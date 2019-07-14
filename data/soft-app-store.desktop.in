@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Soft App Store
+Name[ca]=Gestor d'usuaris de MATE
+Name[zh_CN]=软件应用商店
+Comment=Soft Application Store 
+Comment[ca]=Gestioneu els usuaris
+Comment[zh_CN]=管理用户权限、语言、密码、登录名称、头像。
+Categories=GTK;Settings;System;Utility;
+Keywords=Configuration;Utility;
+OnlyShowIn=MATE;
+Exec=soft-app-store
+Icon=soft-app-store
+Terminal=false
+Type=Application

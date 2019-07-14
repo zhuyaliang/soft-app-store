@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the soft-app-store package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: soft-app-store\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-14 17:25+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+#: src/app-store-util.c:157
+msgid "_Return"
+msgstr ""
+
+#: src/app-store-util.c:168
+msgid "Message"
+msgstr ""
+
+#: src/main.c:47
+msgid "Get Icon Fail"
+msgstr ""
+
+#: src/main.c:60
+msgid "Soft App Store"
+msgstr ""
+
+#: src/main.c:83
+msgid "all store"
+msgstr "商店"
+
+#: src/main.c:89
+msgid "local install"
+msgstr "本地安装"
+
+#: src/main.c:95
+msgid "local update"
+msgstr "本地更新"
+
+#: src/main.c:112 src/main.c:154
+msgid "open file"
+msgstr ""
+
+#: src/main.c:112
+msgid "Create pid file failed"
+msgstr ""
+
+#: src/main.c:121
+msgid "write file"
+msgstr ""
+
+#: src/main.c:121
+msgid "write pid file failed"
+msgstr ""
+
+#: src/main.c:154
+msgid "open pid file failed"
+msgstr ""
+
+#: src/main.c:159
+msgid "read file"
+msgstr ""
+
+#: src/main.c:159
+msgid "read pid file failed"
+msgstr ""
