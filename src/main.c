@@ -59,7 +59,7 @@ static void InitMainWindow(SoftAppStore *app)
     gtk_window_set_position(GTK_WINDOW(app->MainWindow), GTK_WIN_POS_CENTER);
     gtk_window_set_title(GTK_WINDOW(app->MainWindow),_("Soft App Store")); 
     gtk_container_set_border_width(GTK_CONTAINER(app->MainWindow),10);
-    gtk_widget_set_size_request(app->MainWindow, 600, 600);
+    gtk_widget_set_size_request(app->MainWindow, 1000, 600);
     g_signal_connect(G_OBJECT(app->MainWindow), 
                     "delete-event",
                      G_CALLBACK(on_window_quit),
