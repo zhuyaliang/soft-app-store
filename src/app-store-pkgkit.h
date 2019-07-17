@@ -1,5 +1,5 @@
 /*  soft-app-store 
-*   Copyright (C) 2019  zhuyaliang https://github.com/zhuyaliang/
+*   Copyright (C) 2018  zhuyaliang https://github.com/zhuyaliang/
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -15,29 +15,23 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __APP_STORE_H__
-#define __APP_STORE_H__
+#ifndef __APP_STORE_PKGKIT_H__
+#define __APP_STORE_PKGKIT_H__
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
+#include <packagekit-glib2/packagekit.h>
 
-#include <gtk/gtk.h>
-#include <libintl.h>   
-#include <locale.h>   
-#include <app-store-pkgkit.h>
-
-#define _(STRING)  gettext(STRING)   
-
-typedef struct 
+typedef struct PackageApp
 {
-    GtkWidget        *MainWindow;
-    GtkWidget        *NoteBook;
-	GtkWidget        *StoreBox;
-    GtkWidget        *LocalBox;
-    GtkWidget        *UpdateBox;
-    PackageApp       *pkg;
+    GHashTable       *repos;
+    PkBitfield       filters_current;
+    PkBitfield       groups;
+    PkBitfield       roles;
+    PkControl       *control;
+    PkPackageSack   *package_sack;
+    PkStatusEnum     status_last;
+    GCancellable    *cancellable;
 
-}SoftAppStore;
-
+}PackageApp;
+void InitPackageKit(PackageApp *pkg);
 #endif

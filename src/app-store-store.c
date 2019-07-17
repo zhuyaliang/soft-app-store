@@ -17,40 +17,30 @@
 
 #include "app-store-util.h"
 #include "app-store-store.h"
-static GtkWidget *add_new (void)
+#include "app-store-category.h"
+
+static void GetSoftCate(SoftAppCategory *cate)
 {
-    GtkWidget *button,*hbox,*image,*label;
 
-    button = gtk_button_new ();
-    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);  
-    gtk_container_add (GTK_CONTAINER (button), hbox);
-    image = gtk_image_new();
-    gtk_image_set_from_icon_name (GTK_IMAGE (image),
-                                  "audio-x-generic",
-                                  GTK_ICON_SIZE_MENU);
-	gtk_box_pack_start(GTK_BOX(hbox),image ,TRUE, TRUE, 0);
-    label = gtk_label_new(NULL);
-    gtk_label_set_label(GTK_LABEL(label),"test");
-	gtk_box_pack_start(GTK_BOX(hbox),label ,TRUE, TRUE, 0);
-
-    gtk_widget_show_all (button);
-
-  return button;
-}
-
+    cate->image_name = g_strdup("input-gaming");
+    cate->soft_name  = g_strdup("gaming");
+    cate->color      = g_strdup("red");
+}    
 GtkWidget *LoadStoreSoft(SoftAppStore *app)
 {
     GtkWidget *vbox;
 	GtkWidget *label;
     GtkWidget *flowbox;
+    GtkWidget *tile;
+    SoftAppCategory cate;
     guint i;
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
 	
 	label = gtk_label_new(NULL);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	SetLableFontType(label,"black",13,_("soft category"));
+	gtk_widget_set_valign (label, GTK_ALIGN_END);
+	SetLableFontType(label,"black",14,_("soft category"));
 	gtk_box_pack_start(GTK_BOX(vbox),label ,TRUE, TRUE, 0);
     
     flowbox = gtk_flow_box_new ();
@@ -60,10 +50,13 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     gtk_flow_box_set_column_spacing(GTK_FLOW_BOX (flowbox),12);
     gtk_flow_box_set_row_spacing(GTK_FLOW_BOX (flowbox),12);
 	gtk_box_pack_start(GTK_BOX(vbox),flowbox ,TRUE, TRUE, 0);
-
+    
+    GetSoftCate(&cate);
     for (i = 0; i< 8 ; i++)
-        gtk_container_add (GTK_CONTAINER (flowbox), add_new ());
-	
+    {  
+        tile = soft_app_category_tile_new (&cate); 
+        gtk_container_add (GTK_CONTAINER (flowbox),tile);
+    }
     label = gtk_label_new(NULL);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_widget_set_valign (label, GTK_ALIGN_START);

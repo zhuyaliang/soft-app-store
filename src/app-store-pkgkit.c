@@ -15,29 +15,16 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __APP_STORE_H__
-#define __APP_STORE_H__
+#include "app-store-pkgkit.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
-#include <gtk/gtk.h>
-#include <libintl.h>   
-#include <locale.h>   
-#include <app-store-pkgkit.h>
-
-#define _(STRING)  gettext(STRING)   
-
-typedef struct 
+void InitPackageKit(SoftAppStore *app)
 {
-    GtkWidget        *MainWindow;
-    GtkWidget        *NoteBook;
-	GtkWidget        *StoreBox;
-    GtkWidget        *LocalBox;
-    GtkWidget        *UpdateBox;
-    PackageApp       *pkg;
+    PackageApp *pkp = app->pkg;
 
-}SoftAppStore;
+    pkg->package_sack = pk_package_sack_new ();
+    pkg->cancellable = g_cancellable_new ();
+    pkg->repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+    pkg->control = pk_control_new ();
 
-#endif
+}    

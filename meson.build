@@ -87,8 +87,9 @@ add_global_link_arguments(
 
 # Dependencies
 gtk_req_version = '>= 3.0.0'
+packagekit_rep_version = '>=1.0.3'
 gtk_deps = dependency('gtk+-3.0', version: gtk_req_version)
-
+pkgkit_deps = dependency('packagekit-glib2',version: packagekit_rep_version)
 # Configure data
 conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())
