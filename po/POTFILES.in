@@ -1,5 +1,7 @@
 src/app-store-local.c  
 src/app-store-store.c  
 src/app-store-update.c  
-src/app-store-util.c  
+src/app-store-util.c 
+src/app-store-category.c
+src/app-store-pkgkit.c
 src/main.c

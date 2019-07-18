@@ -30,10 +30,10 @@ soft_app_category_tile_refresh (SoftAppCategoryTile *tile)
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (tile));
     gtk_widget_set_size_request(GTK_WIDGET (tile), 10, 10);
-	gtk_label_set_label (GTK_LABEL (tile->label),
-			             tile->soft_name);
+	//gtk_label_set_label (GTK_LABEL (tile->label),
+	//		             tile->soft_name);
 
-	SetLableFontType(tile->label,"black",12,_("soft"));
+	SetLableFontType(tile->label,"black",12,tile->soft_name,TRUE);
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
 				                  tile->image_name,
 				                  GTK_ICON_SIZE_MENU);

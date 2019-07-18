@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: soft-app-store\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-17 09:49+0800\n"
+"POT-Creation-Date: 2019-07-18 11:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app-store-store.c:53
+#: src/app-store-store.c:26
+msgid "game"
+msgstr "游戏"
+
+#: src/app-store-store.c:66
+msgid "user admin"
+msgstr "用户管理"
+
+#: src/app-store-store.c:100
 msgid "soft category"
 msgstr "软件分类"
 
-#: src/app-store-store.c:70
+#: src/app-store-store.c:120
 msgid "soft recommend"
 msgstr "软件推荐"
 

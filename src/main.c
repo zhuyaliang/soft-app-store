@@ -187,7 +187,7 @@ int main(int argc, char **argv)
     
     gtk_init(&argc, &argv);
     
-    InitPackageKit(&app);
+    //InitPackageKit(&app);
     /* Create the main window */
 	InitMainWindow(&app);
 	/* Create book page*/

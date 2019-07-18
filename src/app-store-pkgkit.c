@@ -18,10 +18,8 @@
 #include "app-store-pkgkit.h"
 
 
-void InitPackageKit(SoftAppStore *app)
+void InitPackageKit(PackageApp *pkg)
 {
-    PackageApp *pkp = app->pkg;
-
     pkg->package_sack = pk_package_sack_new ();
     pkg->cancellable = g_cancellable_new ();
     pkg->repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);

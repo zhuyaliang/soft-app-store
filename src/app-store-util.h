@@ -46,7 +46,8 @@ int          MessageReport         (const char  *Title,
 void         SetLableFontType      (GtkWidget   *Lable ,
                                     const char  *Color,
                                     int          FontSzie,
-                                    const char  *Word);
+                                    const char  *Word,
+                                    gboolean     Blod);
 
 GtkWidget   *SetButtonIcon         (const char  *button_text,
 		                            const char  *icon_name);

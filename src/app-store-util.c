@@ -185,13 +185,31 @@ int MessageReport(const char *Title,const char *Msg,int nType)
 *        
 * Author:  zhuyaliang  25/05/2018
 ******************************************************************************/
-void SetLableFontType(GtkWidget *Lable ,const char *Color,int FontSzie,const char *Word)        
+void SetLableFontType(GtkWidget  *Lable ,
+                      const char *Color,
+                      int         FontSzie,
+                      const char *Word,
+                      gboolean    Blod)        
 {
     char LableTypeBuf[200] = { 0 };
     
-    sprintf(LableTypeBuf,
-           "<span foreground=\'%s\'weight=\'light\'font_desc=\'%d\'><b>%s</b></span>",
-            Color,FontSzie,Word);
+    if(Blod)
+    {    
+        sprintf(LableTypeBuf,
+                "<span foreground=\'%s\'weight=\'light\'font_desc=\'%d\'><b>%s</b></span>",
+                Color,
+                FontSzie,
+                Word);
+    }
+    else
+    {
+        sprintf(LableTypeBuf,
+                "<span foreground=\'%s\'weight=\'light\'font_desc=\'%d\'>%s</span>",
+                Color,
+                FontSzie,
+                Word);
+    
+    }    
     gtk_label_set_markup(GTK_LABEL(Lable),LableTypeBuf);
 
 }        
