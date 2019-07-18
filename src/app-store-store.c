@@ -18,6 +18,7 @@
 #include "app-store-util.h"
 #include "app-store-store.h"
 #include "app-store-category.h"
+#include "app-store-thumbnail.h"
 
 static void GetSoftCate(SoftAppCategory *cate)
 {
@@ -26,60 +27,13 @@ static void GetSoftCate(SoftAppCategory *cate)
     cate->soft_name  = g_strdup(_("game"));
     cate->color      = g_strdup("red");
 }
-void
-gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, gint scale)
-{
-    cairo_surface_t *surface;
-    surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
-    if (surface == NULL)
-        return;
-    gtk_image_set_from_surface (image, surface);
-    cairo_surface_destroy (surface);
-}
 
-void
-gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
+static void GetSoftInfo(SoftAppThumbnail *thum)
 {
-    gint scale;
-    scale = gdk_pixbuf_get_width (pixbuf) / 64;
-    gs_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
-}
-static GtkWidget *get_recent(void)
-{
-    GtkWidget *fixed,*button,*event_box,*vbox,*image,*label,*hbox;
-    GdkPixbuf *pixbuf;
 
-    fixed = gtk_fixed_new();
-    button = gtk_button_new ();
-    gtk_fixed_put(GTK_FIXED(fixed),button, 0, 0);
-    gtk_widget_set_size_request(button, 110,100);
-    event_box = gtk_event_box_new();
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
-    //gtk_widget_set_size_request (vbox, 80, 80);
-    gtk_container_add (GTK_CONTAINER (button), event_box);
-    gtk_container_add (GTK_CONTAINER (event_box), vbox);
-    image = gtk_image_new();
-    pixbuf = gdk_pixbuf_new_from_file("/tmp/user-admin.png",NULL);
-    gs_image_set_from_pixbuf(GTK_IMAGE(image),pixbuf);
-    gtk_box_pack_start(GTK_BOX(vbox),image ,TRUE, TRUE, 0);
-    label = gtk_label_new(NULL);
-	SetLableFontType(label,"black",10,_("user admin"),FALSE);
-    //gtk_label_set_label(GTK_LABEL(label),"test");
-	gtk_box_pack_start(GTK_BOX(vbox),label ,TRUE, TRUE, 0);
-    
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,1);
-	gtk_box_pack_start(GTK_BOX(vbox),hbox ,TRUE, TRUE, 0);
-    int i = 5;
-    while(i--)
-    {     
-    image = gtk_image_new();
-    gtk_image_set_from_icon_name (GTK_IMAGE (image),
-                                 "starred",
-                                  GTK_ICON_SIZE_MENU);
-	gtk_box_pack_start(GTK_BOX(hbox),image ,TRUE, TRUE, 0);
-  //gtk_widget_show_all (button);
-    }
-  return fixed;
+    thum->image_name = g_strdup("/tmp/user-admin.png");
+    thum->app_name   = g_strdup(_("time-admin"));
+    thum->level      = 3.5;
 }    
 GtkWidget *LoadStoreSoft(SoftAppStore *app)
 {
@@ -88,6 +42,7 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     GtkWidget *flowbox;
     GtkWidget *tile;
     SoftAppCategory cate;
+    SoftAppThumbnail soft_app;
     guint i;
     GtkWidget *hbox;
     GtkWidget *recent;
@@ -121,9 +76,11 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 	gtk_box_pack_start(GTK_BOX(vbox),label ,TRUE, TRUE, 0);
     hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_box_pack_start(GTK_BOX(vbox),hbox ,TRUE, TRUE, 0);
+
+    GetSoftInfo(&soft_app);
     for (i = 0; i < 8; i++)
     {    
-        recent = get_recent();
+        recent = soft_app_thumbnail_tile_new (&soft_app);
 	    gtk_box_pack_start(GTK_BOX(hbox),recent ,FALSE, FALSE, 16);
     }
 	return vbox;
