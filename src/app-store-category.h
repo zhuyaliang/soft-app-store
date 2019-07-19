@@ -27,16 +27,31 @@ G_BEGIN_DECLS
                                           SOFT_APP_TYPE_CATEGORY_TILE,\
                                           SoftAppCategoryTile))
 
+
+#define SOFT_APP_TYPE_CATEGORY      (soft_app_category_get_type ())
+#define SOFT_APP_CATEGORY(object)   (G_TYPE_CHECK_INSTANCE_CAST ((object),\
+                                     SOFT_APP_TYPE_CATEGORY,\
+                                     SoftAppCategory))
+
+
 typedef struct SoftAppCategory
 {
-    char *soft_name;
-    char *image_name;
-    char *color;
+    GObject      parent_instance;
+    
+    char        *soft_name;
+    char        *icon_name;
+    GPtrArray   *key_colors;
 }SoftAppCategory;
+typedef struct SoftAppCategoryClass
+{
+    GObjectClass parent_instance_class;
+}SoftAppCategoryClass;
 
 typedef struct SoftAppCategoryTile
 {
 	GtkButton	 parent_instance;
+
+    SoftAppCategory *cate;
 	GtkWidget	*label;
     char        *soft_name;
 	GtkWidget	*image;
@@ -49,16 +64,34 @@ typedef struct SoftAppCategoryTileClass
 	GtkButtonClass	 parent_instance_class;
 
 }SoftAppCategoryTileClass;
-//G_DECLARE_FINAL_TYPE (SoftAppCategoryTile, soft_app_category_tile, SOFT_APP, CATEGORY_TILE, GtkButton)
 
 GType             soft_app_category_tile_get_type           (void) G_GNUC_CONST;
+GType             soft_app_category_get_type                (void) G_GNUC_CONST;
 
 GtkWidget        *soft_app_category_tile_new                (SoftAppCategory *soft_cate);
 
+SoftAppCategory  *soft_app_category_new                     (const char *     app_name);
+
+const gchar      *soft_app_category_get_name                (SoftAppCategory *category);
+
+void              soft_app_category_set_name                (SoftAppCategory *category,
+                                                             const gchar     *name);
+
+const gchar      *soft_app_category_get_icon                (SoftAppCategory *category);
+
+void              soft_app_category_set_icon                (SoftAppCategory *category,
+                                                             const gchar     *icon);
+
+GPtrArray        *soft_app_category_get_key_colors          (SoftAppCategory *category);
+
+
+void              soft_app_category_add_key_color           (SoftAppCategory *category,
+                                                             const GdkRGBA   *key_color);
 
 void              soft_app_category_tile_set_category       (SoftAppCategoryTile  *tile,
                                                              SoftAppCategory *soft_cate);
-    
+
+
 G_END_DECLS
 
 #endif

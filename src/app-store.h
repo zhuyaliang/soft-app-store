@@ -34,6 +34,7 @@ typedef struct
     GtkWidget        *MainWindow;
     GtkWidget        *NoteBook;
 	GtkWidget        *StoreBox;
+    GtkWidget        *StoreStack;
     GtkWidget        *LocalBox;
     GtkWidget        *UpdateBox;
     PackageApp       *pkg;

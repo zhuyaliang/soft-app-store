@@ -122,7 +122,7 @@ soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)
     soft_app_star_widget_set_rating (tile->stars5,tile->level--);
     pixbuf = gdk_pixbuf_new_from_file(tile->image_name,NULL);
     soft_app_image_set_from_pixbuf(GTK_IMAGE(tile->image),pixbuf);
-	SetLableFontType(tile->label,"black",10,tile->app_name,FALSE);
+	SetLableFontType(tile->label,"black",11,tile->app_name,FALSE);
 }
 
 static void soft_app_thumbnail_tile_set_data(SoftAppThumbnailTile *tile, SoftAppThumbnail *app)

@@ -19,25 +19,36 @@
 #include "app-store-util.h"
 
 G_DEFINE_TYPE (SoftAppCategoryTile, soft_app_category_tile, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (SoftAppCategory, soft_app_category, G_TYPE_OBJECT)
 
 static void
 soft_app_category_tile_refresh (SoftAppCategoryTile *tile)
 {
+    GPtrArray *key_colors;
 	GtkStyleContext *context;
 	g_autoptr(GtkCssProvider) provider = NULL;
 	g_autofree gchar *css = NULL;
-    GError *error = NULL;
+	g_autofree gchar *color = NULL;
+    GError   *error = NULL;
+    GdkRGBA  *tmp;
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (tile));
     gtk_widget_set_size_request(GTK_WIDGET (tile), 10, 10);
-	//gtk_label_set_label (GTK_LABEL (tile->label),
-	//		             tile->soft_name);
 
-	SetLableFontType(tile->label,"black",12,tile->soft_name,TRUE);
+	SetLableFontType(tile->label,
+                    "black",
+                    12,
+                    soft_app_category_get_name (tile->cate),
+                    TRUE);
+
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
-				                  tile->image_name,
+				                  soft_app_category_get_icon (tile->cate),
 				                  GTK_ICON_SIZE_MENU);
-	css = g_strdup_printf ("button {border-bottom-color:rgb(111,11,111);border-bottom-width:3px;padding-top:11px}");
+    key_colors = soft_app_category_get_key_colors (tile->cate);
+    tmp = g_ptr_array_index (key_colors, 0);
+    color = gdk_rgba_to_string (tmp);
+
+	css = g_strdup_printf ("button {border-bottom-color:%s;border-bottom-width:3px;padding-top:11px}",color);
     provider = gtk_css_provider_new ();
     gtk_css_provider_load_from_data (provider, css, -1, &error);
 	gtk_style_context_add_provider (context, 
@@ -48,19 +59,15 @@ soft_app_category_tile_refresh (SoftAppCategoryTile *tile)
 void
 soft_app_category_tile_set_category (SoftAppCategoryTile *tile, SoftAppCategory *cate)
 {
-	tile->soft_name = g_strdup(cate->soft_name);
-	tile->image_name = g_strdup(cate->image_name);
-	tile->color = g_strdup(cate->color);
-	soft_app_category_tile_refresh (tile);
+	g_set_object (&tile->cate, cate);
+    soft_app_category_tile_refresh (tile);
 }
 
 static void
 soft_app_category_tile_destroy (GtkWidget *widget)
 {
 	SoftAppCategoryTile *tile = SOFT_APP_CATEGORY_TILE (widget);
-    g_free(tile->soft_name);
-    g_free(tile->image_name);
-    g_free(tile->color);
+    g_clear_object (&tile->cate);
 }
 
 static void
@@ -97,4 +104,71 @@ soft_app_category_tile_new (SoftAppCategory *cate)
 	soft_app_category_tile_set_category (tile, cate);
 
 	return GTK_WIDGET (tile);
+}
+
+const gchar *
+soft_app_category_get_name (SoftAppCategory *category)
+{
+    return category->soft_name;
+}
+
+const gchar *
+soft_app_category_get_icon (SoftAppCategory *category)
+{
+    return category->icon_name;
+}
+
+void
+soft_app_category_set_icon (SoftAppCategory *category, 
+                            const gchar     *icon)
+{
+    g_free (category->icon_name);
+    category->icon_name = g_strdup (icon);
+}  
+
+GPtrArray *
+soft_app_category_get_key_colors (SoftAppCategory *category)
+{
+    return category->key_colors;
+}
+
+void
+soft_app_category_add_key_color (SoftAppCategory *category, 
+                                 const GdkRGBA   *key_color)
+{
+    g_return_if_fail (key_color != NULL);
+    g_ptr_array_add (category->key_colors, gdk_rgba_copy (key_color));
+}
+
+static void
+soft_app_category_finalize (GObject *object)
+{
+    SoftAppCategory *category = SOFT_APP_CATEGORY (object);
+
+    g_ptr_array_unref (category->key_colors);
+    g_free (category->soft_name);
+    g_free (category->icon_name);
+}
+
+static void
+soft_app_category_class_init (SoftAppCategoryClass *klass)
+{
+    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    object_class->finalize = soft_app_category_finalize;
+}
+
+static void
+soft_app_category_init (SoftAppCategory *category)
+{
+    category->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+}
+
+SoftAppCategory *
+soft_app_category_new (const gchar *name)
+{
+    SoftAppCategory *category;
+    category = g_object_new (SOFT_APP_TYPE_CATEGORY, NULL);
+    category->soft_name = g_strdup (name);
+    
+    return SOFT_APP_CATEGORY (category);
 }
