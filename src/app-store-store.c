@@ -101,32 +101,87 @@ static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)
     app->page = CATEGORY_LIST_PAGE;
 	SwitchPage(app);
 }
+static GtkWidget *CreateSubclassCombo(SoftAppStore *app)
+{
+	 GtkListStore    *Store;
+     GtkTreeIter      Iter;
+     GtkCellRenderer *Renderer;
+     GtkWidget       *ComboBox;
+
+     Store = gtk_list_store_new(1,G_TYPE_STRING);
+     gtk_list_store_append(Store,&Iter);
+     gtk_list_store_set(Store,&Iter,0,"test1-class",-1);
+     gtk_list_store_append(Store,&Iter);
+     gtk_list_store_set(Store,&Iter,0,"test2-class",-1);
+
+     ComboBox = gtk_combo_box_new_with_model(GTK_TREE_MODEL(Store));
+     g_object_unref(G_OBJECT(Store));
+     Renderer = gtk_cell_renderer_text_new();
+     gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(ComboBox),Renderer,TRUE);
+     gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(ComboBox),Renderer,"text",0,NULL);
+
+     return ComboBox;
+
+}
 GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
 {
     GtkWidget *vbox;
-	GtkWidget *label;
+    GtkWidget *hbox;
 	GtkWidget *button;
+	GtkWidget *label;
+	GtkWidget *ComboBox;
+	GtkWidget *sw;
+	GtkWidget *flowbox;
+    SoftAppThumbnail soft_app;
+    GtkWidget *Recom;
+	gint       i;
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);  
+	gtk_box_pack_start(GTK_BOX(vbox),hbox ,FALSE, FALSE, 12);
+		
 	button = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
 	g_signal_connect (button, 
                      "clicked",
                       G_CALLBACK (SwitchPageToMainPage), 
                       app);
-	
+	sw = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), 
+			                        GTK_POLICY_NEVER, 
+									GTK_POLICY_AUTOMATIC);
 	label = gtk_label_new(NULL);
-	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_widget_set_valign (label, GTK_ALIGN_END);
-	SetLableFontType(label,"black",14,_("soft category"),TRUE);
-	gtk_box_pack_start(GTK_BOX(vbox),label ,TRUE, TRUE, 0);
-    
+	SetLableFontType(label,"black",12,_("Subclass"),FALSE);
+	gtk_box_pack_start(GTK_BOX(hbox),label ,FALSE, FALSE, 6);
+	ComboBox = CreateSubclassCombo(app);
+	gtk_widget_set_valign (ComboBox, GTK_ALIGN_START);
+	gtk_widget_set_halign (ComboBox, GTK_ALIGN_START);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(ComboBox),0);
+	gtk_box_pack_start(GTK_BOX(hbox),ComboBox ,FALSE, FALSE, 0);
+
     label = gtk_label_new(NULL);
-	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_widget_set_valign (label, GTK_ALIGN_END);
-	SetLableFontType(label,"black",14,_("soft recommend"),TRUE);
-	gtk_box_pack_start(GTK_BOX(vbox),label ,TRUE, TRUE, 0);
+	SetLableFontType(label,"black",12,_("sort"),FALSE);
+	gtk_box_pack_start(GTK_BOX(hbox),label ,FALSE, FALSE, 6);
+	ComboBox = CreateSubclassCombo(app);
+	gtk_widget_set_valign (ComboBox, GTK_ALIGN_START);
+	gtk_widget_set_halign (ComboBox, GTK_ALIGN_START);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(ComboBox),0);
+	gtk_box_pack_start(GTK_BOX(hbox),ComboBox ,TRUE, TRUE, 0);
     
-    return vbox;
+    flowbox = gtk_flow_box_new ();
+    gtk_flow_box_set_max_children_per_line(GTK_FLOW_BOX (flowbox), 8);
+    gtk_flow_box_set_selection_mode (GTK_FLOW_BOX (flowbox), GTK_SELECTION_NONE);
+    gtk_flow_box_set_column_spacing(GTK_FLOW_BOX (flowbox),1);
+    gtk_flow_box_set_row_spacing(GTK_FLOW_BOX (flowbox),12);
+	gtk_container_add (GTK_CONTAINER (sw), flowbox);
+	gtk_box_pack_start(GTK_BOX(vbox),sw ,TRUE, TRUE, 0);
+    
+	GetRecommendSoftInfo(&soft_app);
+    for (i = 0; i < 100; i++)
+    {    
+        Recom = soft_app_thumbnail_tile_new (&soft_app);
+        gtk_container_add (GTK_CONTAINER (flowbox),Recom);
+    }
+	return vbox;
 }   
 
 static GtkWidget *CategorySoftWindow(GtkWidget *vbox)

@@ -49,7 +49,7 @@ soft_app_category_tile_refresh (SoftAppCategoryTile *tile)
     color = gdk_rgba_to_string (tmp);
 
 	css = g_strdup_printf ("button {border-bottom-color:%s;border-bottom-width:3px;padding-top:11px}",color);
-    provider = gtk_css_provider_new ();
+	provider = gtk_css_provider_new ();
     gtk_css_provider_load_from_data (provider, css, -1, &error);
 	gtk_style_context_add_provider (context, 
                                     GTK_STYLE_PROVIDER (provider),
