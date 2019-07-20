@@ -21,5 +21,6 @@
 #include "app-store.h"
 
 GtkWidget *LoadStoreSoft(SoftAppStore *app);
+GtkWidget *CreateStoreCategoryList(SoftAppStore *app);
 
 #endif

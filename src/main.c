@@ -65,20 +65,28 @@ static void InitMainWindow(SoftAppStore *app)
                      G_CALLBACK(on_window_quit),
                      app);
     
+    app->Header = gtk_header_bar_new (); 
+    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (app->Header), TRUE);
+    gtk_header_bar_set_has_subtitle (GTK_HEADER_BAR (app->Header), TRUE);
+    gtk_window_set_titlebar (GTK_WINDOW (app->MainWindow), app->Header);
+
     AppIcon = GetAppIcon();
     if(AppIcon)
     {
         gtk_window_set_icon(GTK_WINDOW(app->MainWindow),AppIcon);
         g_object_unref(AppIcon);
     }   
+    app->StoreStack = gtk_stack_new ();
+    gtk_container_add(GTK_CONTAINER(app->MainWindow), app->StoreStack);
 }
 
 static void InitNoteBook (SoftAppStore *app)
 {
     GtkWidget *NoteName;
+    GtkWidget *CategoryVbox;
+   // GtkWidget *IndividualVbox;
     
     app->NoteBook = gtk_notebook_new();
-    gtk_container_add(GTK_CONTAINER(app->MainWindow), app->NoteBook);
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK (app->NoteBook), GTK_POS_TOP);
     
     NoteName = gtk_label_new(_("all store"));
@@ -99,7 +107,15 @@ static void InitNoteBook (SoftAppStore *app)
 			                 app->UpdateBox,
 							 NoteName);
     
-    gtk_widget_show_all(app->MainWindow);
+    gtk_stack_add_named (GTK_STACK (app->StoreStack),app->NoteBook,"main-page");
+	
+	CategoryVbox = CreateStoreCategoryList(app);
+    gtk_stack_add_named (GTK_STACK (app->StoreStack), CategoryVbox,"list-page");
+    
+	//IndividualVbox = CreateStoreIndividualDetails();
+    //gtk_stack_add_named (GTK_STACK (stack), IndividualVbox,"details-page");
+    
+	gtk_widget_show_all(app->MainWindow);
 }    
 static int RecordPid(void)
 {

@@ -16,6 +16,7 @@
 */
 
 #include "app-store-util.h"
+#include "app-store-update.h"
 
 GtkWidget *LoadLocalUpdate(SoftAppStore *app)
 {

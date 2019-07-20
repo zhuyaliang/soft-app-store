@@ -25,10 +25,14 @@
 
 #define TYPEMSG    "<span foreground='red'font_desc='13'>%s </span>"
 
-#define ERROR      1
-#define WARING     2
-#define INFOR      3
-#define QUESTION   4
+#define ERROR                     1
+#define WARING                    2
+#define INFOR                     3
+#define QUESTION                  4
+
+#define MAIN_PAGE                 0
+#define CATEGORY_LIST_PAGE        1
+#define INDIVIDUAL_SOFT_PAGE      2
 
 void         SoftAppStoreLog       (const char  *level,
                                     const char  *message,
@@ -52,4 +56,5 @@ void         SetLableFontType      (GtkWidget   *Lable ,
 GtkWidget   *SetButtonIcon         (const char  *button_text,
 		                            const char  *icon_name);
 
+void         SwitchPage            (SoftAppStore *app);
 #endif

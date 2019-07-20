@@ -67,20 +67,53 @@ static void GetRecommendSoftInfo(SoftAppThumbnail *thum)
     thum->app_name   = g_strdup(_("user-admin"));
     thum->level      = 3.5;
 }   
-static void category_tile_clicked (SoftAppCategoryTile *tile, GtkWidget *stack)
+
+static GtkWidget *LoadHeader_bar(GtkWidget  *header,
+		                         const char *icon,
+								 gboolean    mode)
 {
-    gtk_stack_set_visible_child_name (GTK_STACK (stack), "info");
-    g_print("sssssssssssssssss\r\n");
+    GtkWidget *button;
 
-}    
+    button = gtk_button_new (); 
+    gtk_container_add (GTK_CONTAINER (button),
+                       gtk_image_new_from_icon_name (icon,
+                       GTK_ICON_SIZE_BUTTON));
 
-static GtkWidget *LoadSoftInfo(void)
+	if(mode)
+	{
+		gtk_header_bar_pack_start (GTK_HEADER_BAR (header), button);
+	}
+	else
+	{
+		gtk_header_bar_pack_end (GTK_HEADER_BAR (header), button);
+	}
+	return button;
+}
+
+
+static void SwitchPageToMainPage (GtkWidget *button, SoftAppStore *app)
+{
+    app->page = MAIN_PAGE;
+	SwitchPage(app);
+}
+static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)
+{
+    app->page = CATEGORY_LIST_PAGE;
+	SwitchPage(app);
+}
+GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
 {
     GtkWidget *vbox;
 	GtkWidget *label;
+	GtkWidget *button;
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
-    	
+	button = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
+	g_signal_connect (button, 
+                     "clicked",
+                      G_CALLBACK (SwitchPageToMainPage), 
+                      app);
+	
 	label = gtk_label_new(NULL);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_widget_set_valign (label, GTK_ALIGN_END);
@@ -135,7 +168,7 @@ static GtkWidget *RecommendSoftWindow (GtkWidget *vbox)
     return hbox;
 
 }    
-static GtkWidget *CreateStoreMainWindow(SoftAppStore *app)
+GtkWidget *LoadStoreSoft(SoftAppStore *app)
 {
     GtkWidget *vbox;
     GtkWidget *flowbox;
@@ -145,21 +178,23 @@ static GtkWidget *CreateStoreMainWindow(SoftAppStore *app)
     SoftAppThumbnail soft_app;
     GtkWidget *Recom;
     GtkWidget *hbox;
+    GtkWidget *button;
     guint      i;
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
-    
     flowbox = CategorySoftWindow(vbox);
     list = GetCategoryInfo(app);
-     
+	
+	button = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
     for (i = 0; i < list->len; i++)
     {
         cate = SOFT_APP_CATEGORY (g_ptr_array_index (list, i));
         tile = soft_app_category_tile_new (cate);
+		app->page = CATEGORY_LIST_PAGE;
         g_signal_connect (tile, 
                          "clicked",
-                          G_CALLBACK (category_tile_clicked), 
-                          app->StoreStack);
+                          G_CALLBACK (SwitchPageToCategoryListPage), 
+                          app);
         gtk_container_add (GTK_CONTAINER (flowbox),tile);
     }
 
@@ -172,20 +207,4 @@ static GtkWidget *CreateStoreMainWindow(SoftAppStore *app)
     }
 
     return vbox;
-}    
-GtkWidget *LoadStoreSoft(SoftAppStore *app)
-{
-    GtkWidget *vbox;
-
-    app->StoreStack = gtk_stack_new ();
-    
-    vbox = CreateStoreMainWindow(app);
-    gtk_stack_add_named (GTK_STACK (app->StoreStack), vbox, "formatted");
-    //CreateStoreCategorySoft();
-    gtk_stack_add_named (GTK_STACK (app->StoreStack), LoadSoftInfo(),"info");
-    //CreateStoreIndividualSoft();
-    //gtk_stack_add_named (GTK_STACK (stack), LoadSoftInfo(),"info");
-
-	return app->StoreStack;
-
 }

@@ -230,3 +230,21 @@ GtkWidget *SetButtonIcon(const gchar *button_text,const gchar *icon_name)
 
     return button;
 }    
+void SwitchPage (SoftAppStore *app)
+{
+	g_print("sssssss page = %d\r\n",app->page);
+	switch (app->page)
+	{
+		case MAIN_PAGE:
+			gtk_stack_set_visible_child_name (GTK_STACK (app->StoreStack), "main-page");
+		break;
+		case CATEGORY_LIST_PAGE:
+			gtk_stack_set_visible_child_name (GTK_STACK (app->StoreStack), "list-page");
+		break;
+		case INDIVIDUAL_SOFT_PAGE:
+			gtk_stack_set_visible_child_name (GTK_STACK (app->StoreStack), "details-page");
+		break;
+		default:
+			gtk_stack_set_visible_child_name (GTK_STACK (app->StoreStack), "main-page");
+	}
+}    

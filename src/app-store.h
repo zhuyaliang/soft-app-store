@@ -32,13 +32,15 @@
 typedef struct 
 {
     GtkWidget        *MainWindow;
+    GtkWidget        *Header;
     GtkWidget        *NoteBook;
+    GtkWidget        *NoteName;
 	GtkWidget        *StoreBox;
     GtkWidget        *StoreStack;
     GtkWidget        *LocalBox;
     GtkWidget        *UpdateBox;
     PackageApp       *pkg;
-
+	int               page;
 }SoftAppStore;
 
 #endif
