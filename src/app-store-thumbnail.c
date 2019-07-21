@@ -87,7 +87,7 @@ soft_app_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
     scale = gdk_pixbuf_get_width (pixbuf) / 64;
     soft_app_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
 }
-static void soft_app_star_widget_set_rating (GtkWidget *stars,float level)
+void soft_app_star_widget_set_rating (GtkWidget *stars,float level)
 {
     const float EPSINON = 0.00001;
 

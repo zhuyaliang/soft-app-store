@@ -62,7 +62,9 @@ typedef struct SoftAppThumbnailTileClass
 GType             soft_app_thumbnail_tile_get_type           (void) G_GNUC_CONST;
 
 GtkWidget        *soft_app_thumbnail_tile_new                (SoftAppThumbnail *soft_thumbnail);
-    
+
+void              soft_app_star_widget_set_rating            (GtkWidget *stars,
+		                                                      float      level);    
 G_END_DECLS
 
 #endif

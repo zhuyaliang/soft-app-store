@@ -17,12 +17,66 @@
 
 #include "app-store-util.h"
 #include "app-store-local.h"
+#include "app-store-row.h"
 
+static GPtrArray *GetLocalSoftMessage(SoftAppStore *app)
+{
+	gint i;
+	SoftAppMessage *Message;
+    GPtrArray       *list = NULL;
+    
+    list = g_ptr_array_new ();
+	for(i = 0; i < 100; i++)
+	{
+		Message = soft_app_message_new ();
+		soft_app_message_set_name(Message,_("time-admin"));
+		soft_app_message_set_icon(Message,"/tmp/time-admin.png");
+		soft_app_message_set_score(Message,4.5);
+		soft_app_message_set_describe(Message,_("Marks row as changed, causing any state that depends on this to be updated.\r\nThis affects sorting, filtering and headers."));
+		soft_app_message_set_size(Message,"35.6M");
+		soft_app_message_set_buttontype(Message,TRUE);
+        g_ptr_array_add (list, Message);
+	}
+
+	return list;
+}
+static void SwitchPageToIndividualDetailsPage (GtkWidget *button, SoftAppStore *app)
+{
+    app->page = INDIVIDUAL_SOFT_PAGE;
+	//SwitchPage(app);
+}
 GtkWidget *LoadLocalInstall(SoftAppStore *app)
 {
     GtkWidget *vbox;
+    GtkWidget *sw;
+    GPtrArray *list;
+	GtkWidget *listbox;
+	SoftAppMessage *Message;
+	GtkWidget *row;
+	guint       i;
 
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
+	sw = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
+	listbox = gtk_list_box_new ();
+	gtk_container_add (GTK_CONTAINER (sw), listbox);
+	
+	list = GetLocalSoftMessage(app);
+    for (i = 0; i < list->len; i++)
+    {
+        Message = SOFT_APP_MESSAGE (g_ptr_array_index (list, i));
+		row = soft_app_row_new(Message);
+		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
+		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
+
+		app->page = MAIN_PAGE;
+
+ //       g_signal_connect (row, 
+ //                        "clicked",
+ //                         G_CALLBACK (SwitchPageToIndividualDetailsPage), 
+ //                         app);
+		gtk_list_box_insert (GTK_LIST_BOX(listbox), row, i);
+	}
 	return vbox;
-
 }
