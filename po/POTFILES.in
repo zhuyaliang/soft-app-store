@@ -4,4 +4,6 @@ src/app-store-update.c
 src/app-store-util.c 
 src/app-store-category.c
 src/app-store-pkgkit.c
+src/app-store-row.c
+src/app-store-thumbnail.c
 src/main.c

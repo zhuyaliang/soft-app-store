@@ -56,9 +56,7 @@ typedef struct SoftAppRow
 
     SoftAppMessage *Message;
 	GtkWidget	   *label_name;
-    char           *soft_name;
 	GtkWidget	   *image;
-    char           *image_name;
 	GtkWidget      *stars1;
 	GtkWidget      *stars2;
 	GtkWidget      *stars3;

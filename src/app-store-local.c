@@ -31,8 +31,8 @@ static GPtrArray *GetLocalSoftMessage(SoftAppStore *app)
 		Message = soft_app_message_new ();
 		soft_app_message_set_name(Message,_("time-admin"));
 		soft_app_message_set_icon(Message,"/tmp/time-admin.png");
-		soft_app_message_set_score(Message,4.5);
-		soft_app_message_set_describe(Message,_("Marks row as changed, causing any state that depends on this to be updated.\r\nThis affects sorting, filtering and headers."));
+		soft_app_message_set_score(Message,(i%5)+0.5);
+		soft_app_message_set_describe(Message,_("Marks row as changed, causing any state that depends on this to be updated.This affects sorting, filtering and headers."));
 		soft_app_message_set_size(Message,"35.6M");
 		soft_app_message_set_buttontype(Message,TRUE);
         g_ptr_array_add (list, Message);
@@ -40,10 +40,15 @@ static GPtrArray *GetLocalSoftMessage(SoftAppStore *app)
 
 	return list;
 }
-static void SwitchPageToIndividualDetailsPage (GtkWidget *button, SoftAppStore *app)
+static void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,
+                                               GtkListBoxRow *Row,
+                                               SoftAppStore  *app)
+
 {
     app->page = INDIVIDUAL_SOFT_PAGE;
-	//SwitchPage(app);
+	SoftAppRow *row = SOFT_APP_ROW(Row); 
+	g_print("abcdefg = %f\r\n",soft_app_message_get_score(row->Message));
+	SwitchPage(app);
 }
 GtkWidget *LoadLocalInstall(SoftAppStore *app)
 {
@@ -62,6 +67,10 @@ GtkWidget *LoadLocalInstall(SoftAppStore *app)
 	listbox = gtk_list_box_new ();
 	gtk_container_add (GTK_CONTAINER (sw), listbox);
 	
+    g_signal_connect (listbox, 
+                     "row-activated",
+                      G_CALLBACK (SwitchPageToIndividualDetailsPage), 
+                      app);
 	list = GetLocalSoftMessage(app);
     for (i = 0; i < list->len; i++)
     {
@@ -71,11 +80,6 @@ GtkWidget *LoadLocalInstall(SoftAppStore *app)
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 
 		app->page = MAIN_PAGE;
-
- //       g_signal_connect (row, 
- //                        "clicked",
- //                         G_CALLBACK (SwitchPageToIndividualDetailsPage), 
- //                         app);
 		gtk_list_box_insert (GTK_LIST_BOX(listbox), row, i);
 	}
 	return vbox;

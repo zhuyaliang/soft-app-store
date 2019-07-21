@@ -15,33 +15,21 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __APP_STORE_H__
-#define __APP_STORE_H__
+#include "app-store-util.h"
+#include "app-store-details.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <gtk/gtk.h>
-#include <libintl.h>   
-#include <locale.h>   
-#include <app-store-pkgkit.h>
-
-#define _(STRING)  gettext(STRING)   
-
-typedef struct 
+GtkWidget *CreateStoreIndividualDetails (SoftAppStore *app)
 {
-    GtkWidget        *MainWindow;
-    GtkWidget        *Header;
-    GtkWidget        *NoteBook;
-    GtkWidget        *NoteName;
-	GtkWidget        *StoreBox;
-    GtkWidget        *StoreStack;
-    GtkWidget        *LocalBox;
-    GtkWidget        *UpdateBox;
-    PackageApp       *pkg;
-	int               page;
-	int               parent_page;
-}SoftAppStore;
+    GtkWidget *vbox;
+    GtkWidget *sw;
+    GtkWidget *label;
 
-#endif
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
+	sw = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
+	label = gtk_label_new("sssss");
+	gtk_container_add (GTK_CONTAINER (sw), label);
+
+	return vbox;
+}

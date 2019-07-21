@@ -10,6 +10,7 @@ sources = [
 'app-store-pkgkit.c',
 'app-store-thumbnail.c',
 'app-store-row.c',
+'app-store-details.c',
 ]
 
 executable('soft-app-store',

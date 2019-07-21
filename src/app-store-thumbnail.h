@@ -38,7 +38,8 @@ typedef struct SoftAppThumbnail
 
 typedef struct SoftAppThumbnailTile
 {
-	GtkFixed	 parent_instance;
+//	GtkFixed	 parent_instance;
+	GtkButton	 parent_instance;
     
     GtkWidget   *event_box;
 	GtkWidget	*label;
@@ -55,7 +56,8 @@ typedef struct SoftAppThumbnailTile
 }SoftAppThumbnailTile;
 typedef struct SoftAppThumbnailTileClass
 {
-	GtkFixedClass	 parent_instance_class;
+	//GtkFixedClass	 parent_instance_class;
+	GtkButtonClass	 parent_instance_class;
 
 }SoftAppThumbnailTileClass;
 

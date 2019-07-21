@@ -1,5 +1,5 @@
 /*  soft-app-store 
-*   Copyright (C) 2019  zhuyaliang https://github.com/zhuyaliang/
+*   Copyright (C) 2018  zhuyaliang https://github.com/zhuyaliang/
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -15,33 +15,11 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __APP_STORE_H__
-#define __APP_STORE_H__
+#ifndef __APP_STORE_DETAILS_H__
+#define __APP_STORE_DETAILS_H__
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "app-store.h"
 
-#include <gtk/gtk.h>
-#include <libintl.h>   
-#include <locale.h>   
-#include <app-store-pkgkit.h>
-
-#define _(STRING)  gettext(STRING)   
-
-typedef struct 
-{
-    GtkWidget        *MainWindow;
-    GtkWidget        *Header;
-    GtkWidget        *NoteBook;
-    GtkWidget        *NoteName;
-	GtkWidget        *StoreBox;
-    GtkWidget        *StoreStack;
-    GtkWidget        *LocalBox;
-    GtkWidget        *UpdateBox;
-    PackageApp       *pkg;
-	int               page;
-	int               parent_page;
-}SoftAppStore;
+GtkWidget *CreateStoreIndividualDetails (SoftAppStore *app);
 
 #endif

@@ -139,13 +139,17 @@ soft_app_row_init (SoftAppRow *row)
 	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars5 ,TRUE, TRUE, 0);
     
 	row->label_describe = gtk_label_new(NULL);
+	gtk_label_set_max_width_chars(GTK_LABEL(row->label_describe),70);
+	gtk_widget_set_size_request(row->label_describe,100,10);
+	gtk_label_set_line_wrap(GTK_LABEL(row->label_describe),TRUE);
+	gtk_label_set_lines(GTK_LABEL(row->label_describe),2);
 	gtk_box_pack_start(GTK_BOX(hbox),row->label_describe ,FALSE,FALSE, 6);
 
     h_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);  
 	gtk_box_pack_start(GTK_BOX(hbox),h_vbox ,FALSE,FALSE, 6);
 
 	row->button = gtk_button_new();
-	gtk_box_pack_start(GTK_BOX(h_vbox),row->button ,FALSE,FALSE, 6);
+	gtk_box_pack_start(GTK_BOX(h_vbox),row->button ,TRUE,TRUE, 6);
 	
 	row->label_size = gtk_label_new(NULL);
 	gtk_box_pack_start(GTK_BOX(h_vbox),row->label_size ,FALSE,FALSE, 6);

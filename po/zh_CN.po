@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: soft-app-store\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-18 11:50+0800\n"
+"POT-Creation-Date: 2019-07-21 20:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,29 +17,48 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app-store-store.c:26
-msgid "game"
-msgstr "游戏"
+#: src/app-store-local.c:32
+msgid "time-admin"
+msgstr "时间管理"
 
-#: src/app-store-store.c:66
-msgid "user admin"
+#: src/app-store-local.c:35
+msgid ""
+"Marks row as changed, causing any state that depends on this to be updated."
+"\r\n"
+"This affects sorting, filtering and headers."
+msgstr ""
+
+#: src/app-store-store.c:67
+msgid "user-admin"
 msgstr "用户管理"
 
-#: src/app-store-store.c:100
+#: src/app-store-store.c:153
+msgid "Subclass"
+msgstr "子类"
+
+#: src/app-store-store.c:162
+msgid "sort"
+msgstr "排序"
+
+#: src/app-store-store.c:195
 msgid "soft category"
 msgstr "软件分类"
 
-#: src/app-store-store.c:120
+#: src/app-store-store.c:217
 msgid "soft recommend"
 msgstr "软件推荐"
 
 #: src/app-store-util.c:157
 msgid "_Return"
-msgstr ""
+msgstr "返回"
 
 #: src/app-store-util.c:168
 msgid "Message"
-msgstr ""
+msgstr "消息"
+
+#: src/app-store-row.c:78
+msgid "uninstall"
+msgstr "卸载"
 
 #: src/main.c:47
 msgid "Get Icon Fail"
@@ -49,42 +68,45 @@ msgstr ""
 msgid "Soft App Store"
 msgstr ""
 
-#: src/main.c:84
+#: src/main.c:92
 msgid "all store"
 msgstr "商店"
 
-#: src/main.c:90
+#: src/main.c:98
 msgid "local install"
 msgstr "本地安装"
 
-#: src/main.c:96
+#: src/main.c:104
 msgid "local update"
 msgstr "本地更新"
 
-#: src/main.c:113 src/main.c:155
+#: src/main.c:129 src/main.c:171
 msgid "open file"
 msgstr ""
 
-#: src/main.c:113
+#: src/main.c:129
 msgid "Create pid file failed"
 msgstr ""
 
-#: src/main.c:122
+#: src/main.c:138
 msgid "write file"
 msgstr ""
 
-#: src/main.c:122
+#: src/main.c:138
 msgid "write pid file failed"
 msgstr ""
 
-#: src/main.c:155
+#: src/main.c:171
 msgid "open pid file failed"
 msgstr ""
 
-#: src/main.c:160
+#: src/main.c:176
 msgid "read file"
 msgstr ""
 
-#: src/main.c:160
+#: src/main.c:176
 msgid "read pid file failed"
 msgstr ""
+
+#~ msgid "game"
+#~ msgstr "游戏"

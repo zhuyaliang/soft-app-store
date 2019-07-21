@@ -24,6 +24,7 @@
 #include "app-store-store.h"
 #include "app-store-local.h"
 #include "app-store-update.h"
+#include "app-store-details.h"
 
 #define  LOCKFILE              "/tmp/soft-app-store.pid"
 #define  APPICON               "soft-app-store.png"
@@ -84,7 +85,7 @@ static void InitNoteBook (SoftAppStore *app)
 {
     GtkWidget *NoteName;
     GtkWidget *CategoryVbox;
-   // GtkWidget *IndividualVbox;
+    GtkWidget *IndividualVbox;
     
     app->NoteBook = gtk_notebook_new();
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK (app->NoteBook), GTK_POS_TOP);
@@ -112,8 +113,8 @@ static void InitNoteBook (SoftAppStore *app)
 	CategoryVbox = CreateStoreCategoryList(app);
     gtk_stack_add_named (GTK_STACK (app->StoreStack), CategoryVbox,"list-page");
     
-	//IndividualVbox = CreateStoreIndividualDetails();
-    //gtk_stack_add_named (GTK_STACK (stack), IndividualVbox,"details-page");
+	IndividualVbox = CreateStoreIndividualDetails(app);
+    gtk_stack_add_named (GTK_STACK (app->StoreStack), IndividualVbox,"details-page");
     
 	gtk_widget_show_all(app->MainWindow);
 }    

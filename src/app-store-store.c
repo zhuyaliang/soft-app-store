@@ -91,14 +91,31 @@ static GtkWidget *LoadHeader_bar(GtkWidget  *header,
 }
 
 
-static void SwitchPageToMainPage (GtkWidget *button, SoftAppStore *app)
+static void SwitchPageToReturn (GtkWidget *button, SoftAppStore *app)
 {
-    app->page = MAIN_PAGE;
+    app->page = app->parent_page--;
 	SwitchPage(app);
 }
 static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)
 {
     app->page = CATEGORY_LIST_PAGE;
+	SwitchPage(app);
+}
+
+static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)
+{
+	const char *page_name;
+
+	page_name = gtk_stack_get_visible_child_name(GTK_STACK(app->StoreStack));
+    if(g_strcmp0(page_name,"main-page") == 0)
+	{
+		app->parent_page = MAIN_PAGE;
+	}
+	else if(g_strcmp0(page_name,"list-page") == 0)
+	{
+		app->parent_page = CATEGORY_LIST_PAGE;
+	}
+	app->page = INDIVIDUAL_SOFT_PAGE;
 	SwitchPage(app);
 }
 static GtkWidget *CreateSubclassCombo(SoftAppStore *app)
@@ -123,6 +140,7 @@ static GtkWidget *CreateSubclassCombo(SoftAppStore *app)
      return ComboBox;
 
 }
+
 GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
 {
     GtkWidget *vbox;
@@ -133,6 +151,7 @@ GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
 	GtkWidget *sw;
 	GtkWidget *flowbox;
     SoftAppThumbnail soft_app;
+    GtkWidget *fixed;
     GtkWidget *Recom;
 	gint       i;
 
@@ -143,7 +162,7 @@ GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
 	button = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
 	g_signal_connect (button, 
                      "clicked",
-                      G_CALLBACK (SwitchPageToMainPage), 
+                      G_CALLBACK (SwitchPageToReturn), 
                       app);
 	sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), 
@@ -174,12 +193,18 @@ GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
     gtk_flow_box_set_row_spacing(GTK_FLOW_BOX (flowbox),12);
 	gtk_container_add (GTK_CONTAINER (sw), flowbox);
 	gtk_box_pack_start(GTK_BOX(vbox),sw ,TRUE, TRUE, 0);
-    
+
 	GetRecommendSoftInfo(&soft_app);
     for (i = 0; i < 100; i++)
     {    
         Recom = soft_app_thumbnail_tile_new (&soft_app);
-        gtk_container_add (GTK_CONTAINER (flowbox),Recom);
+        g_signal_connect (Recom, 
+                         "clicked",
+                          G_CALLBACK (SwitchPageToDetailsPage), 
+                          app);
+		fixed = gtk_fixed_new();
+		gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
+        gtk_container_add (GTK_CONTAINER (flowbox),fixed);
     }
 	return vbox;
 }   
@@ -231,6 +256,7 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     GtkWidget *tile;
     SoftAppCategory *cate;
     SoftAppThumbnail soft_app;
+    GtkWidget *fixed;
     GtkWidget *Recom;
     GtkWidget *hbox;
     GtkWidget *button;
@@ -258,7 +284,13 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     for (i = 0; i < 8; i++)
     {    
         Recom = soft_app_thumbnail_tile_new (&soft_app);
-	    gtk_box_pack_start(GTK_BOX(hbox),Recom ,FALSE, FALSE, 16);
+        g_signal_connect (Recom, 
+                         "clicked",
+                          G_CALLBACK (SwitchPageToDetailsPage), 
+                          app);
+		fixed = gtk_fixed_new();
+		gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
+	    gtk_box_pack_start(GTK_BOX(hbox),fixed ,FALSE, FALSE, 16);
     }
 
     return vbox;

@@ -18,7 +18,7 @@
 #include "app-store-thumbnail.h"
 #include "app-store-util.h"
 
-G_DEFINE_TYPE (SoftAppThumbnailTile, soft_app_thumbnail_tile, GTK_TYPE_FIXED)
+G_DEFINE_TYPE (SoftAppThumbnailTile, soft_app_thumbnail_tile, GTK_TYPE_BUTTON)
 
 /*
 static gboolean
@@ -144,14 +144,12 @@ soft_app_thumbnail_tile_destroy (GtkWidget *widget)
 static void
 soft_app_thumbnail_tile_init (SoftAppThumbnailTile *tile)
 {
-    GtkWidget *button,*vbox,*hbox;
+    GtkWidget *vbox,*hbox;
     
-    button = gtk_button_new ();
-    gtk_fixed_put(GTK_FIXED(tile),GTK_WIDGET (button), 0, 0);
-    gtk_widget_set_size_request(GTK_WIDGET (button), 110,100);
+    gtk_widget_set_size_request(GTK_WIDGET (tile), 110,100);
     
     tile->event_box = gtk_event_box_new();
-    gtk_container_add (GTK_CONTAINER (button), tile->event_box);
+    gtk_container_add (GTK_CONTAINER (tile), tile->event_box);
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
     gtk_container_add (GTK_CONTAINER (tile->event_box), vbox);
     
