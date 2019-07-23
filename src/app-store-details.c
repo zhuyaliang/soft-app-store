@@ -17,10 +17,161 @@
 
 #include "app-store-util.h"
 #include "app-store-details.h"
+#include "app-store-thumbnail.h"
 
-//G_DEFINE_TYPE (SoftAppDetails,     soft_app_details,  G_TYPE_OBJECT)
+G_DEFINE_TYPE (SoftAppDetails,     soft_app_details,  GTK_TYPE_FIXED)
 G_DEFINE_TYPE (SoftAppInfo,        soft_app_info,     G_TYPE_OBJECT)
 
+
+static void
+soft_app_image_set_from_pixbuf_with_scale (GtkImage *image, 
+                                           const GdkPixbuf *pixbuf, 
+                                           int       scale)
+{
+    cairo_surface_t *surface;
+    surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
+    if (surface == NULL)
+        return;
+    gtk_image_set_from_surface (image, surface);
+    cairo_surface_destroy (surface);
+}
+
+static void
+soft_app_image_set_from_pixbuf (GtkImage        *image, 
+                                const GdkPixbuf *pixbuf,
+                                int              size)
+{
+    gint scale;
+    scale = gdk_pixbuf_get_width (pixbuf) / size;
+    soft_app_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
+}
+static void
+soft_app_details_refresh (SoftAppDetails *details)
+{
+	GdkPixbuf *pixbuf;
+	float      level;
+	const char *icon_name,*screenshot_name;
+
+	icon_name = soft_app_info_get_icon(details->info);
+	pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
+	soft_app_image_set_from_pixbuf(GTK_IMAGE(details->soft_image),pixbuf,50);
+    g_object_unref(pixbuf);
+	SetLableFontType(details->label_name,
+                    "black",
+                     10,
+                     soft_app_info_get_name (details->info),
+                     TRUE);
+	
+	SetLableFontType(details->label_comment,
+                    "black",
+                     10,
+                     soft_app_info_get_comment (details->info),
+                     TRUE);
+	level = soft_app_info_get_score(details->info);
+
+    soft_app_star_widget_set_rating (details->stars1,level--);
+    soft_app_star_widget_set_rating (details->stars2,level--);
+    soft_app_star_widget_set_rating (details->stars3,level--);
+    soft_app_star_widget_set_rating (details->stars4,level--);
+    soft_app_star_widget_set_rating (details->stars5,level--);
+
+    gtk_button_set_label(GTK_BUTTON(details->button),
+                         soft_app_info_get_button(details->info));	
+	
+	screenshot_name = soft_app_info_get_screenshot(details->info);
+	pixbuf = gdk_pixbuf_new_from_file(screenshot_name,NULL);
+	soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,200);
+    g_object_unref(pixbuf);
+    SetLableFontType(details->explain,
+                    "black",
+                     10,
+                     soft_app_info_get_explain (details->info),
+                     TRUE);
+}    
+void
+soft_app_details_set_info (SoftAppDetails *details, SoftAppInfo *info)
+{
+    g_set_object (&details->info, info);
+    soft_app_details_refresh (details);
+}
+
+static void
+soft_app_details_destroy (GtkWidget *widget)
+{
+    SoftAppDetails *details = SOFT_APP_DETAILS (widget);
+    g_clear_object (&details->info);
+}
+
+static void
+soft_app_details_init (SoftAppDetails *details)
+{
+    GtkWidget *main_vbox;
+    GtkWidget *hbox1,*vbox1,*hbox2,*hbox3;
+    
+    main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    gtk_fixed_put(GTK_FIXED(details),main_vbox, 0, 0);
+    
+    hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(main_vbox),hbox1 ,FALSE,FALSE, 10);
+
+    details->soft_image = gtk_image_new();
+    gtk_box_pack_start(GTK_BOX(hbox1),details->soft_image ,FALSE,FALSE, 10);
+    
+    vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    gtk_box_pack_start(GTK_BOX(hbox1),vbox1 ,FALSE,FALSE, 10);
+    details->label_name = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(hbox1),details->label_name ,FALSE,FALSE, 6);
+    details->label_comment = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(hbox1),details->label_comment ,FALSE,FALSE, 6);
+    
+    hbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(hbox1),hbox2 ,FALSE,FALSE, 10);
+    gtk_widget_set_halign (hbox2, GTK_ALIGN_END); 
+    details->stars1 = gtk_image_new();
+    gtk_box_pack_start(GTK_BOX(hbox2),details->stars1 ,FALSE,FALSE, 0);
+    details->stars2 = gtk_image_new();
+    gtk_box_pack_start(GTK_BOX(hbox2),details->stars2 ,FALSE,FALSE, 0);
+    details->stars3 = gtk_image_new();
+    gtk_box_pack_start(GTK_BOX(hbox2),details->stars3 ,FALSE,FALSE, 0);
+    details->stars4 = gtk_image_new();
+    gtk_box_pack_start(GTK_BOX(hbox2),details->stars4 ,FALSE,FALSE, 0);
+    details->stars5 = gtk_image_new();
+    gtk_box_pack_start(GTK_BOX(hbox2),details->stars5 ,FALSE,FALSE, 0);
+    
+    hbox3 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(main_vbox),hbox3 ,FALSE,FALSE, 10);
+    details->button = gtk_button_new();
+    gtk_box_pack_start(GTK_BOX(hbox3),details->button ,FALSE,FALSE, 10);
+
+    details->screenshot = gtk_image_new();
+    gtk_box_pack_start(GTK_BOX(main_vbox),details->screenshot ,FALSE,FALSE, 10);
+	
+    details->explain = gtk_label_new(NULL);
+	gtk_label_set_max_width_chars(GTK_LABEL(details->explain),70);
+	gtk_widget_set_size_request(details->explain,100,10);
+	gtk_label_set_line_wrap(GTK_LABEL(details->explain),TRUE);
+	gtk_label_set_lines(GTK_LABEL(details->explain),3);
+	gtk_box_pack_start(GTK_BOX(main_vbox),details->explain ,FALSE,FALSE, 6);
+
+}
+static void
+soft_app_details_class_init (SoftAppDetailsClass *klass)
+{
+    GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
+    widget_class->destroy = soft_app_details_destroy;
+}
+
+GtkFixed *
+soft_app_details_new (SoftAppInfo *info)
+{
+    SoftAppDetails *details;
+
+    details = g_object_new (SOFT_APP_TYPE_DETAILS, NULL);
+    soft_app_details_set_info (details, info);
+
+    return GTK_FIXED (details);
+}
 
 const char	*soft_app_info_get_name	(SoftAppInfo *info)
 {
@@ -183,13 +334,32 @@ soft_app_info_new (const char *name)
 
     return SOFT_APP_INFO (info);
 }
+GtkWidget *CreateRecommendDetails(SoftAppStore *app,gpointer data)
+{
+    SoftAppThumbnailTile *thumbnail = SOFT_APP_THUMBNAIL_TILE(data);
 
+    GtkWidget *vbox;
+    GtkWidget *sw;
+    GtkWidget *label;
+
+    g_print("abcdef = %s\r\n",thumbnail->app_name);
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
+	sw = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
+	label = gtk_label_new("pppppppppppppppppppp");
+	gtk_container_add (GTK_CONTAINER (sw), label);
+
+	return vbox;
+
+}    
 GtkWidget *CreateStoreIndividualDetails (SoftAppStore *app)
 {
     GtkWidget *vbox;
     GtkWidget *sw;
     GtkWidget *label;
-
+    
+    g_print("abcdef\e\n");
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
 	sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);

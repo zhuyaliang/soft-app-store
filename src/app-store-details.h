@@ -54,7 +54,7 @@ typedef struct SoftAppInfoClass
 
 typedef struct SoftAppDetails
 {
-    GObject      parent_instance;
+    GtkFixed    parent_instance;
    
 	SoftAppInfo *info;
     GtkWidget   *soft_image;
@@ -83,18 +83,20 @@ typedef struct SoftAppDetails
 
 typedef struct SoftAppDetailsClass
 {
-    GObjectClass parent_instance_class;
+    GtkFixedClass parent_instance_class;
 }SoftAppDetailsClass;
 
 
 GType             soft_app_details_get_type         (void) G_GNUC_CONST;
 
-SoftAppDetails   *soft_app_details_new              (SoftAppInfo *info);
+GtkFixed         *soft_app_details_new              (SoftAppInfo *info);
 
 GType             soft_app_info_get_type            (void) G_GNUC_CONST;
 
 SoftAppInfo      *soft_app_info_new                 (const char  *soft_name);
 
+void              soft_app_details_set_info         (SoftAppDetails *details, 
+                                                     SoftAppInfo *info);
 
 const char       *soft_app_info_get_name            (SoftAppInfo *info);
 
@@ -153,5 +155,6 @@ void              soft_app_info_set_size            (SoftAppInfo *info,
 		                                             const char  *size);
 
 GtkWidget *CreateStoreIndividualDetails (SoftAppStore *app);
+GtkWidget *CreateRecommendDetails(SoftAppStore *app,gpointer      data);
 G_END_DECLS
 #endif

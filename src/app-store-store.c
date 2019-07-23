@@ -19,6 +19,7 @@
 #include "app-store-store.h"
 #include "app-store-category.h"
 #include "app-store-thumbnail.h"
+#include "app-store-details.h"
 
 typedef struct {
     const gchar *name;
@@ -105,6 +106,7 @@ static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)
 static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)
 {
 	const char *page_name;
+    GtkWidget  *box;
 
 	page_name = gtk_stack_get_visible_child_name(GTK_STACK(app->StoreStack));
     if(g_strcmp0(page_name,"main-page") == 0)
@@ -116,6 +118,9 @@ static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)
 		app->parent_page = CATEGORY_LIST_PAGE;
 	}
 	app->page = INDIVIDUAL_SOFT_PAGE;
+    box = CreateRecommendDetails(app,SOFT_APP_THUMBNAIL_TILE(button));
+    gtk_stack_add_named (GTK_STACK (app->StoreStack),box,"details-page");
+
 	SwitchPage(app);
 }
 static GtkWidget *CreateSubclassCombo(SoftAppStore *app)
