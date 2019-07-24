@@ -313,15 +313,33 @@ soft_app_info_new (const char *name)
 }
 void CreateRecommendDetails(SoftAppStore *app,gpointer data)
 {
-    SoftAppThumbnailTile *thumbnail = SOFT_APP_THUMBNAIL_TILE(data);
+    SoftAppThumbnailTile *tile = SOFT_APP_THUMBNAIL_TILE(data);
 
-    GtkWidget *sw;
-    GtkWidget *label;
+    GtkWidget   *sw;
+    GtkWidget   *label;
+	SoftAppInfo *info;
+	GtkFixed    *details;
+	const char  *name;
+	const char  *icon;
+	float        score;
 	
     sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
-	label = gtk_label_new("pppppppppppppppppppp");
-	gtk_container_add (GTK_CONTAINER (sw), label);
+	
+	name = soft_app_thumbnail_get_name(tile->thb);
+	icon = soft_app_thumbnail_get_icon(tile->thb);
+	score = soft_app_thumbnail_get_score(tile->thb);
+	info = soft_app_info_new(name);
+	soft_app_info_set_icon(info,icon);
+	soft_app_info_set_comment(info,"manage local time and time zone");
+	soft_app_info_set_button(info,"install");
+	soft_app_info_set_score(info,score);
+	soft_app_info_set_screenshot(info,"/tmp/time.png");
+	soft_app_info_set_explain(info,"abcdefg");
+	
+	details = soft_app_details_new(info);
+	//label = gtk_label_new("pppppppppppppppppppp");
+	gtk_container_add (GTK_CONTAINER (sw), GTK_WIDGET(details));
     gtk_widget_show_all(app->StackDetailsBox);
 }    
