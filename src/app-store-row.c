@@ -23,26 +23,6 @@ G_DEFINE_TYPE (SoftAppRow,     soft_app_row,     GTK_TYPE_LIST_BOX_ROW)
 G_DEFINE_TYPE (SoftAppMessage, soft_app_message, G_TYPE_OBJECT)
 
 static void
-soft_app_image_set_from_pixbuf_with_scale (GtkImage *image, 
-                                           const GdkPixbuf *pixbuf, 
-                                           int       scale)
-{
-    cairo_surface_t *surface;
-    surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
-    if (surface == NULL)
-        return;
-    gtk_image_set_from_surface (image, surface);
-    cairo_surface_destroy (surface);
-}
-
-static void
-soft_app_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
-{
-    gint scale;
-    scale = gdk_pixbuf_get_width (pixbuf) / 50;
-    soft_app_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
-}
-static void
 soft_app_row_refresh (SoftAppRow *row)
 {
 	GdkPixbuf *pixbuf;
@@ -51,7 +31,7 @@ soft_app_row_refresh (SoftAppRow *row)
 
 	icon_name = soft_app_message_get_icon(row->Message);
 	pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
-	soft_app_image_set_from_pixbuf(GTK_IMAGE(row->image),pixbuf);
+	soft_app_image_set_from_pixbuf(GTK_IMAGE(row->image),pixbuf,50);
 
 	SetLableFontType(row->label_name,
                     "black",

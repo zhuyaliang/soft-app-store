@@ -22,29 +22,6 @@
 G_DEFINE_TYPE (SoftAppDetails,     soft_app_details,  GTK_TYPE_FIXED)
 G_DEFINE_TYPE (SoftAppInfo,        soft_app_info,     G_TYPE_OBJECT)
 
-
-static void
-soft_app_image_set_from_pixbuf_with_scale (GtkImage *image, 
-                                           const GdkPixbuf *pixbuf, 
-                                           int       scale)
-{
-    cairo_surface_t *surface;
-    surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
-    if (surface == NULL)
-        return;
-    gtk_image_set_from_surface (image, surface);
-    cairo_surface_destroy (surface);
-}
-
-static void
-soft_app_image_set_from_pixbuf (GtkImage        *image, 
-                                const GdkPixbuf *pixbuf,
-                                int              size)
-{
-    gint scale;
-    scale = gdk_pixbuf_get_width (pixbuf) / size;
-    soft_app_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
-}
 static void
 soft_app_details_refresh (SoftAppDetails *details)
 {
@@ -334,38 +311,17 @@ soft_app_info_new (const char *name)
 
     return SOFT_APP_INFO (info);
 }
-GtkWidget *CreateRecommendDetails(SoftAppStore *app,gpointer data)
+void CreateRecommendDetails(SoftAppStore *app,gpointer data)
 {
     SoftAppThumbnailTile *thumbnail = SOFT_APP_THUMBNAIL_TILE(data);
 
-    GtkWidget *vbox;
     GtkWidget *sw;
     GtkWidget *label;
-
-    g_print("abcdef = %s\r\n",thumbnail->app_name);
-	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
-	sw = gtk_scrolled_window_new (NULL, NULL);
+	
+    sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
 	label = gtk_label_new("pppppppppppppppppppp");
 	gtk_container_add (GTK_CONTAINER (sw), label);
-
-	return vbox;
-
+    gtk_widget_show_all(app->StackDetailsBox);
 }    
-GtkWidget *CreateStoreIndividualDetails (SoftAppStore *app)
-{
-    GtkWidget *vbox;
-    GtkWidget *sw;
-    GtkWidget *label;
-    
-    g_print("abcdef\e\n");
-	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
-	sw = gtk_scrolled_window_new (NULL, NULL);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
-	label = gtk_label_new("sssss");
-	gtk_container_add (GTK_CONTAINER (sw), label);
-
-	return vbox;
-}

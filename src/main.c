@@ -84,8 +84,6 @@ static void InitMainWindow(SoftAppStore *app)
 static void InitNoteBook (SoftAppStore *app)
 {
     GtkWidget *NoteName;
-    GtkWidget *CategoryVbox;
-    GtkWidget *IndividualVbox;
     
     app->NoteBook = gtk_notebook_new();
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK (app->NoteBook), GTK_POS_TOP);
@@ -110,11 +108,16 @@ static void InitNoteBook (SoftAppStore *app)
     
     gtk_stack_add_named (GTK_STACK (app->StoreStack),app->NoteBook,"main-page");
 	
-	CategoryVbox = CreateStoreCategoryList(app);
-    gtk_stack_add_named (GTK_STACK (app->StoreStack), CategoryVbox,"list-page");
+
+    app->StackCategoryBox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
+    gtk_stack_add_named (GTK_STACK (app->StoreStack), 
+                         app->StackCategoryBox,
+                        "list-page");
     
-	IndividualVbox = CreateStoreIndividualDetails(app);
-    gtk_stack_add_named (GTK_STACK (app->StoreStack), IndividualVbox,"details-page");
+    app->StackDetailsBox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
+    gtk_stack_add_named (GTK_STACK (app->StoreStack), 
+                         app->StackDetailsBox,
+                        "details-page");
     
 	gtk_widget_show_all(app->MainWindow);
 }    

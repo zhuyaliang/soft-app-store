@@ -57,4 +57,8 @@ GtkWidget   *SetButtonIcon         (const char  *button_text,
 		                            const char  *icon_name);
 
 void         SwitchPage            (SoftAppStore *app);
+
+void        soft_app_image_set_from_pixbuf (GtkImage        *image, 
+                                            const GdkPixbuf *pixbuf,
+                                            int              size);
 #endif

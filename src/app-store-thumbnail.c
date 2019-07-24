@@ -19,6 +19,7 @@
 #include "app-store-util.h"
 
 G_DEFINE_TYPE (SoftAppThumbnailTile, soft_app_thumbnail_tile, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (SoftAppThumbnail,     soft_app_thumbnail,      G_TYPE_OBJECT)
 
 /*
 static gboolean
@@ -67,26 +68,6 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsPopularTile *tile)
     tile->app_state_changed_id = g_idle_add (app_state_changed_idle, tile);
 }
 */
-static void
-soft_app_image_set_from_pixbuf_with_scale (GtkImage *image, 
-                                           const GdkPixbuf *pixbuf, 
-                                           int       scale)
-{
-    cairo_surface_t *surface;
-    surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
-    if (surface == NULL)
-        return;
-    gtk_image_set_from_surface (image, surface);
-    cairo_surface_destroy (surface);
-}
-
-static void
-soft_app_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
-{
-    gint scale;
-    scale = gdk_pixbuf_get_width (pixbuf) / 64;
-    soft_app_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
-}
 void soft_app_star_widget_set_rating (GtkWidget *stars,float level)
 {
     const float EPSINON = 0.00001;
@@ -114,31 +95,39 @@ static void
 soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)
 {
     GdkPixbuf *pixbuf;
+    float      level;
+	const char *icon_name;
+	const char *soft_name;
 
-    soft_app_star_widget_set_rating (tile->stars1,tile->level--);
-    soft_app_star_widget_set_rating (tile->stars2,tile->level--);
-    soft_app_star_widget_set_rating (tile->stars3,tile->level--);
-    soft_app_star_widget_set_rating (tile->stars4,tile->level--);
-    soft_app_star_widget_set_rating (tile->stars5,tile->level--);
-    pixbuf = gdk_pixbuf_new_from_file(tile->image_name,NULL);
-    soft_app_image_set_from_pixbuf(GTK_IMAGE(tile->image),pixbuf);
-	SetLableFontType(tile->label,"black",11,tile->app_name,FALSE);
+	level = soft_app_thumbnail_get_score(tile->thb);
+    soft_app_star_widget_set_rating (tile->stars1,level--);
+    soft_app_star_widget_set_rating (tile->stars2,level--);
+    soft_app_star_widget_set_rating (tile->stars3,level--);
+    soft_app_star_widget_set_rating (tile->stars4,level--);
+    soft_app_star_widget_set_rating (tile->stars5,level--);
+
+	icon_name = soft_app_thumbnail_get_icon(tile->thb);
+    pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
+    soft_app_image_set_from_pixbuf(GTK_IMAGE(tile->image),pixbuf,64);
+	
+    soft_name = soft_app_thumbnail_get_name(tile->thb);
+    SetLableFontType(tile->label,
+                    "black",
+                     11,
+                     soft_name,
+                     FALSE);
 }
 
 static void soft_app_thumbnail_tile_set_data(SoftAppThumbnailTile *tile, SoftAppThumbnail *app)
 {
-    tile->app_name = g_strdup(app->app_name);
-    tile->image_name = g_strdup(app->image_name);
-    tile->level = app->level;
+	g_set_object (&tile->thb, app);
     soft_app_thumbnail_tile_set_app (tile);
 }    
 static void
 soft_app_thumbnail_tile_destroy (GtkWidget *widget)
 {
     SoftAppThumbnailTile *tile = SOFT_APP_THUMBNAIL_TILE(widget);
-    
-    g_free(tile->app_name);
-    g_free(tile->image_name);
+    g_clear_object (&tile->thb);
 }
 
 static void
@@ -195,3 +184,74 @@ soft_app_thumbnail_tile_new (SoftAppThumbnail *app)
     return GTK_WIDGET (tile);
 }
 
+float
+soft_app_thumbnail_get_score (SoftAppThumbnail *thb)
+{
+    return thb->soft_score;
+}
+
+void
+soft_app_thumbnail_set_score (SoftAppThumbnail  *thb, 
+                              float              soft_score)
+{
+    thb->soft_score = soft_score;
+}  
+
+const gchar *
+soft_app_thumbnail_get_name (SoftAppThumbnail *thb)
+{
+    return thb->soft_name;
+}
+
+void
+soft_app_thumbnail_set_name (SoftAppThumbnail  *thb,
+                             const char      *name)
+{
+    g_free (thb->soft_name);
+    thb->soft_name = g_strdup (name);
+}  
+
+const gchar *
+soft_app_thumbnail_get_icon (SoftAppThumbnail *thb)
+{
+    return thb->icon_name;
+}
+
+void
+soft_app_thumbnail_set_icon (SoftAppThumbnail  *thb, 
+                             const gchar     *icon)
+{
+    g_free (thb->icon_name);
+    thb->icon_name = g_strdup (icon);
+}  
+
+static void
+soft_app_thumbnail_finalize (GObject *object)
+{
+    SoftAppThumbnail *thb = SOFT_APP_THUMBNAIL (object);
+
+    g_free (thb->soft_name);
+    g_free (thb->icon_name);
+}
+
+static void
+soft_app_thumbnail_class_init (SoftAppThumbnailClass *klass)
+{
+    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    object_class->finalize = soft_app_thumbnail_finalize;
+}
+
+static void
+soft_app_thumbnail_init (SoftAppThumbnail *thb)
+{
+
+}
+
+SoftAppThumbnail *
+soft_app_thumbnail_new (void)
+{
+    SoftAppThumbnail *thb;
+    thb = g_object_new (SOFT_APP_TYPE_THUMBNAIL, NULL);
+    
+    return SOFT_APP_THUMBNAIL (thb);
+}    

@@ -39,6 +39,8 @@ typedef struct
     GtkWidget        *StoreStack;
     GtkWidget        *LocalBox;
     GtkWidget        *UpdateBox;
+    GtkWidget        *StackCategoryBox;
+    GtkWidget        *StackDetailsBox;
     PackageApp       *pkg;
 	int               page;
 	int               parent_page;

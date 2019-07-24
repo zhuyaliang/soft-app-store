@@ -248,3 +248,25 @@ void SwitchPage (SoftAppStore *app)
 			gtk_stack_set_visible_child_name (GTK_STACK (app->StoreStack), "main-page");
 	}
 }    
+static void
+soft_app_image_set_from_pixbuf_with_scale (GtkImage *image, 
+                                           const GdkPixbuf *pixbuf, 
+                                           int       scale)
+{
+    cairo_surface_t *surface;
+    surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
+    if (surface == NULL)
+        return;
+    gtk_image_set_from_surface (image, surface);
+    cairo_surface_destroy (surface);
+}
+
+void
+soft_app_image_set_from_pixbuf (GtkImage        *image, 
+                                const GdkPixbuf *pixbuf,
+                                int              size)
+{
+    gint scale;
+    scale = gdk_pixbuf_get_width (pixbuf) / size;
+    soft_app_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
+}

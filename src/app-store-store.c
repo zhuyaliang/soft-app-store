@@ -40,7 +40,7 @@ static const SoftAppDesktopData msdata[] =
     {("Utilities"),    "applications-utilities-symbolic",   "#8fc1ac"},
     { NULL }
 };
-
+static void CreateStoreCategoryList(SoftAppStore *app);
 static GPtrArray *GetCategoryInfo(SoftAppStore *app)
 {
     SoftAppCategory *cate;
@@ -61,12 +61,42 @@ static GPtrArray *GetCategoryInfo(SoftAppStore *app)
     return list;
 }
 
-static void GetRecommendSoftInfo(SoftAppThumbnail *thum)
+static GPtrArray *GetRecommendSoftInfo(SoftAppStore *app)
 {
+    SoftAppThumbnail *thb;
+    gint             i;
+    GPtrArray       *list = NULL;
+    
+    list = g_ptr_array_new ();
+    for (i = 0; i< 8; i++)
+    {
+        thb = soft_app_thumbnail_new ();
+        soft_app_thumbnail_set_icon  (thb,"/tmp/time-admin.png");
+        soft_app_thumbnail_set_name  (thb,_("time-admin"));
+        soft_app_thumbnail_set_score (thb,i%5+0.5);
+        g_ptr_array_add (list,thb);
+    }   
 
-    thum->image_name = g_strdup("/tmp/user-admin.png");
-    thum->app_name   = g_strdup(_("user-admin"));
-    thum->level      = 3.5;
+    return list;
+}   
+
+static GPtrArray *GetCategoryListInfo(SoftAppStore *app)
+{
+    SoftAppThumbnail *thb;
+    gint             i;
+    GPtrArray       *list = NULL;
+    
+    list = g_ptr_array_new ();
+    for (i = 0; i< 100; i++)
+    {
+        thb = soft_app_thumbnail_new ();
+        soft_app_thumbnail_set_icon  (thb,"/tmp/user-admin.png");
+        soft_app_thumbnail_set_name  (thb,_("user-admin"));
+        soft_app_thumbnail_set_score (thb,i%5+0.5);
+        g_ptr_array_add (list,thb);
+    }   
+
+    return list;
 }   
 
 static GtkWidget *LoadHeader_bar(GtkWidget  *header,
@@ -101,12 +131,12 @@ static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)
 {
     app->page = CATEGORY_LIST_PAGE;
 	SwitchPage(app);
+	CreateStoreCategoryList(app);
 }
 
 static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)
 {
 	const char *page_name;
-    GtkWidget  *box;
 
 	page_name = gtk_stack_get_visible_child_name(GTK_STACK(app->StoreStack));
     if(g_strcmp0(page_name,"main-page") == 0)
@@ -118,10 +148,9 @@ static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)
 		app->parent_page = CATEGORY_LIST_PAGE;
 	}
 	app->page = INDIVIDUAL_SOFT_PAGE;
-    box = CreateRecommendDetails(app,SOFT_APP_THUMBNAIL_TILE(button));
-    gtk_stack_add_named (GTK_STACK (app->StoreStack),box,"details-page");
 
 	SwitchPage(app);
+    CreateRecommendDetails(app,SOFT_APP_THUMBNAIL_TILE(button));
 }
 static GtkWidget *CreateSubclassCombo(SoftAppStore *app)
 {
@@ -146,29 +175,27 @@ static GtkWidget *CreateSubclassCombo(SoftAppStore *app)
 
 }
 
-GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
+static void CreateStoreCategoryList(SoftAppStore *app)
 {
-    GtkWidget *vbox;
     GtkWidget *hbox;
 	GtkWidget *button;
 	GtkWidget *label;
 	GtkWidget *ComboBox;
 	GtkWidget *sw;
 	GtkWidget *flowbox;
-    SoftAppThumbnail soft_app;
+    GPtrArray *list;
     GtkWidget *fixed;
+    SoftAppThumbnail *thb;
     GtkWidget *Recom;
-	gint       i;
+	guint       i;
 
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
     hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);  
-	gtk_box_pack_start(GTK_BOX(vbox),hbox ,FALSE, FALSE, 12);
+	gtk_box_pack_start(GTK_BOX(app->StackCategoryBox),
+                       hbox ,
+                       FALSE, 
+                       FALSE, 
+                       12);
 		
-	button = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
-	g_signal_connect (button, 
-                     "clicked",
-                      G_CALLBACK (SwitchPageToReturn), 
-                      app);
 	sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), 
 			                        GTK_POLICY_NEVER, 
@@ -197,12 +224,13 @@ GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
     gtk_flow_box_set_column_spacing(GTK_FLOW_BOX (flowbox),1);
     gtk_flow_box_set_row_spacing(GTK_FLOW_BOX (flowbox),12);
 	gtk_container_add (GTK_CONTAINER (sw), flowbox);
-	gtk_box_pack_start(GTK_BOX(vbox),sw ,TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(app->StackCategoryBox),sw ,TRUE, TRUE, 0);
 
-	GetRecommendSoftInfo(&soft_app);
-    for (i = 0; i < 100; i++)
+	list = GetCategoryListInfo(app);
+    for (i = 0; i < list->len; i++)
     {    
-        Recom = soft_app_thumbnail_tile_new (&soft_app);
+        thb = SOFT_APP_THUMBNAIL (g_ptr_array_index (list, i));
+        Recom = soft_app_thumbnail_tile_new (thb);
         g_signal_connect (Recom, 
                          "clicked",
                           G_CALLBACK (SwitchPageToDetailsPage), 
@@ -211,7 +239,7 @@ GtkWidget *CreateStoreCategoryList(SoftAppStore *app)
 		gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
         gtk_container_add (GTK_CONTAINER (flowbox),fixed);
     }
-	return vbox;
+    gtk_widget_show_all(app->StackCategoryBox);
 }   
 
 static GtkWidget *CategorySoftWindow(GtkWidget *vbox)
@@ -257,10 +285,11 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 {
     GtkWidget *vbox;
     GtkWidget *flowbox;
-    GPtrArray *list;
+    GPtrArray *CategoryList;
+    GPtrArray *RecommendList;
     GtkWidget *tile;
     SoftAppCategory *cate;
-    SoftAppThumbnail soft_app;
+    SoftAppThumbnail *thb;
     GtkWidget *fixed;
     GtkWidget *Recom;
     GtkWidget *hbox;
@@ -269,12 +298,17 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
     flowbox = CategorySoftWindow(vbox);
-    list = GetCategoryInfo(app);
+    CategoryList = GetCategoryInfo(app);
 	
-	button = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
-    for (i = 0; i < list->len; i++)
+	//button = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
+	button = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
+	g_signal_connect (button, 
+                     "clicked",
+                      G_CALLBACK (SwitchPageToReturn), 
+                      app);
+    for (i = 0; i < CategoryList->len; i++)
     {
-        cate = SOFT_APP_CATEGORY (g_ptr_array_index (list, i));
+        cate = SOFT_APP_CATEGORY (g_ptr_array_index (CategoryList, i));
         tile = soft_app_category_tile_new (cate);
 		app->page = CATEGORY_LIST_PAGE;
         g_signal_connect (tile, 
@@ -285,10 +319,11 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     }
 
     hbox = RecommendSoftWindow(vbox);
-    GetRecommendSoftInfo(&soft_app);
-    for (i = 0; i < 8; i++)
+    RecommendList = GetRecommendSoftInfo(app);
+    for (i = 0; i < RecommendList->len; i++)
     {    
-        Recom = soft_app_thumbnail_tile_new (&soft_app);
+        thb = SOFT_APP_THUMBNAIL (g_ptr_array_index (RecommendList, i));
+        Recom = soft_app_thumbnail_tile_new (thb);
         g_signal_connect (Recom, 
                          "clicked",
                           G_CALLBACK (SwitchPageToDetailsPage), 

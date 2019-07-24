@@ -154,7 +154,6 @@ const char       *soft_app_info_get_size            (SoftAppInfo *info);
 void              soft_app_info_set_size            (SoftAppInfo *info,
 		                                             const char  *size);
 
-GtkWidget *CreateStoreIndividualDetails (SoftAppStore *app);
-GtkWidget *CreateRecommendDetails(SoftAppStore *app,gpointer      data);
+void CreateRecommendDetails(SoftAppStore *app,gpointer      data);
 G_END_DECLS
 #endif
