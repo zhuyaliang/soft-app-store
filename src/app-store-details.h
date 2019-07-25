@@ -68,16 +68,10 @@ typedef struct SoftAppDetails
 	GtkWidget   *button;
 	GtkWidget   *screenshot;
 	GtkWidget   *explain;
-	GtkWidget   *title;
-	GtkWidget   *label_version_title;
 	GtkWidget   *label_version;
-	GtkWidget   *label_protocol_title;
 	GtkWidget   *label_protocol;
-	GtkWidget   *label_source_title;
 	GtkWidget   *label_source;
-	GtkWidget   *label_size_title;
 	GtkWidget   *label_size;
-	GtkWidget   *label_discuss_title;
 	GtkWidget   *button_discuss;
 }SoftAppDetails;
 

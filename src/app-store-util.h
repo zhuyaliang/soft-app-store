@@ -61,4 +61,6 @@ void         SwitchPage            (SoftAppStore *app);
 void        soft_app_image_set_from_pixbuf (GtkImage        *image, 
                                             const GdkPixbuf *pixbuf,
                                             int              size);
+
+void        soft_app_container_remove_all  (GtkContainer    *container);
 #endif

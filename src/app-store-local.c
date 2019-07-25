@@ -45,8 +45,8 @@ static void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,
                                                SoftAppStore  *app)
 
 {
-    app->page = INDIVIDUAL_SOFT_PAGE;
 	SoftAppRow *row = SOFT_APP_ROW(Row); 
+    app->page = INDIVIDUAL_SOFT_PAGE;
 	g_print("abcdefg = %f\r\n",soft_app_message_get_score(row->Message));
 	SwitchPage(app);
 }

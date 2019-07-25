@@ -129,9 +129,15 @@ static void SwitchPageToReturn (GtkWidget *button, SoftAppStore *app)
 }
 static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)
 {
+    GtkAdjustment *adj = NULL;
+
     app->page = CATEGORY_LIST_PAGE;
 	SwitchPage(app);
+    soft_app_container_remove_all (GTK_CONTAINER (app->StackCategoryBox));
 	CreateStoreCategoryList(app);
+    adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (app->sw));
+    gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+
 }
 
 static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)
@@ -148,7 +154,7 @@ static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)
 		app->parent_page = CATEGORY_LIST_PAGE;
 	}
 	app->page = INDIVIDUAL_SOFT_PAGE;
-
+    soft_app_container_remove_all (GTK_CONTAINER (app->StackDetailsBox));
 	SwitchPage(app);
     CreateRecommendDetails(app,SOFT_APP_THUMBNAIL_TILE(button));
 }
@@ -178,10 +184,8 @@ static GtkWidget *CreateSubclassCombo(SoftAppStore *app)
 static void CreateStoreCategoryList(SoftAppStore *app)
 {
     GtkWidget *hbox;
-	GtkWidget *button;
 	GtkWidget *label;
 	GtkWidget *ComboBox;
-	GtkWidget *sw;
 	GtkWidget *flowbox;
     GPtrArray *list;
     GtkWidget *fixed;
@@ -196,8 +200,8 @@ static void CreateStoreCategoryList(SoftAppStore *app)
                        FALSE, 
                        12);
 		
-	sw = gtk_scrolled_window_new (NULL, NULL);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), 
+	app->sw = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (app->sw), 
 			                        GTK_POLICY_NEVER, 
 									GTK_POLICY_AUTOMATIC);
 	label = gtk_label_new(NULL);
@@ -223,8 +227,8 @@ static void CreateStoreCategoryList(SoftAppStore *app)
     gtk_flow_box_set_selection_mode (GTK_FLOW_BOX (flowbox), GTK_SELECTION_NONE);
     gtk_flow_box_set_column_spacing(GTK_FLOW_BOX (flowbox),1);
     gtk_flow_box_set_row_spacing(GTK_FLOW_BOX (flowbox),12);
-	gtk_container_add (GTK_CONTAINER (sw), flowbox);
-	gtk_box_pack_start(GTK_BOX(app->StackCategoryBox),sw ,TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (app->sw), flowbox);
+	gtk_box_pack_start(GTK_BOX(app->StackCategoryBox),app->sw ,TRUE, TRUE, 0);
 
 	list = GetCategoryListInfo(app);
     for (i = 0; i < list->len; i++)

@@ -270,3 +270,16 @@ soft_app_image_set_from_pixbuf (GtkImage        *image,
     scale = gdk_pixbuf_get_width (pixbuf) / size;
     soft_app_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
 }
+
+static void
+remove_all_cb (GtkWidget *widget, gpointer user_data)
+{
+    GtkContainer *container = GTK_CONTAINER (user_data);
+    gtk_container_remove (container, widget);
+}
+
+void
+soft_app_container_remove_all (GtkContainer *container)
+{
+    gtk_container_foreach (container, remove_all_cb, container);
+}

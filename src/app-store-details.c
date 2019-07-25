@@ -31,19 +31,19 @@ soft_app_details_refresh (SoftAppDetails *details)
 
 	icon_name = soft_app_info_get_icon(details->info);
 	pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
-	soft_app_image_set_from_pixbuf(GTK_IMAGE(details->soft_image),pixbuf,50);
+	soft_app_image_set_from_pixbuf(GTK_IMAGE(details->soft_image),pixbuf,65);
     g_object_unref(pixbuf);
 	SetLableFontType(details->label_name,
                     "black",
-                     10,
+                     12,
                      soft_app_info_get_name (details->info),
                      TRUE);
 	
 	SetLableFontType(details->label_comment,
                     "black",
-                     10,
+                     11,
                      soft_app_info_get_comment (details->info),
-                     TRUE);
+                     FALSE);
 	level = soft_app_info_get_score(details->info);
 
     soft_app_star_widget_set_rating (details->stars1,level--);
@@ -57,13 +57,35 @@ soft_app_details_refresh (SoftAppDetails *details)
 	
 	screenshot_name = soft_app_info_get_screenshot(details->info);
 	pixbuf = gdk_pixbuf_new_from_file(screenshot_name,NULL);
-	soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,200);
+
+    soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,500);
     g_object_unref(pixbuf);
     SetLableFontType(details->explain,
                     "black",
-                     10,
+                     11,
                      soft_app_info_get_explain (details->info),
-                     TRUE);
+                     FALSE);
+    
+    SetLableFontType(details->label_version,
+                    "black",
+                     10,
+                     soft_app_info_get_version (details->info),
+                     FALSE);
+    SetLableFontType(details->label_protocol,
+                    "black",
+                     10,
+                     soft_app_info_get_protocol (details->info),
+                     FALSE);
+    SetLableFontType(details->label_source,
+                    "black",
+                     10,
+                     soft_app_info_get_source (details->info),
+                     FALSE);
+    SetLableFontType(details->label_size,
+                    "black",
+                     10,
+                     soft_app_info_get_size (details->info),
+                     FALSE);
 }    
 void
 soft_app_details_set_info (SoftAppDetails *details, SoftAppInfo *info)
@@ -83,23 +105,34 @@ static void
 soft_app_details_init (SoftAppDetails *details)
 {
     GtkWidget *main_vbox;
-    GtkWidget *hbox1,*vbox1,*hbox2,*hbox3;
-    
+    GtkWidget *hbox1,*vbox1,*vbox2,*hbox2,*hbox3,*screenshot_box,*explain_box;
+    GtkWidget *table;
+    GtkWidget *tile;
+    GtkWidget *version_tile;
+    GtkWidget *source_tile;
+    GtkWidget *size_tile;
+    GtkWidget *protocol_tile;
+
     main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_fixed_put(GTK_FIXED(details),main_vbox, 0, 0);
     
-    hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 18);
     gtk_box_pack_start(GTK_BOX(main_vbox),hbox1 ,FALSE,FALSE, 10);
 
     details->soft_image = gtk_image_new();
-    gtk_box_pack_start(GTK_BOX(hbox1),details->soft_image ,FALSE,FALSE, 10);
+    gtk_box_pack_start(GTK_BOX(hbox1),details->soft_image ,FALSE,FALSE, 0);
     
     vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_box_pack_start(GTK_BOX(hbox1),vbox1 ,FALSE,FALSE, 10);
+    gtk_box_pack_start(GTK_BOX(hbox1),vbox1 ,TRUE,TRUE, 0);
+    gtk_widget_set_halign(vbox1,GTK_ALIGN_START);
+    gtk_widget_set_valign(vbox1,GTK_ALIGN_START);
+    
     details->label_name = gtk_label_new(NULL);
-    gtk_box_pack_start(GTK_BOX(hbox1),details->label_name ,FALSE,FALSE, 6);
+    gtk_widget_set_halign(details->label_name,GTK_ALIGN_START);
+    gtk_widget_set_hexpand (details->label_name,TRUE);
+    gtk_box_pack_start(GTK_BOX(vbox1),details->label_name ,FALSE,FALSE, 0);
     details->label_comment = gtk_label_new(NULL);
-    gtk_box_pack_start(GTK_BOX(hbox1),details->label_comment ,FALSE,FALSE, 6);
+    gtk_box_pack_start(GTK_BOX(vbox1),details->label_comment ,FALSE,FALSE, 0);
     
     hbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(hbox1),hbox2 ,FALSE,FALSE, 10);
@@ -120,15 +153,84 @@ soft_app_details_init (SoftAppDetails *details)
     details->button = gtk_button_new();
     gtk_box_pack_start(GTK_BOX(hbox3),details->button ,FALSE,FALSE, 10);
 
+    screenshot_box = gtk_box_new (GTK_ORIENTATION_VERTICAL,6);
+    gtk_widget_set_size_request(screenshot_box,600,-1);
+    gtk_box_pack_start(GTK_BOX(main_vbox),screenshot_box ,FALSE,FALSE, 10);
     details->screenshot = gtk_image_new();
-    gtk_box_pack_start(GTK_BOX(main_vbox),details->screenshot ,FALSE,FALSE, 10);
-	
+    gtk_box_pack_start(GTK_BOX(screenshot_box),details->screenshot ,FALSE,FALSE, 10);
+
+    explain_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+	gtk_box_pack_start(GTK_BOX(main_vbox),explain_box ,FALSE,FALSE, 6);
     details->explain = gtk_label_new(NULL);
-	gtk_label_set_max_width_chars(GTK_LABEL(details->explain),70);
-	gtk_widget_set_size_request(details->explain,100,10);
+	gtk_label_set_max_width_chars(GTK_LABEL(details->explain),50);
+	gtk_widget_set_size_request(details->explain,50,5);
 	gtk_label_set_line_wrap(GTK_LABEL(details->explain),TRUE);
-	gtk_label_set_lines(GTK_LABEL(details->explain),3);
-	gtk_box_pack_start(GTK_BOX(main_vbox),details->explain ,FALSE,FALSE, 6);
+	gtk_label_set_lines(GTK_LABEL(details->explain),5);
+	gtk_box_pack_start(GTK_BOX(explain_box),details->explain ,FALSE,FALSE, 6);
+    
+    tile = gtk_label_new(NULL);
+	SetLableFontType(tile,
+                    "black",
+                     15,
+                    _("details"),
+                     TRUE);
+    gtk_widget_set_halign(tile,GTK_ALIGN_START);
+    gtk_widget_set_valign(tile,GTK_ALIGN_START);
+	gtk_box_pack_start(GTK_BOX(main_vbox),tile ,FALSE,FALSE, 6);
+    
+    table = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(table),TRUE);
+    gtk_widget_set_halign(table,GTK_ALIGN_START);
+    gtk_widget_set_valign(table,GTK_ALIGN_START);
+    gtk_box_pack_start(GTK_BOX(main_vbox),table ,FALSE,FALSE, 6);
+    
+    version_tile = gtk_label_new(NULL);
+	SetLableFontType(version_tile,
+                    "black",
+                     12,
+                    _("version"),
+                     TRUE);
+    gtk_grid_attach(GTK_GRID(table) , version_tile , 0 , 0 , 1 , 1);
+    details->label_version = gtk_label_new(NULL);
+    gtk_grid_attach(GTK_GRID(table) , details->label_version , 1 , 0 , 1 , 1);
+
+    protocol_tile = gtk_label_new(NULL);
+	SetLableFontType(protocol_tile,
+                    "black",
+                     12,
+                    _("protocol"),
+                     TRUE);
+    gtk_grid_attach(GTK_GRID(table) , protocol_tile , 0 , 1 , 1 , 1);
+    details->label_protocol = gtk_label_new(NULL);
+    gtk_grid_attach(GTK_GRID(table) , details->label_protocol , 1 , 1 , 1 , 1);
+    
+    source_tile = gtk_label_new(NULL);
+	SetLableFontType(source_tile,
+                    "black",
+                     12,
+                    _("sources"),
+                     TRUE);
+    gtk_grid_attach(GTK_GRID(table) , source_tile , 0 , 2 , 1 , 1);
+    details->label_source = gtk_label_new(NULL);
+    gtk_grid_attach(GTK_GRID(table) , details->label_source , 1 , 2 , 1 , 1);
+    
+    size_tile = gtk_label_new(NULL);
+	SetLableFontType(size_tile,
+                    "black",
+                     12,
+                    _("size"),
+                     TRUE);
+    gtk_grid_attach(GTK_GRID(table) , size_tile , 0 , 3 , 1 , 1);
+    details->label_size = gtk_label_new(NULL);
+    gtk_grid_attach(GTK_GRID(table) , details->label_size , 1 , 3 , 1 , 1);
+    gtk_grid_set_row_spacing(GTK_GRID(table), 12);
+    gtk_grid_set_column_spacing(GTK_GRID(table), 12);
+    
+    vbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(main_vbox),vbox2 ,FALSE,FALSE, 10);
+
+    details->button_discuss = gtk_button_new_with_label(_("discuss"));
+    gtk_box_pack_start(GTK_BOX(vbox2),details->button_discuss ,FALSE,FALSE, 10);
 
 }
 static void
@@ -316,7 +418,6 @@ void CreateRecommendDetails(SoftAppStore *app,gpointer data)
     SoftAppThumbnailTile *tile = SOFT_APP_THUMBNAIL_TILE(data);
 
     GtkWidget   *sw;
-    GtkWidget   *label;
 	SoftAppInfo *info;
 	GtkFixed    *details;
 	const char  *name;
@@ -336,10 +437,17 @@ void CreateRecommendDetails(SoftAppStore *app,gpointer data)
 	soft_app_info_set_button(info,"install");
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot(info,"/tmp/time.png");
-	soft_app_info_set_explain(info,"abcdefg");
+	soft_app_info_set_explain(info,"This function simply calls local time zone date ntp sync net time hellow world world hello  get depends on some condition.");
+	soft_app_info_set_version(info,"v1.1.1");
+	soft_app_info_set_protocol(info,"GPL-3.0");
+	soft_app_info_set_source(info,"github.com/zhuyaliang");
+	soft_app_info_set_size(info,"12M");
 	
 	details = soft_app_details_new(info);
-	//label = gtk_label_new("pppppppppppppppppppp");
-	gtk_container_add (GTK_CONTAINER (sw), GTK_WIDGET(details));
+    gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
+    gtk_widget_set_valign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
+	
+    gtk_container_add (GTK_CONTAINER (sw), GTK_WIDGET(details));
+
     gtk_widget_show_all(app->StackDetailsBox);
 }    

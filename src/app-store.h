@@ -41,6 +41,7 @@ typedef struct
     GtkWidget        *UpdateBox;
     GtkWidget        *StackCategoryBox;
     GtkWidget        *StackDetailsBox;
+	GtkWidget        *sw;
     PackageApp       *pkg;
 	int               page;
 	int               parent_page;

@@ -6,4 +6,5 @@ src/app-store-category.c
 src/app-store-pkgkit.c
 src/app-store-row.c
 src/app-store-thumbnail.c
+src/app-store-details.c
 src/main.c
