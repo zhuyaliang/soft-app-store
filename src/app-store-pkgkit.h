@@ -21,6 +21,12 @@
 #define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
 #include <packagekit-glib2/packagekit.h>
 
+typedef enum {
+    GPK_ACTION_NONE,
+    GPK_ACTION_INSTALL,
+    GPK_ACTION_REMOVE,
+    GPK_ACTION_UNKNOWN
+} GpkActionMode;
 typedef struct PackageApp
 {
     GHashTable       *repos;
@@ -31,7 +37,9 @@ typedef struct PackageApp
     PkPackageSack   *package_sack;
     PkStatusEnum     status_last;
     GCancellable    *cancellable;
+	GpkActionMode    action;
+	PkTask          *task;
 
 }PackageApp;
-void InitPackageKit(PackageApp *pkg);
+void            PackageKitNew(PackageApp *pkg);
 #endif

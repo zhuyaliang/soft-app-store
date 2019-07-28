@@ -25,6 +25,7 @@
 #include "app-store-local.h"
 #include "app-store-update.h"
 #include "app-store-details.h"
+#include "app-store-pkgkit.h"
 
 #define  LOCKFILE              "/tmp/soft-app-store.pid"
 #define  APPICON               "soft-app-store.png"
@@ -33,7 +34,20 @@ static gboolean on_window_quit (GtkWidget    *widget,
                                 GdkEvent     *event, 
                                 SoftAppStore *app)
 {
-    CloseLogFile();    
+    CloseLogFile();  
+
+	if (app->pkg->control != NULL)
+        g_object_unref (app->pkg->control);
+    if (app->pkg->task != NULL)
+        g_object_unref (app->pkg->task);
+    if (app->pkg->cancellable != NULL)
+        g_object_unref (app->pkg->cancellable);
+    if (app->pkg->package_sack != NULL)
+        g_object_unref (app->pkg->package_sack);
+    if (app->pkg->repos != NULL)
+        g_hash_table_destroy (app->pkg->repos);
+    g_free (app->pkg);
+
     gtk_main_quit();
     return TRUE;
 }
@@ -197,6 +211,12 @@ ERROREXIT:
 
 }        
 
+static void InitPackageKit(SoftAppStore *app)
+{
+
+	app->pkg = g_new0 (PackageApp, 1);
+	PackageKitNew(app->pkg);
+}
 int main(int argc, char **argv)
 {
 	
@@ -207,7 +227,7 @@ int main(int argc, char **argv)
     
     gtk_init(&argc, &argv);
     
-    //InitPackageKit(&app);
+    InitPackageKit(&app);
     /* Create the main window */
 	InitMainWindow(&app);
 	/* Create book page*/

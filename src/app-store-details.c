@@ -18,6 +18,7 @@
 #include "app-store-util.h"
 #include "app-store-details.h"
 #include "app-store-thumbnail.h"
+#include "app-store.h"
 
 G_DEFINE_TYPE (SoftAppDetails,     soft_app_details,  GTK_TYPE_FIXED)
 G_DEFINE_TYPE (SoftAppInfo,        soft_app_info,     G_TYPE_OBJECT)
@@ -101,6 +102,55 @@ soft_app_details_destroy (GtkWidget *widget)
     g_clear_object (&details->info);
 }
 
+static guint soft_app_get_progress(SoftAppStore *app)
+{
+	usleep(10000);
+	return app->per++;
+}
+static void
+soft_app_details_page_refresh_progress (SoftAppStore *app)
+{
+	guint percentage;
+
+	SoftAppDetails *details = app->details;
+	percentage = soft_app_get_progress (app);
+    if (percentage <= 100) 
+	{
+		g_autofree gchar *str = g_strdup_printf ("%u%%", percentage);
+        gtk_label_set_label (GTK_LABEL (details->label_progress), str);
+        gtk_widget_set_visible (details->label_progress, TRUE);
+        gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (details->progressbar),
+                           (gdouble) percentage / 100.f);
+        gtk_widget_set_visible (details->progressbar, TRUE);
+    }
+
+}
+static gboolean
+soft_app_details_page_refresh_progress_idle (gpointer user_data)
+{
+    SoftAppStore *app = (SoftAppStore *)user_data;
+    soft_app_details_page_refresh_progress (app);
+    
+	return TRUE;
+}
+
+static void
+soft_app_details_page_progress_changed_cb (SoftAppStore *app)
+{
+    g_idle_add (soft_app_details_page_refresh_progress_idle, app);
+}
+
+static void
+soft_app_details_page_app_install_button_cb (GtkWidget *widget, SoftAppStore *app)
+{
+	SoftAppDetails *details = app->details;
+	
+	app->per = 0;
+	gtk_widget_hide(widget);
+	soft_app_details_page_progress_changed_cb(app);
+	gtk_widget_show(details->progressbar);
+}
+
 static void
 soft_app_details_init (SoftAppDetails *details)
 {
@@ -148,10 +198,16 @@ soft_app_details_init (SoftAppDetails *details)
     details->stars5 = gtk_image_new();
     gtk_box_pack_start(GTK_BOX(hbox2),details->stars5 ,FALSE,FALSE, 0);
     
-    hbox3 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(main_vbox),hbox3 ,FALSE,FALSE, 10);
     details->button = gtk_button_new();
+    gtk_widget_set_halign(details->button,GTK_ALIGN_START);
+    gtk_widget_set_valign(details->button,GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(hbox3),details->button ,FALSE,FALSE, 10);
+	details->progressbar = gtk_progress_bar_new();
+    gtk_box_pack_start(GTK_BOX(hbox3),details->progressbar ,FALSE,FALSE, 10);
+	details->label_progress = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(hbox3),details->label_progress ,FALSE,FALSE, 10);
 
     screenshot_box = gtk_box_new (GTK_ORIENTATION_VERTICAL,6);
     gtk_widget_set_size_request(screenshot_box,600,-1);
@@ -374,6 +430,14 @@ void soft_app_info_set_size (SoftAppInfo *info,
 	g_free (info->size);
     info->size = g_strdup (size);
 }
+GtkWidget *soft_app_details_get_button(SoftAppDetails *details)
+{
+	return details->button;
+}
+GtkWidget *soft_app_details_get_bar(SoftAppDetails *details)
+{
+	return details->progressbar;
+}
 static void
 soft_app_info_finalize (GObject *object)
 {
@@ -413,9 +477,10 @@ soft_app_info_new (const char *name)
 
     return SOFT_APP_INFO (info);
 }
-void CreateRecommendDetails(SoftAppStore *app,gpointer data)
+void CreateRecommendDetails(gpointer d,gpointer data)
 {
     SoftAppThumbnailTile *tile = SOFT_APP_THUMBNAIL_TILE(data);
+	SoftAppStore *app = (SoftAppStore *)d;
 
     GtkWidget   *sw;
 	SoftAppInfo *info;
@@ -423,6 +488,8 @@ void CreateRecommendDetails(SoftAppStore *app,gpointer data)
 	const char  *name;
 	const char  *icon;
 	float        score;
+	GtkWidget   *install_button;
+	GtkWidget   *install_bar;
 	
     sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -446,8 +513,14 @@ void CreateRecommendDetails(SoftAppStore *app,gpointer data)
 	details = soft_app_details_new(info);
     gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
     gtk_widget_set_valign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
-	
+	app->details = SOFT_APP_DETAILS(details);	
+	install_button = soft_app_details_get_button(SOFT_APP_DETAILS(details));
+	g_signal_connect (install_button, "clicked",
+                      G_CALLBACK (soft_app_details_page_app_install_button_cb),
+                      app);
     gtk_container_add (GTK_CONTAINER (sw), GTK_WIDGET(details));
 
     gtk_widget_show_all(app->StackDetailsBox);
+	install_bar = soft_app_details_get_bar(SOFT_APP_DETAILS(details));
+	gtk_widget_hide(install_bar);
 }    

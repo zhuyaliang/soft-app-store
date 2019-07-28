@@ -18,7 +18,6 @@
 #ifndef __APP_STORE_DETAILS_H__
 #define __APP_STORE_DETAILS_H__
 
-#include "app-store.h"
  
 G_BEGIN_DECLS
 #define SOFT_APP_TYPE_DETAILS                (soft_app_details_get_type ())
@@ -66,6 +65,8 @@ typedef struct SoftAppDetails
 	GtkWidget   *stars4;
 	GtkWidget   *stars5;
 	GtkWidget   *button;
+	GtkWidget   *progressbar;
+	GtkWidget   *label_progress;
 	GtkWidget   *screenshot;
 	GtkWidget   *explain;
 	GtkWidget   *label_version;
@@ -91,6 +92,10 @@ SoftAppInfo      *soft_app_info_new                 (const char  *soft_name);
 
 void              soft_app_details_set_info         (SoftAppDetails *details, 
                                                      SoftAppInfo *info);
+
+GtkWidget        *soft_app_details_get_button       (SoftAppDetails *details);
+
+GtkWidget        *soft_app_details_get_bar          (SoftAppDetails *details);
 
 const char       *soft_app_info_get_name            (SoftAppInfo *info);
 
@@ -148,6 +153,6 @@ const char       *soft_app_info_get_size            (SoftAppInfo *info);
 void              soft_app_info_set_size            (SoftAppInfo *info,
 		                                             const char  *size);
 
-void CreateRecommendDetails(SoftAppStore *app,gpointer      data);
+void CreateRecommendDetails(gpointer app,gpointer      data);
 G_END_DECLS
 #endif
