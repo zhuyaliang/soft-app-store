@@ -29,7 +29,7 @@ typedef enum {
 } GpkActionMode;
 typedef struct PackageApp
 {
-    GHashTable       *repos;
+    GHashTable      *repos;
     PkBitfield       filters_current;
     PkBitfield       groups;
     PkBitfield       roles;
@@ -39,6 +39,8 @@ typedef struct PackageApp
     GCancellable    *cancellable;
 	GpkActionMode    action;
 	PkTask          *task;
+    GPtrArray       *list;
+    gint             retval;
 
 }PackageApp;
 void            PackageKitNew(PackageApp *pkg);

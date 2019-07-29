@@ -46,17 +46,15 @@ soft_app_row_refresh (SoftAppRow *row)
     soft_app_star_widget_set_rating (row->stars3,level--);
     soft_app_star_widget_set_rating (row->stars4,level--);
     soft_app_star_widget_set_rating (row->stars5,level--);
-
+    
+    g_print("describe = %s\r\n",soft_app_message_get_describe (row->Message));
 	SetLableFontType(row->label_describe,
                     "black",
                      10,
                      soft_app_message_get_describe (row->Message),
                      FALSE);
 	
-	if(soft_app_message_get_buttontype(row->Message))
-	{
-		gtk_button_set_label(GTK_BUTTON(row->button),_("uninstall"));
-	}
+	gtk_button_set_label(GTK_BUTTON(row->button),_("uninstall"));
 	
 	SetLableFontType(row->label_size,
                     "black",
@@ -156,19 +154,6 @@ soft_app_row_new (SoftAppMessage *Message)
 	return GTK_WIDGET (row);
 }
 
-gboolean
-soft_app_message_get_buttontype (SoftAppMessage *Message)
-{
-    return Message->soft_type;
-}
-
-void
-soft_app_message_set_buttontype (SoftAppMessage  *Message, 
-                                 gboolean         soft_type)
-{
-    Message->soft_type = soft_type;
-}
-
 float
 soft_app_message_get_score (SoftAppMessage *Message)
 {
@@ -222,6 +207,75 @@ soft_app_message_set_name (SoftAppMessage  *Message,
 {
     g_free (Message->soft_name);
     Message->soft_name = g_strdup (name);
+}  
+
+const gchar *
+soft_app_message_get_version (SoftAppMessage *Message)
+{
+    return Message->soft_version;
+}
+
+void
+soft_app_message_set_version (SoftAppMessage  *Message, 
+                              const gchar     *version)
+{
+    g_free (Message->soft_version);
+    Message->soft_version = g_strdup (version);
+} 
+
+const gchar *
+soft_app_message_get_license (SoftAppMessage *Message)
+{
+    return Message->soft_license;
+}
+
+void
+soft_app_message_set_license (SoftAppMessage  *Message, 
+                              const gchar     *licenses)
+{
+    g_free (Message->soft_license);
+    Message->soft_license = g_strdup (licenses);
+}  
+
+const gchar *
+soft_app_message_get_url (SoftAppMessage *Message)
+{
+    return Message->soft_url;
+}
+
+void
+soft_app_message_set_url (SoftAppMessage  *Message, 
+                          const gchar     *url)
+{
+    g_free (Message->soft_url);
+    Message->soft_url = g_strdup (url);
+} 
+
+const gchar *
+soft_app_message_get_arch (SoftAppMessage *Message)
+{
+    return Message->soft_arch;
+}
+
+void
+soft_app_message_set_arch (SoftAppMessage  *Message, 
+                           const gchar     *arch)
+{
+    g_free (Message->soft_arch);
+    Message->soft_arch = g_strdup (arch);
+}  
+const gchar *
+soft_app_message_get_package (SoftAppMessage *Message)
+{
+    return Message->soft_package;
+}
+
+void
+soft_app_message_set_package (SoftAppMessage  *Message, 
+                           const gchar     *package)
+{
+    g_free (Message->soft_package);
+    Message->soft_package = g_strdup (package);
 }  
 
 const gchar *

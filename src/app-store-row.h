@@ -41,6 +41,11 @@ typedef struct SoftAppMessage
     char        *icon_name;
     float        soft_score;
 	char        *soft_describe;
+    char        *soft_arch;
+    char        *soft_version;
+    char        *soft_url;
+    char        *soft_license;
+    char        *soft_package;
 	gboolean     soft_type;
 	char        *soft_size;
 }SoftAppMessage;
@@ -105,10 +110,31 @@ const gchar      *soft_app_message_get_size            (SoftAppMessage *Message)
 void              soft_app_message_set_size            (SoftAppMessage *Message,
                                                         const gchar    *soft_size);
 
-gboolean          soft_app_message_get_buttontype      (SoftAppMessage *Message);
 
-void              soft_app_message_set_buttontype      (SoftAppMessage *Message,
-                                                        gboolean        soft_type);
+const gchar      *soft_app_message_get_version         (SoftAppMessage *Message);
+
+void              soft_app_message_set_version         (SoftAppMessage *Message,
+                                                        const gchar    *version);
+ 
+const gchar      *soft_app_message_get_license         (SoftAppMessage *Message);
+
+void              soft_app_message_set_license         (SoftAppMessage *Message,
+                                                        const gchar    *license);
+
+const gchar      *soft_app_message_get_url             (SoftAppMessage *Message);
+
+void              soft_app_message_set_url             (SoftAppMessage *Message,
+                                                        const gchar    *url);
+
+const gchar      *soft_app_message_get_arch            (SoftAppMessage *Message);
+
+void              soft_app_message_set_arch            (SoftAppMessage *Message,
+                                                        const gchar    *arch);
+
+const gchar      *soft_app_message_get_package         (SoftAppMessage *Message);
+
+void              soft_app_message_set_package         (SoftAppMessage *Message,
+                                                        const gchar    *package);
 
 void              soft_app_row_set_list                (SoftAppRow     *Row,
                                                         SoftAppMessage *Message);
