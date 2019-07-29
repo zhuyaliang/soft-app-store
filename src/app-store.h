@@ -42,8 +42,9 @@ typedef struct
     GtkWidget        *UpdateBox;
     GtkWidget        *StackCategoryBox;
     GtkWidget        *StackDetailsBox;
+	GtkWidget        *LocalSoftListBox;
 	GtkWidget        *sw;
-    PackageApp       *pkg;
+    SoftAppPkgkit    *pkg;
 	SoftAppDetails   *details;
 	uint              per;
 	int               page;

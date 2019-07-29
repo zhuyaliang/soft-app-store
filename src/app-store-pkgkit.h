@@ -18,8 +18,17 @@
 #ifndef __APP_STORE_PKGKIT_H__
 #define __APP_STORE_PKGKIT_H__
 
-#define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
-#include <packagekit-glib2/packagekit.h>
+#include <app-store-row.h>
+G_BEGIN_DECLS
+#define SOFT_APP_TYPE_PKGKIT             (soft_app_pkgkit_get_type ())
+
+#define SOFT_APP_PKGKIT(o)               (G_TYPE_CHECK_INSTANCE_CAST ((o),\
+			                              SOFT_APP_TYPE_PKGKIT, \
+										  SoftAppPkgkit))
+
+#define SOFT_APP_PKGKIT_CLASS(o)         (G_TYPE_INSTANCE_GET_CLASS ((o), \
+                                          SOFT_APP_TYPE_PKGKIT, SoftAppPkgkitClass))
+
 
 typedef enum {
     GPK_ACTION_NONE,
@@ -27,9 +36,12 @@ typedef enum {
     GPK_ACTION_REMOVE,
     GPK_ACTION_UNKNOWN
 } GpkActionMode;
-typedef struct PackageApp
+
+typedef struct SoftAppPkgkit
 {
-    GHashTable      *repos;
+	SoftAppMessage   parent_instance;
+    
+	GHashTable      *repos;
     PkBitfield       filters_current;
     PkBitfield       groups;
     PkBitfield       roles;
@@ -42,6 +54,17 @@ typedef struct PackageApp
     GPtrArray       *list;
     gint             retval;
 
-}PackageApp;
-void            PackageKitNew(PackageApp *pkg);
+}SoftAppPkgkit;
+
+typedef struct SoftAppPkgkitClass
+{
+	SoftAppMessageClass parent_instance_calss;
+}SoftAppPkgkitClass;
+
+GType             soft_app_pkgkit_get_type            (void) G_GNUC_CONST;
+
+SoftAppPkgkit    *soft_app_pkgkit_new                 (void);
+
+void emit(SoftAppPkgkit *pkg);
+G_END_DECLS
 #endif

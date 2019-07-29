@@ -23,37 +23,20 @@
  
 static void UpdateLocalInstallPage(SoftAppStore *app)
 {
-    GtkWidget *vbox;
-    GtkWidget *sw;
-    GPtrArray *list;
-	GtkWidget *listbox;
 	SoftAppMessage *Message;
 	GtkWidget *row;
 	guint       i;
-    GtkWidget   *NoteName; 
-    PackageApp *pkg = app->pkg;
 
-	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
-	sw = gtk_scrolled_window_new (NULL, NULL);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
-	listbox = gtk_list_box_new ();
-	gtk_container_add (GTK_CONTAINER (sw), listbox);
-	
-    for (i = 0; i < pkg->list->len; i++)
+    for (i = 0; i < app->pkg->list->len; i++)
     {
-        Message = SOFT_APP_MESSAGE (g_ptr_array_index (pkg->list, i));
+        Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
 		row = soft_app_row_new(Message);
 		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 
 		app->page = MAIN_PAGE;
-		gtk_list_box_insert (GTK_LIST_BOX(listbox), row, i);
+		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
 	}
-    NoteName = gtk_label_new(_("local update"));
-    gtk_notebook_append_page(GTK_NOTEBOOK (app->NoteBook),
-			                 vbox,
-							 NoteName);
 	gtk_widget_show_all(app->MainWindow);
 }
 static void
@@ -116,7 +99,6 @@ GetLocalSoftAppDetails (PkClient       *client,
     s_size = g_strdup_printf ("%.2f",(float)size/(1024*1024));
     package = pk_package_id_to_printable (package_id);
     soft_app_message_set_describe(Message,description);
-    g_print("description = %s\r\n",description);
 	soft_app_message_set_size(Message,s_size);
 	soft_app_message_set_url(Message,url);
 	soft_app_message_set_version(Message,license);
@@ -124,7 +106,7 @@ GetLocalSoftAppDetails (PkClient       *client,
 }    
 
 static void
-pk_console_package_cb (PkPackage *package, PackageApp *pkg)
+pk_console_package_cb (PkPackage *package, SoftAppPkgkit *pkg)
 {
     PkInfoEnum      info;
     const gchar    *package_id;
@@ -150,16 +132,24 @@ pk_console_package_cb (PkPackage *package, PackageApp *pkg)
 	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
 	soft_app_message_set_icon(Message,"/tmp/time-admin.png");
 	soft_app_message_set_score(Message,0.5);
+/*
+    soft_app_local_soft_detalis (Message,
+		                         PK_CLIENT(pkg->task),
+			                     package_ids,
+								 pkg->cancellable,
+                                 (GAsyncReadyCallback) GetLocalSoftAppDetails,
+                                 pkg);
+*/
     package_ids = pk_package_ids_from_id (package_id);
     pk_client_get_details_async (PK_CLIENT(pkg->task), 
                                  package_ids, 
                                  pkg->cancellable,
-                                (PkProgressCallback) 
                                  NULL,NULL,
                                 (GAsyncReadyCallback) GetLocalSoftAppDetails,
                                  Message);
     g_ptr_array_add (pkg->list, Message);
 
+	emit(pkg);
 }
 
 static void
@@ -174,7 +164,7 @@ pk_console_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
     g_autoptr(PkResults) results = NULL;
     SoftAppStore *app = (SoftAppStore *)data;
 
-    PackageApp *pkg = app->pkg;
+    SoftAppPkgkit *pkg = app->pkg;
     results = pk_task_generic_finish (PK_TASK (pkg->task), res, &error);
     if (results == NULL) 
     {
@@ -235,19 +225,26 @@ out:
 	g_print("error !!!!!!\r\n");
 }
 
-
-static GPtrArray *GetLocalSoftMessage(SoftAppStore *app)
+static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
+                                          SoftAppStore  *app)
 {
-	PackageApp *pkg = app->pkg;
-    
-	pkg->list = g_ptr_array_new ();
-    pk_task_get_packages_async (pkg->task,
+	g_print("get_local_soft_details_ready \r\n");
+}
+static void GetLocalSoftMessage(SoftAppStore *app)
+{
+	app->pkg = g_new0 (SoftAppPkgkit, 1);
+	app->pkg = soft_app_pkgkit_new();
+	app->pkg->list = g_ptr_array_new ();
+	g_signal_connect (app->pkg,
+                     "details-ready",
+                      G_CALLBACK (get_local_soft_details_ready),
+                      app);
+    pk_task_get_packages_async (app->pkg->task,
                                 16777284,
-                                pkg->cancellable,
+                                app->pkg->cancellable,
                                 NULL,NULL,
                                 pk_console_finished_cb, app);
 
-	return pkg->list;
 }
 static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 {
@@ -298,7 +295,6 @@ static void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,
 {
 	SoftAppRow *row = SOFT_APP_ROW(Row); 
     app->page = INDIVIDUAL_SOFT_PAGE;
-	g_print("abcdefg = %f\r\n",soft_app_message_get_score(row->Message));
 	SwitchPage(app);
     CreateLocalSoftDetails(app,row);
 }
@@ -306,33 +302,18 @@ GtkWidget *LoadLocalInstall(SoftAppStore *app)
 {
     GtkWidget *vbox;
     GtkWidget *sw;
-    GPtrArray *list;
-	GtkWidget *listbox;
-	SoftAppMessage *Message;
-	GtkWidget *row;
-	guint       i;
 
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
 	sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
-	listbox = gtk_list_box_new ();
-	gtk_container_add (GTK_CONTAINER (sw), listbox);
-	
-    g_signal_connect (listbox, 
+	app->LocalSoftListBox = gtk_list_box_new ();
+	gtk_container_add (GTK_CONTAINER (sw), app->LocalSoftListBox);
+    g_signal_connect (app->LocalSoftListBox, 
                      "row-activated",
                       G_CALLBACK (SwitchPageToIndividualDetailsPage), 
                       app);
-	list = GetLocalSoftMessage(app);
-    for (i = 0; i < list->len; i++)
-    {
-        Message = SOFT_APP_MESSAGE (g_ptr_array_index (list, i));
-		row = soft_app_row_new(Message);
-		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
-		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 
-		app->page = MAIN_PAGE;
-		gtk_list_box_insert (GTK_LIST_BOX(listbox), row, i);
-	}
+	GetLocalSoftMessage(app);
 	return vbox;
 }

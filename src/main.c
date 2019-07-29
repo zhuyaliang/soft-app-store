@@ -211,12 +211,6 @@ ERROREXIT:
 
 }        
 
-static void InitPackageKit(SoftAppStore *app)
-{
-
-	app->pkg = g_new0 (PackageApp, 1);
-	PackageKitNew(app->pkg);
-}
 int main(int argc, char **argv)
 {
 	
@@ -227,7 +221,6 @@ int main(int argc, char **argv)
     
     gtk_init(&argc, &argv);
     
-    InitPackageKit(&app);
     /* Create the main window */
 	InitMainWindow(&app);
 	/* Create book page*/

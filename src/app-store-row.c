@@ -47,7 +47,6 @@ soft_app_row_refresh (SoftAppRow *row)
     soft_app_star_widget_set_rating (row->stars4,level--);
     soft_app_star_widget_set_rating (row->stars5,level--);
     
-    g_print("describe = %s\r\n",soft_app_message_get_describe (row->Message));
 	SetLableFontType(row->label_describe,
                     "black",
                      10,
@@ -291,6 +290,30 @@ soft_app_message_set_icon (SoftAppMessage  *Message,
     g_free (Message->icon_name);
     Message->icon_name = g_strdup (icon);
 }  
+void soft_app_local_soft_detalis   (SoftAppMessage *Message,
+		                            PkClient     *client,
+			                        const char  **package_ids,
+								   	GCancellable *cancellable,
+                                    GAsyncReadyCallback callback_ready,
+                                    gpointer      user_data)
+	
+{
+	SoftAppMessageClass *klass;
+
+    klass = SOFT_APP_MESSAGE_CLASS (Message);
+    //g_assert (klass->get_local_soft_detalis != NULL);
+
+
+    return klass->get_local_soft_detalis (Message, 
+			                              client, 
+										  package_ids, 
+										  cancellable,
+										  NULL,
+										  NULL,
+										  callback_ready,
+										  user_data);
+}
+
 
 static void
 soft_app_message_finalize (GObject *object)

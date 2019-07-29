@@ -18,13 +18,20 @@
 #ifndef __APP_STORE_ROW_H__
 #define __APP_STORE_ROW_H__
 
+#define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
+#include <packagekit-glib2/packagekit.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 #define SOFT_APP_TYPE_MESSAGE            (soft_app_message_get_type ())
+
 #define SOFT_APP_MESSAGE(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object),\
                                           SOFT_APP_TYPE_MESSAGE,\
                                           SoftAppMessage))
+
+#define SOFT_APP_MESSAGE_CLASS(o)        (G_TYPE_INSTANCE_GET_CLASS ((o), \
+			                              SOFT_APP_TYPE_MESSAGE, \
+			                              SoftAppMessageClass))
 
 
 #define SOFT_APP_TYPE_ROW                (soft_app_row_get_type ())
@@ -53,6 +60,14 @@ typedef struct SoftAppMessage
 typedef struct SoftAppMessageClass
 {
     GObjectClass parent_instance_class;
+	void        (*get_local_soft_detalis)   (SoftAppMessage *m,
+			                                 PkClient       *client,
+			                                 const char    **package_ids,
+											 GCancellable   *cancellable,
+											 PkProgressCallback progress_callback,
+                                             gpointer        progress_user_data,
+                                             GAsyncReadyCallback callback_ready,
+                                             gpointer        user_data);
 }SoftAppMessageClass;
 
 typedef struct SoftAppRow
@@ -135,6 +150,13 @@ const gchar      *soft_app_message_get_package         (SoftAppMessage *Message)
 
 void              soft_app_message_set_package         (SoftAppMessage *Message,
                                                         const gchar    *package);
+
+void              soft_app_local_soft_detalis          (SoftAppMessage *Message,
+		                                                PkClient       *client,
+			                                            const char    **package_ids,
+								   	                    GCancellable   *cancellable,
+                                                        GAsyncReadyCallback callback_ready,
+                                                        gpointer        user_data);
 
 void              soft_app_row_set_list                (SoftAppRow     *Row,
                                                         SoftAppMessage *Message);
