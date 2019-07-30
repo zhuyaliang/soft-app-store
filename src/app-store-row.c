@@ -31,8 +31,8 @@ soft_app_row_refresh (SoftAppRow *row)
 
 	icon_name = soft_app_message_get_icon(row->Message);
 	pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
-	soft_app_image_set_from_pixbuf(GTK_IMAGE(row->image),pixbuf,50);
-
+	//soft_app_image_set_from_pixbuf(GTK_IMAGE(row->image),pixbuf,50);
+    gtk_image_set_from_icon_name(GTK_IMAGE(row->image),soft_app_message_get_name (row->Message),GTK_ICON_SIZE_DIALOG);
 	SetLableFontType(row->label_name,
                     "black",
                      10,
@@ -81,6 +81,7 @@ soft_app_row_init (SoftAppRow *row)
 {
     GtkWidget *box;
     GtkWidget *hbox;
+    GtkWidget *described_box;
     GtkWidget *vbox;
     GtkWidget *v_hbox;
     GtkWidget *h_vbox;
@@ -96,37 +97,42 @@ soft_app_row_init (SoftAppRow *row)
 	gtk_box_pack_start(GTK_BOX(hbox),row->image ,FALSE,FALSE, 10);
     
     vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);  
+	gtk_widget_set_size_request(vbox,150,-1);
 	gtk_box_pack_start(GTK_BOX(hbox),vbox ,FALSE,FALSE, 10);
 
     row->label_name = gtk_label_new(NULL);
 	gtk_box_pack_start(GTK_BOX(vbox),row->label_name ,FALSE,FALSE, 6);
     
     v_hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);  
+    gtk_widget_set_halign(v_hbox, GTK_ALIGN_CENTER);
 	gtk_box_pack_start(GTK_BOX(vbox),v_hbox ,FALSE,FALSE, 0);
 	
 	row->stars1 = gtk_image_new();
-	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars1 ,TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars1 ,FALSE, FALSE, 0);
     row->stars2 = gtk_image_new();
-	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars2 ,TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars2 ,FALSE, FALSE, 0);
     row->stars3 = gtk_image_new();
-	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars3 ,TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars3 ,FALSE, FALSE, 0);
     row->stars4 = gtk_image_new();
-	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars4 ,TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars4 ,FALSE, FALSE, 0);
     row->stars5 = gtk_image_new();
-	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars5 ,TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars5 ,FALSE, FALSE, 0);
     
+    described_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);  
+	gtk_widget_set_size_request(described_box,500,-1);
+	gtk_box_pack_start(GTK_BOX(hbox),described_box ,FALSE,FALSE, 6);
 	row->label_describe = gtk_label_new(NULL);
-	gtk_label_set_max_width_chars(GTK_LABEL(row->label_describe),70);
+	gtk_label_set_max_width_chars(GTK_LABEL(row->label_describe),50);
 	gtk_widget_set_size_request(row->label_describe,100,10);
 	gtk_label_set_line_wrap(GTK_LABEL(row->label_describe),TRUE);
 	gtk_label_set_lines(GTK_LABEL(row->label_describe),2);
-	gtk_box_pack_start(GTK_BOX(hbox),row->label_describe ,FALSE,FALSE, 6);
+	gtk_box_pack_start(GTK_BOX(described_box),row->label_describe ,FALSE,FALSE, 6);
 
     h_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);  
 	gtk_box_pack_start(GTK_BOX(hbox),h_vbox ,FALSE,FALSE, 6);
 
 	row->button = gtk_button_new();
-	gtk_box_pack_start(GTK_BOX(h_vbox),row->button ,TRUE,TRUE, 6);
+    gtk_box_pack_end(GTK_BOX(h_vbox),row->button ,FALSE,FALSE, 6);
 	
 	row->label_size = gtk_label_new(NULL);
 	gtk_box_pack_start(GTK_BOX(h_vbox),row->label_size ,FALSE,FALSE, 6);
@@ -278,6 +284,20 @@ soft_app_message_set_package (SoftAppMessage  *Message,
 }  
 
 const gchar *
+soft_app_message_get_pkgid (SoftAppMessage *Message)
+{
+    return Message->soft_ids;
+}
+
+void
+soft_app_message_set_pkgid (SoftAppMessage  *Message, 
+                              const gchar     *ids)
+{
+    g_free (Message->soft_ids);
+    Message->soft_ids = g_strdup(ids);
+}
+
+const gchar *
 soft_app_message_get_icon (SoftAppMessage *Message)
 {
     return Message->icon_name;
@@ -324,6 +344,12 @@ soft_app_message_finalize (GObject *object)
     g_free (Message->icon_name);
     g_free (Message->soft_describe);
     g_free (Message->soft_size);
+    g_free (Message->soft_url);
+    g_free (Message->soft_version);
+    g_free (Message->soft_arch);
+    g_free (Message->soft_package);
+    g_free (Message->soft_ids);
+    g_free (Message->soft_license);
 }
 
 static void

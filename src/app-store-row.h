@@ -55,6 +55,7 @@ typedef struct SoftAppMessage
     char        *soft_package;
 	gboolean     soft_type;
 	char        *soft_size;
+	char        *soft_ids;
 }SoftAppMessage;
 
 typedef struct SoftAppMessageClass
@@ -150,6 +151,11 @@ const gchar      *soft_app_message_get_package         (SoftAppMessage *Message)
 
 void              soft_app_message_set_package         (SoftAppMessage *Message,
                                                         const gchar    *package);
+
+const gchar      *soft_app_message_get_pkgid           (SoftAppMessage *Message);
+
+void              soft_app_message_set_pkgid           (SoftAppMessage *Message,
+                                                        const gchar    *ids);
 
 void              soft_app_local_soft_detalis          (SoftAppMessage *Message,
 		                                                PkClient       *client,

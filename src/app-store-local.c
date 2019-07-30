@@ -26,15 +26,14 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 	SoftAppMessage *Message;
 	GtkWidget *row;
 	guint       i;
-
+	app->page = MAIN_PAGE;
+    
     for (i = 0; i < app->pkg->list->len; i++)
     {
         Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
 		row = soft_app_row_new(Message);
 		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
-
-		app->page = MAIN_PAGE;
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
 	}
 	gtk_widget_show_all(app->MainWindow);
@@ -42,7 +41,7 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 static void
 GetLocalSoftAppDetails (PkClient       *client, 
                         GAsyncResult   *res, 
-                        SoftAppMessage *Message)
+                        SoftAppPkgkit  *pkg)
 {
     g_autoptr(PkResults) results = NULL;
     g_autoptr(GError)    error = NULL;
@@ -58,7 +57,9 @@ GetLocalSoftAppDetails (PkClient       *client,
     g_autofree gchar *url = NULL;
     g_autofree gchar *s_size = NULL;
     PkGroupEnum       group;
-
+    g_auto(GStrv)     split = NULL;
+	SoftAppMessage   *Message;
+    static int i = 0;
 
     results = pk_client_generic_finish (client, res, &error);
     if (results == NULL) 
@@ -98,12 +99,60 @@ GetLocalSoftAppDetails (PkClient       *client,
     
     s_size = g_strdup_printf ("%.2f",(float)size/(1024*1024));
     package = pk_package_id_to_printable (package_id);
+    split = pk_package_id_split (package_id);
+    if (split == NULL)
+    {    
+        return;
+    }
+	Message = soft_app_message_new ();
+	soft_app_message_set_pkgid(Message,package_id);
+	soft_app_message_set_name(Message,split[PK_PACKAGE_ID_NAME]);
+	soft_app_message_set_version(Message,split[PK_PACKAGE_ID_VERSION]);
+	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
+	soft_app_message_set_icon(Message,"/tmp/time-admin.png");
+	soft_app_message_set_score(Message,0.5);
     soft_app_message_set_describe(Message,description);
 	soft_app_message_set_size(Message,s_size);
 	soft_app_message_set_url(Message,url);
-	soft_app_message_set_version(Message,license);
+	soft_app_message_set_license(Message,license);
 	soft_app_message_set_package(Message,package);
+    g_print("count get details %d num\r\n",i++);
+    g_ptr_array_add (pkg->list, Message);
 }    
+static void
+GetLocalDetailsProgress(PkProgress    *progress, 
+                        PkProgressType type, 
+                        SoftAppPkgkit *pkg)
+{
+    PkStatusEnum status;
+    gint percentage;
+    gboolean allow_cancel;
+    static uint soft_sum = 0;
+
+    g_object_get (progress,
+                 "status", &status,
+                 "percentage", &percentage,
+                 "allow-cancel", &allow_cancel,
+                  NULL);
+
+    if (type == PK_PROGRESS_TYPE_STATUS)
+    {
+        if (status == PK_STATUS_ENUM_FINISHED)
+        {    
+            if(++soft_sum >=pkg->listlen)
+            {
+	            emit_details_complete(pkg);
+            }    
+        }
+    } 
+    else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
+    {
+        if (percentage > 0) 
+        {
+            g_print("percentage = %.2f\r\n",(float) percentage / 100.0f);
+        } 
+    } 
+}
 
 static void
 pk_console_package_cb (PkPackage *package, SoftAppPkgkit *pkg)
@@ -111,8 +160,6 @@ pk_console_package_cb (PkPackage *package, SoftAppPkgkit *pkg)
     PkInfoEnum      info;
     const gchar    *package_id;
     g_auto(GStrv)   package_ids = NULL;
-    g_auto(GStrv)   split = NULL;
-	SoftAppMessage *Message;
     
     /* ignore finished */
     info = pk_package_get_info (package);
@@ -121,17 +168,6 @@ pk_console_package_cb (PkPackage *package, SoftAppPkgkit *pkg)
 
     /* split */
     package_id = pk_package_get_id (package);
-    split = pk_package_id_split (package_id);
-    if (split == NULL)
-    {    
-        return;
-    }
-	Message = soft_app_message_new ();
-	soft_app_message_set_name(Message,split[PK_PACKAGE_ID_NAME]);
-	soft_app_message_set_version(Message,split[PK_PACKAGE_ID_VERSION]);
-	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
-	soft_app_message_set_icon(Message,"/tmp/time-admin.png");
-	soft_app_message_set_score(Message,0.5);
 /*
     soft_app_local_soft_detalis (Message,
 		                         PK_CLIENT(pkg->task),
@@ -144,12 +180,10 @@ pk_console_package_cb (PkPackage *package, SoftAppPkgkit *pkg)
     pk_client_get_details_async (PK_CLIENT(pkg->task), 
                                  package_ids, 
                                  pkg->cancellable,
-                                 NULL,NULL,
+                                (PkProgressCallback) GetLocalDetailsProgress,
+                                 pkg,
                                 (GAsyncReadyCallback) GetLocalSoftAppDetails,
-                                 Message);
-    g_ptr_array_add (pkg->list, Message);
-
-	emit(pkg);
+                                 pkg);
 }
 
 static void
@@ -196,6 +230,8 @@ pk_console_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
     array = pk_package_sack_get_array (sack);
 
     /* package */
+    pkg->listlen = array->len;
+    g_print("array->len = %u\r\n",array->len);
     filename = g_object_get_data (G_OBJECT (pkg->task), "PkConsole:list-create-filename");
     if ((role != PK_ROLE_ENUM_INSTALL_PACKAGES &&
          role != PK_ROLE_ENUM_UPDATE_PACKAGES &&
@@ -211,8 +247,6 @@ pk_console_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
          pkg->retval = FALSE;
     }
     
-    g_print("list len = %d\r\n",pkg->list->len);
-    UpdateLocalInstallPage(app);
     g_ptr_array_unref (array);
     g_object_unref (sack);
 /*
@@ -228,7 +262,9 @@ out:
 static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
                                           SoftAppStore  *app)
 {
-	g_print("get_local_soft_details_ready \r\n");
+    g_print("list len = %u\r\n",app->pkg->list->len);
+    UpdateLocalInstallPage(app);
+	//g_print("get_local_soft_details_ready \r\n");
 }
 static void GetLocalSoftMessage(SoftAppStore *app)
 {
@@ -253,6 +289,11 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	GtkFixed    *details;
 	const char  *name;
 	const char  *icon;
+	const char  *explain;
+	const char  *version;
+	const char  *license;
+	const char  *url;
+	const char  *size;
 	float        score;
 	//GtkWidget   *install_button;
 	GtkWidget   *install_bar;
@@ -265,6 +306,11 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	name = soft_app_message_get_name(row->Message);
 	icon = soft_app_message_get_icon(row->Message);
 	score = soft_app_message_get_score(row->Message);
+    explain = soft_app_message_get_describe(row->Message);
+    version = soft_app_message_get_version(row->Message);
+    license = soft_app_message_get_license(row->Message);
+    url     = soft_app_message_get_url(row->Message);
+    size     = soft_app_message_get_size(row->Message);
 
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
@@ -272,11 +318,11 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_button(info,"removed");
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot(info,"/tmp/time.png");
-	soft_app_info_set_explain(info,"This function simply calls local time zone date ntp sync net time hellow world world hello  get depends on some condition.");
-	soft_app_info_set_version(info,"v1.1.1");
-	soft_app_info_set_protocol(info,"GPL-3.0");
-	soft_app_info_set_source(info,"github.com/zhuyaliang");
-	soft_app_info_set_size(info,"12M");
+	soft_app_info_set_explain(info,explain);
+	soft_app_info_set_version(info,version);
+	soft_app_info_set_protocol(info,license);
+	soft_app_info_set_source(info,url);
+	soft_app_info_set_size(info,size);
 	
 	details = soft_app_details_new(info);
     gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);

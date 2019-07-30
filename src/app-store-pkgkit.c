@@ -75,7 +75,7 @@ static void soft_app_pkgkit_get_details	(SoftAppMessage *Message,
 {
 	g_print("package_ids = %s\r\n",package_ids[0]);
 }
-void emit(SoftAppPkgkit *pkg)
+void emit_details_complete(SoftAppPkgkit *pkg)
 {
 	g_signal_emit (pkg, signals[DETAILS_READY], 0);
 }
@@ -125,6 +125,7 @@ soft_app_pkgkit_init (SoftAppPkgkit *pkg)
     pkg->repos        = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	pkg->task         = pk_task_new ();
 	pkg->action       = GPK_ACTION_NONE;	
+	pkg->listlen      = 0;	
     pk_client_get_repo_list_async (PK_CLIENT (pkg->task),
                                    pk_bitfield_value (PK_FILTER_ENUM_NONE),
                                    pkg->cancellable,

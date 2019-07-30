@@ -53,6 +53,7 @@ typedef struct SoftAppPkgkit
 	PkTask          *task;
     GPtrArray       *list;
     gint             retval;
+    guint            listlen;
 
 }SoftAppPkgkit;
 
@@ -65,6 +66,6 @@ GType             soft_app_pkgkit_get_type            (void) G_GNUC_CONST;
 
 SoftAppPkgkit    *soft_app_pkgkit_new                 (void);
 
-void emit(SoftAppPkgkit *pkg);
+void              emit_details_complete               (SoftAppPkgkit *pkg);
 G_END_DECLS
 #endif
