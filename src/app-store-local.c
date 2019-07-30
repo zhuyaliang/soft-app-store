@@ -37,6 +37,10 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
 	}
 	gtk_widget_show_all(app->MainWindow);
+	gtk_widget_hide(app->LocalSoftBar);
+	gtk_widget_hide(app->LocalSoftLabel);
+	gtk_spinner_stop (GTK_SPINNER (app->LocalSoftSpinner));
+	gtk_widget_hide(app->LocalSoftSpinner);
 }
 static void
 GetLocalSoftAppDetails (PkClient       *client, 
@@ -116,18 +120,19 @@ GetLocalSoftAppDetails (PkClient       *client,
 	soft_app_message_set_url(Message,url);
 	soft_app_message_set_license(Message,license);
 	soft_app_message_set_package(Message,package);
-    g_print("count get details %d num\r\n",i++);
+//    g_print("count get details %d num\r\n",i++);
     g_ptr_array_add (pkg->list, Message);
 }    
 static void
 GetLocalDetailsProgress(PkProgress    *progress, 
                         PkProgressType type, 
-                        SoftAppPkgkit *pkg)
+                        SoftAppStore  *app)
 {
     PkStatusEnum status;
     gint percentage;
     gboolean allow_cancel;
     static uint soft_sum = 0;
+    SoftAppPkgkit *pkg = app->pkg;
 
     g_object_get (progress,
                  "status", &status,
@@ -142,25 +147,32 @@ GetLocalDetailsProgress(PkProgress    *progress,
             if(++soft_sum >=pkg->listlen)
             {
 	            emit_details_complete(pkg);
-            }    
+            }
+			else
+			{
+				gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),
+						                      (gfloat) soft_sum /pkg->listlen);
+				gtk_progress_bar_set_text(GTK_PROGRESS_BAR(app->LocalSoftBar),NULL);
+			}
         }
     } 
     else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
     {
         if (percentage > 0) 
         {
-            g_print("percentage = %.2f\r\n",(float) percentage / 100.0f);
+            //g_print("percentage = %.2f\r\n",(float) percentage / 100.0f);
         } 
     } 
 }
 
 static void
-pk_console_package_cb (PkPackage *package, SoftAppPkgkit *pkg)
+pk_console_package_cb (PkPackage *package, SoftAppStore *app)
 {
     PkInfoEnum      info;
     const gchar    *package_id;
     g_auto(GStrv)   package_ids = NULL;
     
+    SoftAppPkgkit *pkg = app->pkg;
     /* ignore finished */
     info = pk_package_get_info (package);
     if (info == PK_INFO_ENUM_FINISHED)
@@ -181,7 +193,7 @@ pk_console_package_cb (PkPackage *package, SoftAppPkgkit *pkg)
                                  package_ids, 
                                  pkg->cancellable,
                                 (PkProgressCallback) GetLocalDetailsProgress,
-                                 pkg,
+                                 app,
                                 (GAsyncReadyCallback) GetLocalSoftAppDetails,
                                  pkg);
 }
@@ -237,7 +249,7 @@ pk_console_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
          role != PK_ROLE_ENUM_UPDATE_PACKAGES &&
          role != PK_ROLE_ENUM_REMOVE_PACKAGES &&
          filename == NULL)) {
-        g_ptr_array_foreach (array, (GFunc) pk_console_package_cb, pkg);
+        g_ptr_array_foreach (array, (GFunc) pk_console_package_cb, app);
     }
 
     if (array->len == 0 &&
@@ -266,6 +278,36 @@ static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
     UpdateLocalInstallPage(app);
 	//g_print("get_local_soft_details_ready \r\n");
 }
+
+static void pk_console_progress_cb (PkProgress     *progress, 
+		                            PkProgressType type, 
+									gpointer       app)
+{
+    PkStatusEnum status;
+    gint percentage;
+    gboolean allow_cancel;
+
+    g_object_get (progress,
+                 "status", &status,
+                 "percentage", &percentage,
+                 "allow-cancel", &allow_cancel,
+                  NULL);
+
+    if (type == PK_PROGRESS_TYPE_STATUS)
+    {
+        if (status == PK_STATUS_ENUM_FINISHED)
+        {    
+			g_print("finished !!!!\r\n");
+		}
+    } 
+    else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
+    {
+        if (percentage > 0) 
+        {
+            g_print("percentage = %.2f\r\n",(float) percentage / 100.0f);
+		}
+	}	
+}
 static void GetLocalSoftMessage(SoftAppStore *app)
 {
 	app->pkg = g_new0 (SoftAppPkgkit, 1);
@@ -278,9 +320,8 @@ static void GetLocalSoftMessage(SoftAppStore *app)
     pk_task_get_packages_async (app->pkg->task,
                                 16777284,
                                 app->pkg->cancellable,
-                                NULL,NULL,
+                                pk_console_progress_cb, app,
                                 pk_console_finished_cb, app);
-
 }
 static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 {
@@ -359,6 +400,20 @@ GtkWidget *LoadLocalInstall(SoftAppStore *app)
                      "row-activated",
                       G_CALLBACK (SwitchPageToIndividualDetailsPage), 
                       app);
+	app->LocalSoftLabel = gtk_label_new(NULL);
+	SetLableFontType(app->LocalSoftLabel,
+                    "black",
+                     18,
+                     _("Efforts are being made to load the local software list"),
+                     TRUE);
+	gtk_box_pack_start (GTK_BOX (vbox), app->LocalSoftLabel, TRUE, TRUE, 0);
+	app->LocalSoftSpinner = gtk_spinner_new ();
+	gtk_spinner_start (GTK_SPINNER (app->LocalSoftSpinner));
+	gtk_box_pack_start (GTK_BOX (vbox), app->LocalSoftSpinner, TRUE, TRUE, 0);
+	app->LocalSoftBar =  gtk_progress_bar_new ();
+	gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(app->LocalSoftBar),TRUE);
+	g_object_set(app->LocalSoftBar,"show-text",TRUE,NULL);
+	gtk_box_pack_start (GTK_BOX (vbox), app->LocalSoftBar, TRUE, TRUE, 0);
 
 	GetLocalSoftMessage(app);
 	return vbox;
