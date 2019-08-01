@@ -100,7 +100,6 @@ GetLocalSoftAppDetails (PkClient       *client,
                  "description", &description,
                  "size", &size,
                   NULL);
-    
     s_size = g_strdup_printf ("%.2f",(float)size/(1024*1024));
     package = pk_package_id_to_printable (package_id);
     split = pk_package_id_split (package_id);
@@ -323,6 +322,90 @@ static void GetLocalSoftMessage(SoftAppStore *app)
                                 pk_console_progress_cb, app,
                                 pk_console_finished_cb, app);
 }
+static void soft_app_remove_progress_cb (PkProgress     *progress, 
+		                                 PkProgressType  type, 
+								   	     SoftAppStore   *app)
+{
+    PkStatusEnum status;
+    gint percentage;
+    gboolean allow_cancel;
+
+    g_object_get (progress,
+                 "status", &status,
+                 "percentage", &percentage,
+                 "allow-cancel", &allow_cancel,
+                  NULL);
+
+    if (type == PK_PROGRESS_TYPE_STATUS)
+    {
+        if (status == PK_STATUS_ENUM_FINISHED)
+        {    
+			g_print("finished !!!!\r\n");
+		}
+    } 
+    else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
+    {
+        if (percentage > 0) 
+        {
+            g_print("percentage = %.2f\r\n",(float) percentage / 100.0f);
+		}
+	}	
+}
+static void
+soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
+{
+    g_autoptr(PkResults) results = NULL;
+    g_autoptr(GError) error = NULL;
+    g_autoptr(PkError) error_code = NULL;
+    guint idle_id;
+
+    /* get the results */
+    results = pk_task_generic_finish (task, res, &error);
+    if (results == NULL) {
+        g_warning ("failed to remove packages: %s", error->message);
+        return;
+    }
+
+    /* check error code */
+    error_code = pk_results_get_error_code (results);
+    if (error_code != NULL) 
+	{
+		SoftAppStoreLog ("failed to remove packages: %s, %s", 
+				          pk_error_enum_to_string (pk_error_get_code (error_code)), 
+						  pk_error_get_details (error_code));
+
+        return;
+    }
+
+    /* idle add in the background */
+    //idle_id = g_idle_add ((GSourceFunc) gpk_application_perform_search_idle_cb, priv);
+    //g_source_set_name_by_id (idle_id, "[GpkApplication] search");
+
+    /* clear if success */
+    //pk_package_sack_clear (priv->package_sack);
+    //priv->action = GPK_ACTION_NONE;
+    //gpk_application_change_queue_status (priv);
+}
+
+static void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
+{
+	g_auto(GStrv) package_ids = NULL;
+    g_autofree const gchar *package_id = NULL;
+
+	package_id = soft_app_info_get_pkgid(app->details->info);
+    package_ids = pk_package_ids_from_id (package_id);
+    /* remove */
+    pk_task_remove_packages_async (app->pkg->task, 
+								   package_ids, 
+								   TRUE, 
+								   FALSE, 
+								   app->pkg->cancellable,
+								  (PkProgressCallback) soft_app_remove_progress_cb, 
+								   app,
+                                  (GAsyncReadyCallback) soft_app_remove_packages_cb, 
+								   app);
+
+}
 static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 {
     GtkWidget   *sw;
@@ -335,8 +418,9 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	const char  *license;
 	const char  *url;
 	const char  *size;
+	const char  *pkgid;
 	float        score;
-	//GtkWidget   *install_button;
+	GtkWidget   *remove_button;
 	GtkWidget   *install_bar;
 	
     soft_app_container_remove_all (GTK_CONTAINER (app->StackDetailsBox));
@@ -351,7 +435,8 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     version = soft_app_message_get_version(row->Message);
     license = soft_app_message_get_license(row->Message);
     url     = soft_app_message_get_url(row->Message);
-    size     = soft_app_message_get_size(row->Message);
+    size    = soft_app_message_get_size(row->Message);
+    pkgid   = soft_app_message_get_pkgid(row->Message);
 
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
@@ -364,11 +449,18 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_protocol(info,license);
 	soft_app_info_set_source(info,url);
 	soft_app_info_set_size(info,size);
+	soft_app_info_set_pkgid(info,pkgid);
 	
 	details = soft_app_details_new(info);
+	app->details = SOFT_APP_DETAILS(details);	
+	remove_button = soft_app_details_get_button(SOFT_APP_DETAILS(details));
+    g_signal_connect (remove_button, 
+                     "clicked",
+                      G_CALLBACK (RemoveLocalSoftApp), 
+					  app);
+					  
     gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
     gtk_widget_set_valign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
-	app->details = SOFT_APP_DETAILS(details);	
     gtk_container_add (GTK_CONTAINER (sw), GTK_WIDGET(details));
 
     gtk_widget_show_all(app->StackDetailsBox);

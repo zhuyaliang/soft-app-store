@@ -430,6 +430,17 @@ void soft_app_info_set_size (SoftAppInfo *info,
 	g_free (info->size);
     info->size = g_strdup (size);
 }
+
+const char *soft_app_info_get_pkgid (SoftAppInfo *info)
+{
+	return info->pkgid; 
+}
+void soft_app_info_set_pkgid (SoftAppInfo *info,
+		                      const char  *pkgid)
+{
+	g_free (info->pkgid);
+    info->pkgid = g_strdup (pkgid);
+}
 GtkWidget *soft_app_details_get_button(SoftAppDetails *details)
 {
 	return details->button;
@@ -453,6 +464,7 @@ soft_app_info_finalize (GObject *object)
     g_free (info->protocol);
     g_free (info->source);
     g_free (info->size);
+    g_free (info->pkgid);
 }
 
 static void

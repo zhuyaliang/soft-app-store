@@ -44,6 +44,7 @@ typedef struct SoftAppInfo
 	char        *protocol;
 	char        *source;
 	char        *size;
+	char        *pkgid;
 }SoftAppInfo;
 
 typedef struct SoftAppInfoClass
@@ -152,6 +153,11 @@ const char       *soft_app_info_get_size            (SoftAppInfo *info);
 
 void              soft_app_info_set_size            (SoftAppInfo *info,
 		                                             const char  *size);
+
+const char       *soft_app_info_get_pkgid           (SoftAppInfo *info);
+
+void              soft_app_info_set_pkgid           (SoftAppInfo *info,
+		                                             const char  *pkgid);
 
 void CreateRecommendDetails(gpointer app,gpointer      data);
 G_END_DECLS
