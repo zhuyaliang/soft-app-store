@@ -42,6 +42,33 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 	gtk_spinner_stop (GTK_SPINNER (app->LocalSoftSpinner));
 	gtk_widget_hide(app->LocalSoftSpinner);
 }
+static char **GetLocalSoftFiles(SoftAppPkgkit *pkg,
+                                char          *package_id)
+{
+    g_autoptr(PkResults) results = NULL;
+	g_auto(GStrv) package_ids = NULL;
+    GError *error = NULL;
+    g_autoptr(GPtrArray) array = NULL;
+    PkFiles *item;
+    char **files;
+
+    package_ids = pk_package_ids_from_id (package_id);
+    results = pk_task_get_files_sync(pkg->task,
+                                     package_ids,
+                                     pkg->cancellable,
+                                     NULL,
+                                     NULL,
+                                    &error);
+    if(results == NULL)
+    {
+        SoftAppStoreLog("Error","%s",error->message);
+        return NULL;
+    }    
+    array = pk_results_get_files_array(results);
+    item = g_ptr_array_index (array, 0);
+    files = pk_files_get_files (item);
+    return g_strdupv(files);
+}    
 static void
 GetLocalSoftAppDetails (PkClient       *client, 
                         GAsyncResult   *res, 
@@ -63,8 +90,9 @@ GetLocalSoftAppDetails (PkClient       *client,
     PkGroupEnum       group;
     g_auto(GStrv)     split = NULL;
 	SoftAppMessage   *Message;
-    static int i = 0;
-
+    char            **files = NULL;
+    static uint soft_sum = 0;
+    
     results = pk_client_generic_finish (client, res, &error);
     if (results == NULL) 
     {
@@ -119,7 +147,15 @@ GetLocalSoftAppDetails (PkClient       *client,
 	soft_app_message_set_url(Message,url);
 	soft_app_message_set_license(Message,license);
 	soft_app_message_set_package(Message,package);
-//    g_print("count get details %d num\r\n",i++);
+    files = GetLocalSoftFiles(pkg,package_id);
+    soft_app_message_set_files(Message,files);
+    g_strfreev(files);
+    g_print("count get details %u num len = %u\r\n",soft_sum,pkg->list->len);
+    if(++soft_sum >=pkg->listlen)
+    {
+        emit_details_complete(pkg);
+        soft_sum = 0;
+    }
     g_ptr_array_add (pkg->list, Message);
 }    
 static void
@@ -143,16 +179,13 @@ GetLocalDetailsProgress(PkProgress    *progress,
     {
         if (status == PK_STATUS_ENUM_FINISHED)
         {    
-            if(++soft_sum >=pkg->listlen)
+            if(++soft_sum <= pkg->listlen)
             {
-	            emit_details_complete(pkg);
-            }
-			else
-			{
 				gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),
 						                      (gfloat) soft_sum /pkg->listlen);
 				gtk_progress_bar_set_text(GTK_PROGRESS_BAR(app->LocalSoftBar),NULL);
-			}
+                soft_sum = 0;
+            }
         }
     } 
     else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
@@ -441,7 +474,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
 	soft_app_info_set_comment(info,"manage local time and time zone");
-	soft_app_info_set_button(info,"removed");
+	soft_app_info_set_button(info,_("removed"));
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot(info,"/tmp/time.png");
 	soft_app_info_set_explain(info,explain);

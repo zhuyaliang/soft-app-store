@@ -310,6 +310,19 @@ soft_app_message_set_icon (SoftAppMessage  *Message,
     g_free (Message->icon_name);
     Message->icon_name = g_strdup (icon);
 }  
+gchar **
+soft_app_message_get_files (SoftAppMessage *Message)
+{
+    return Message->soft_files;
+}
+
+void
+soft_app_message_set_files (SoftAppMessage  *Message, 
+                            gchar          **files)
+{
+    g_strfreev (Message->soft_files);
+    Message->soft_files = g_strdupv (files);
+}    
 void soft_app_local_soft_detalis   (SoftAppMessage *Message,
 		                            PkClient     *client,
 			                        const char  **package_ids,
@@ -350,6 +363,7 @@ soft_app_message_finalize (GObject *object)
     g_free (Message->soft_package);
     g_free (Message->soft_ids);
     g_free (Message->soft_license);
+    g_strfreev (Message->soft_files);
 }
 
 static void
