@@ -49,6 +49,7 @@ typedef struct
 	GtkWidget        *sw;
     SoftAppPkgkit    *pkg;
 	SoftAppDetails   *details;
+	gint              index;
 	uint              per;
 	int               page;
 	int               parent_page;

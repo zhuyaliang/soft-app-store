@@ -21,29 +21,8 @@
 #include "app-store-details.h"
 #include "app-store-pkgkit.h"
  
-static void UpdateLocalInstallPage(SoftAppStore *app)
-{
-	SoftAppMessage *Message;
-	GtkWidget *row;
-	guint       i;
-	app->page = MAIN_PAGE;
-    
-    for (i = 0; i < app->pkg->list->len; i++)
-    {
-        Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
-		row = soft_app_row_new(Message);
-		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
-		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
-		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
-	}
-	gtk_widget_show_all(app->MainWindow);
-	gtk_widget_hide(app->LocalSoftBar);
-	gtk_widget_hide(app->LocalSoftLabel);
-	gtk_spinner_stop (GTK_SPINNER (app->LocalSoftSpinner));
-	gtk_widget_hide(app->LocalSoftSpinner);
-}
 static char **GetLocalSoftFiles(SoftAppPkgkit *pkg,
-                                char          *package_id)
+                                const char    *package_id)
 {
     g_autoptr(PkResults) results = NULL;
 	g_auto(GStrv) package_ids = NULL;
@@ -69,6 +48,27 @@ static char **GetLocalSoftFiles(SoftAppPkgkit *pkg,
     files = pk_files_get_files (item);
     return g_strdupv(files);
 }    
+static void UpdateLocalInstallPage(SoftAppStore *app)
+{
+	SoftAppMessage *Message;
+	GtkWidget  *row;
+	guint       i;
+	app->page = MAIN_PAGE;
+    
+    for (i = 0; i < app->pkg->list->len; i++)
+    {
+        Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
+		row = soft_app_row_new(Message);
+		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
+		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
+		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
+	}
+	gtk_widget_show_all(app->MainWindow);
+	gtk_widget_hide(app->LocalSoftBar);
+	gtk_widget_hide(app->LocalSoftLabel);
+	gtk_spinner_stop (GTK_SPINNER (app->LocalSoftSpinner));
+	gtk_widget_hide(app->LocalSoftSpinner);
+}
 static void
 GetLocalSoftAppDetails (PkClient       *client, 
                         GAsyncResult   *res, 
@@ -90,7 +90,6 @@ GetLocalSoftAppDetails (PkClient       *client,
     PkGroupEnum       group;
     g_auto(GStrv)     split = NULL;
 	SoftAppMessage   *Message;
-    char            **files = NULL;
     static uint soft_sum = 0;
     
     results = pk_client_generic_finish (client, res, &error);
@@ -147,9 +146,6 @@ GetLocalSoftAppDetails (PkClient       *client,
 	soft_app_message_set_url(Message,url);
 	soft_app_message_set_license(Message,license);
 	soft_app_message_set_package(Message,package);
-    files = GetLocalSoftFiles(pkg,package_id);
-    soft_app_message_set_files(Message,files);
-    g_strfreev(files);
     g_print("count get details %u num len = %u\r\n",soft_sum,pkg->list->len);
     if(++soft_sum >=pkg->listlen)
     {
@@ -184,8 +180,9 @@ GetLocalDetailsProgress(PkProgress    *progress,
 				gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),
 						                      (gfloat) soft_sum /pkg->listlen);
 				gtk_progress_bar_set_text(GTK_PROGRESS_BAR(app->LocalSoftBar),NULL);
-                soft_sum = 0;
             }
+			else 
+				soft_sum = 0;
         }
     } 
     else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
@@ -372,15 +369,20 @@ static void soft_app_remove_progress_cb (PkProgress     *progress,
     if (type == PK_PROGRESS_TYPE_STATUS)
     {
         if (status == PK_STATUS_ENUM_FINISHED)
-        {    
-			g_print("finished !!!!\r\n");
+		{
+			g_ptr_array_remove_index (app->pkg->list,app->index);    
+			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->details->progressbar),
+										  1.00);
+			UpdateLocalInstallPage(app);
 		}
-    } 
+	} 
     else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
     {
         if (percentage > 0) 
         {
-            g_print("percentage = %.2f\r\n",(float) percentage / 100.0f);
+			g_print("percentage = %d\r\n",percentage);
+			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->details->progressbar),
+										 (float) percentage / 100.0f);
 		}
 	}	
 }
@@ -388,8 +390,8 @@ static void
 soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
 {
     g_autoptr(PkResults) results = NULL;
-    g_autoptr(GError) error = NULL;
-    g_autoptr(PkError) error_code = NULL;
+    g_autoptr(GError)    error = NULL;
+    g_autoptr(PkError)   error_code = NULL;
     guint idle_id;
 
     /* get the results */
@@ -409,8 +411,7 @@ soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
 
         return;
     }
-
-    /* idle add in the background */
+	/* idle add in the background */
     //idle_id = g_idle_add ((GSourceFunc) gpk_application_perform_search_idle_cb, priv);
     //g_source_set_name_by_id (idle_id, "[GpkApplication] search");
 
@@ -425,6 +426,8 @@ static void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
 	g_auto(GStrv) package_ids = NULL;
     g_autofree const gchar *package_id = NULL;
 
+	gtk_widget_hide(button);
+	gtk_widget_show(app->details->progressbar);
 	package_id = soft_app_info_get_pkgid(app->details->info);
     package_ids = pk_package_ids_from_id (package_id);
     /* remove */
@@ -460,7 +463,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
-	
+
 	name = soft_app_message_get_name(row->Message);
 	icon = soft_app_message_get_icon(row->Message);
 	score = soft_app_message_get_score(row->Message);
@@ -506,8 +509,10 @@ static void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,
 
 {
 	SoftAppRow *row = SOFT_APP_ROW(Row); 
+
     app->page = INDIVIDUAL_SOFT_PAGE;
 	SwitchPage(app);
+	app->index = gtk_list_box_row_get_index(Row);
     CreateLocalSoftDetails(app,row);
 }
 GtkWidget *LoadLocalInstall(SoftAppStore *app)
