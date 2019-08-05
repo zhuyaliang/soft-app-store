@@ -69,7 +69,7 @@ static GdkPixbuf * GetAppIcon(void)
 static void InitMainWindow(SoftAppStore *app)
 {
     GdkPixbuf *AppIcon;
-    char      *user,*dname;
+    char      *home,*dname;
 
     app->MainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(app->MainWindow), GTK_WIN_POS_CENTER);
@@ -94,8 +94,9 @@ static void InitMainWindow(SoftAppStore *app)
     }   
     app->StoreStack = gtk_stack_new ();
     gtk_container_add(GTK_CONTAINER(app->MainWindow), app->StoreStack);
-    user = g_get_user_name();
-    dname = g_strconcat("/",user,"/.soft-app-store",NULL);
+    
+	home = getenv("HOME");
+    dname = g_strconcat(home,"/.soft-app-store",NULL);
     g_print("dname = %s\r\n",dname);
     if(access(dname,F_OK) != 0)
     {

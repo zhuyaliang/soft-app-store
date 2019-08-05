@@ -24,13 +24,14 @@
 #define   UNKNOWPNG               "mp.png"
 static void SetSoftIcon(SoftAppMessage *Message)
 {
-    char *user,*fname,*dname;
+	const char *dname;
+	char *fname,*home;
     int   fd,len;
     char  ReadBuf[64] = { 0 };
 
-    user = g_get_user_name();
+	home = getenv("HOME");
     dname = soft_app_message_get_name(Message);
-    fname = g_strconcat("/",user,"/.soft-app-store/",dname,"/icon",NULL);
+    fname = g_strconcat(home,"/.soft-app-store/",dname,"/icon",NULL);
     fd = open(fname,O_RDONLY);
     if(fd <= 0)
     {   
@@ -200,11 +201,11 @@ GetLocalDetailsProgress(PkProgress    *progress,
 static int 
 CreateCacheFile(const char *dirname)
 {
-    char *user,*dname,*fname;
+    char *home,*dname,*fname;
     int   fd = -1;
 
-    user = g_get_user_name();
-    dname = g_strconcat("/",user,"/.soft-app-store/",dirname,NULL);
+	home = getenv("HOME");
+    dname = g_strconcat(home,"/.soft-app-store/",dirname,NULL);
     if(access(dname,F_OK) != 0)
     {
         mkdir(dname,0755);
@@ -221,16 +222,16 @@ static void GetSoftDesktopMsg(const char *dirname,const char *desktop_name)
 {
     FILE *s_fp = NULL;
     int   d_fd = 0;
-    char *user,*fname;
+    char *home,*fname;
     char  ReadBuf[1024] = { 0 };
 
+	home = getenv("HOME");
     s_fp = fopen(desktop_name,"r");
     if(s_fp == NULL)
     {
         return;
     }   
-    user = g_get_user_name();
-    fname = g_strconcat("/",user,"/.soft-app-store/",dirname,"/icon",NULL);
+    fname = g_strconcat(home,"/.soft-app-store/",dirname,"/icon",NULL);
     d_fd = open(fname,O_RDWR|O_CREAT,S_IRUSR|S_IWUSR);
     while((fgets(ReadBuf,1024,s_fp)) != NULL)
     {
@@ -262,7 +263,7 @@ GetLocalSoftFilesFinished (PkClient       *client,
     g_auto(GStrv)        split = NULL;
     PkFiles *item;
     char   **files = NULL;
-    char    *package_id;
+    const char    *package_id;
     int      i = 0;
     int      fd;
     g_autoptr(PkResults) results = NULL;
@@ -542,50 +543,16 @@ soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
     }
 }
 
-static GPtrArray *GetSoftFiles(char *dname,GPtrArray **array)
+static void GetSoftFiles(const char *dname,GtkDialog *dialog)
 {
-    FILE  *s_fp = NULL;
-    char  *user,*fname;
-    char   ReadBuf[128] = { 0 };
-    int i = 0;
-    char *s;
-
-    user = g_get_user_name();
-    fname = g_strconcat("/",user,"/.soft-app-store/",dname,"/files",NULL);
-    s_fp = fopen(fname,"r");
-    if(s_fp == NULL)
-    {
-        return NULL;
-    }   
-    while((fgets(ReadBuf,128,s_fp)) != NULL)
-    {
-        g_ptr_array_add (*array,ReadBuf);
-        g_print("g_ptr_array_index = %s\r\n",g_ptr_array_index(*array,i));
-        i++;
-        g_free(s);
-    }   
-    fclose(s_fp);
-    g_free(fname);
-
-    return *array;
-}   
-static gboolean
-set_dialog_embed_file_list_widget (GtkDialog *dialog,GPtrArray *files)
-{
-    GtkWidget *scroll;
-    GtkWidget *widget;
+    GtkWidget     *scroll;
+    GtkWidget     *widget;
     GtkTextBuffer *buffer;
-    g_auto(GStrv) array = NULL;
-    g_autofree gchar *text = NULL;
+    FILE          *s_fp = NULL;
+    char          *home,*fname,*files;
+    char   ReadBuf[128] = { 0 };
     
-    array = pk_ptr_array_to_strv(files);
-    text = g_strjoinv ("\n", array);
-    if (text[0] == '\0') {
-        g_free (text);
-        text = g_strdup (_("No files"));
-    }
-
-    /* create a text view to hold the store */
+	/* create a text view to hold the store */
     widget = gtk_text_view_new ();
     gtk_text_view_set_editable (GTK_TEXT_VIEW (widget), FALSE);
     gtk_text_view_set_left_margin (GTK_TEXT_VIEW (widget), 5);
@@ -598,12 +565,18 @@ set_dialog_embed_file_list_widget (GtkDialog *dialog,GPtrArray *files)
     gtk_container_add (GTK_CONTAINER (scroll), widget);
     gtk_widget_show (scroll);
 
-    /* set in buffer */
-    buffer = gtk_text_buffer_new (NULL);
-    gtk_text_buffer_set_text (buffer, text, -1);
-    gtk_text_view_set_buffer (GTK_TEXT_VIEW (widget), buffer);
-    gtk_widget_show (widget);
-
+	buffer = gtk_text_buffer_new (NULL);
+    home = getenv("HOME");
+    fname = g_strconcat(home,"/.soft-app-store/",dname,"/files",NULL);
+    s_fp = fopen(fname,"r");
+    while((fgets(ReadBuf,128,s_fp)) != NULL)
+    {
+		files = g_strconcat(files,ReadBuf,NULL);
+		/* set in buffer */
+    }   
+	gtk_text_buffer_set_text (buffer,files , -1);
+	gtk_text_view_set_buffer (GTK_TEXT_VIEW (widget), buffer);
+	gtk_widget_show (widget);
     /* add some spacing to conform to the GNOME HIG */
     gtk_container_set_border_width (GTK_CONTAINER (scroll), 6);
     gtk_widget_set_size_request (GTK_WIDGET (scroll), -1, 300);
@@ -612,37 +585,27 @@ set_dialog_embed_file_list_widget (GtkDialog *dialog,GPtrArray *files)
     widget = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
     gtk_box_pack_start (GTK_BOX (widget), scroll, TRUE, TRUE, 0);
 
-    return TRUE;
-}
+    fclose(s_fp);
+    g_free(fname);
+    g_free(files);
+	
+}   
 
 static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
 {
-    char      *name;
-    GPtrArray *array;
-    GtkWidget *dialog;
-    g_autofree char *title = NULL;
-    int i;
+    const char *name;
+	GtkWidget  *dialog;
 
-    array = g_ptr_array_new ();
     name  = soft_app_info_get_name(app->details->info);
-    GetSoftFiles(name,&array);
-    
-    for (i = 0; i < array->len; i++)
-        g_print("index = %s\r\n",g_ptr_array_index(array,i));
-    /* TRANSLATORS: title: how many files are installed by the application */
-    title = g_strdup_printf ("%u files installed by %s",
-                              array->len,name);
- 
     dialog = gtk_message_dialog_new (GTK_WINDOW(app->MainWindow), 
                                      GTK_DIALOG_DESTROY_WITH_PARENT,
                                      GTK_MESSAGE_INFO, 
                                      GTK_BUTTONS_OK, 
-                                     "%s", title);
+                                     "%s", name);
 
-    set_dialog_embed_file_list_widget (GTK_DIALOG (dialog),array);
+    GetSoftFiles(name,GTK_DIALOG (dialog));
     gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
     gtk_window_set_default_size (GTK_WINDOW (dialog), 600, 250);
- 
     gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy (GTK_WIDGET (dialog));
     
