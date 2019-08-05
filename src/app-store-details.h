@@ -45,6 +45,8 @@ typedef struct SoftAppInfo
 	char        *source;
 	char        *size;
 	char        *pkgid;
+	char        *arch;
+	char        *package;
 }SoftAppInfo;
 
 typedef struct SoftAppInfoClass
@@ -74,6 +76,8 @@ typedef struct SoftAppDetails
 	GtkWidget   *label_protocol;
 	GtkWidget   *label_source;
 	GtkWidget   *label_size;
+	GtkWidget   *label_arch;
+	GtkWidget   *label_package;
 	GtkWidget   *button_discuss;
 }SoftAppDetails;
 
@@ -158,6 +162,16 @@ const char       *soft_app_info_get_pkgid           (SoftAppInfo *info);
 
 void              soft_app_info_set_pkgid           (SoftAppInfo *info,
 		                                             const char  *pkgid);
+
+const char       *soft_app_info_get_arch            (SoftAppInfo *info);
+
+void              soft_app_info_set_arch            (SoftAppInfo *info,
+		                                             const char  *arch);
+
+const char       *soft_app_info_get_package         (SoftAppInfo *info);
+
+void              soft_app_info_set_package         (SoftAppInfo *info,
+		                                             const char  *package);
 
 void CreateRecommendDetails(gpointer app,gpointer      data);
 G_END_DECLS

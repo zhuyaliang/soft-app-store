@@ -21,32 +21,32 @@
 #include "app-store-details.h"
 #include "app-store-pkgkit.h"
  
-static char **GetLocalSoftFiles(SoftAppPkgkit *pkg,
-                                const char    *package_id)
+static void SetSoftIcon(SoftAppMessage *Message)
 {
-    g_autoptr(PkResults) results = NULL;
-	g_auto(GStrv) package_ids = NULL;
-    GError *error = NULL;
-    g_autoptr(GPtrArray) array = NULL;
-    PkFiles *item;
-    char **files;
+    char *user,*fname,*dname;
+    int   fd,len;
+    char  ReadBuf[64] = { 0 };
 
-    package_ids = pk_package_ids_from_id (package_id);
-    results = pk_task_get_files_sync(pkg->task,
-                                     package_ids,
-                                     pkg->cancellable,
-                                     NULL,
-                                     NULL,
-                                    &error);
-    if(results == NULL)
+    user = g_get_user_name();
+    dname = soft_app_message_get_name(Message);
+    fname = g_strconcat("/",user,"/.soft-app-store/",dname,"/icon",NULL);
+    fd = open(fname,O_RDONLY);
+    if(fd <= 0)
+    {   
+        perror("open");
+        return;
+    }
+    len = read(fd,ReadBuf,64);
+    if(len <= 0)
     {
-        SoftAppStoreLog("Error","%s",error->message);
-        return NULL;
-    }    
-    array = pk_results_get_files_array(results);
-    item = g_ptr_array_index (array, 0);
-    files = pk_files_get_files (item);
-    return g_strdupv(files);
+        soft_app_message_set_icon(Message,"unknow");
+    }   
+    else
+    {   
+        soft_app_message_set_icon(Message,&ReadBuf[5]);
+    }
+    close(fd);
+    g_free(fname);
 }    
 static void UpdateLocalInstallPage(SoftAppStore *app)
 {
@@ -58,6 +58,7 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
     for (i = 0; i < app->pkg->list->len; i++)
     {
         Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
+	    SetSoftIcon(Message);
 		row = soft_app_row_new(Message);
 		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
@@ -122,6 +123,7 @@ GetLocalSoftAppDetails (PkClient       *client,
     g_object_get (item,
                  "package-id", &package_id,
                  "url", &url,
+                 "summary",&summary,
                  "group", &group,
                  "license", &license,
                  "description", &description,
@@ -139,13 +141,13 @@ GetLocalSoftAppDetails (PkClient       *client,
 	soft_app_message_set_name(Message,split[PK_PACKAGE_ID_NAME]);
 	soft_app_message_set_version(Message,split[PK_PACKAGE_ID_VERSION]);
 	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
-	soft_app_message_set_icon(Message,"/tmp/time-admin.png");
 	soft_app_message_set_score(Message,0.5);
     soft_app_message_set_describe(Message,description);
 	soft_app_message_set_size(Message,s_size);
 	soft_app_message_set_url(Message,url);
 	soft_app_message_set_license(Message,license);
 	soft_app_message_set_package(Message,package);
+	soft_app_message_set_summary(Message,summary);
     g_print("count get details %u num len = %u\r\n",soft_sum,pkg->list->len);
     if(++soft_sum >=pkg->listlen)
     {
@@ -194,6 +196,124 @@ GetLocalDetailsProgress(PkProgress    *progress,
     } 
 }
 
+static int 
+CreateCacheFile(const char *dirname)
+{
+    char *user,*dname,*fname;
+    int   fd = -1;
+
+    user = g_get_user_name();
+    dname = g_strconcat("/",user,"/.soft-app-store/",dirname,NULL);
+    if(access(dname,F_OK) != 0)
+    {
+        mkdir(dname,0755);
+    }    
+    
+    fname = g_strconcat(dname,"/files",NULL);
+    fd = open(fname,O_RDWR|O_CREAT,S_IRUSR|S_IWUSR);
+    g_free(dname);
+    g_free(fname);
+
+    return fd;
+}   
+static void GetSoftDesktopMsg(const char *dirname,const char *desktop_name)
+{
+    FILE *s_fp = NULL;
+    int   d_fd = 0;
+    char *user,*fname;
+    char  ReadBuf[1024] = { 0 };
+
+    s_fp = fopen(desktop_name,"r");
+    if(s_fp == NULL)
+    {
+        return;
+    }   
+    user = g_get_user_name();
+    fname = g_strconcat("/",user,"/.soft-app-store/",dirname,"/icon",NULL);
+    d_fd = open(fname,O_RDWR|O_CREAT,S_IRUSR|S_IWUSR);
+    while((fgets(ReadBuf,1024,s_fp)) != NULL)
+    {
+        if(g_strrstr(ReadBuf,"Icon=") != NULL)
+        {
+            write(d_fd,ReadBuf,strlen(ReadBuf)-1);
+            break;
+        }    
+    }   
+    fclose(s_fp);
+    g_free(fname);
+
+}    
+static void
+GetLocalSoftFilesProgress(PkProgress    *progress, 
+                          PkProgressType type, 
+                          SoftAppStore  *app)
+{
+    
+}    
+static void
+GetLocalSoftFilesFinished (PkClient       *client, 
+                           GAsyncResult   *res, 
+                           SoftAppStore   *app)
+{
+    g_autoptr(GError)    error = NULL;
+    g_autoptr(GPtrArray) array = NULL;
+    g_autoptr(PkError)   error_code = NULL;
+    g_auto(GStrv)        split = NULL;
+    PkFiles *item;
+    char   **files = NULL;
+    char    *package_id;
+    int      i = 0;
+    int      fd;
+    g_autoptr(PkResults) results = NULL;
+
+    /* get the results */
+    results = pk_client_generic_finish (client, res, &error);
+    if (results == NULL) 
+    {
+        SoftAppStoreLog ("Error","failed to get files: %s", error->message);
+        return;
+    }
+    /* check error code */
+    error_code = pk_results_get_error_code (results);
+    if (error_code != NULL) 
+    {
+        SoftAppStoreLog ("Error","failed to get files: %s, %s", 
+                          pk_error_enum_to_string (pk_error_get_code (error_code)), 
+                          pk_error_get_details (error_code));
+
+        return;
+    }
+
+    /* get data */
+    array = pk_results_get_files_array (results);
+    if (array->len != 1)
+        return;
+
+    /* assume only one option */
+    item = g_ptr_array_index (array, 0);
+    files = pk_files_get_files (item);
+    package_id = pk_files_get_package_id(item); 
+    split = pk_package_id_split (package_id);
+    fd = CreateCacheFile(split[PK_PACKAGE_ID_NAME]);
+    while(files[i] != NULL)
+    {
+        write(fd,files[i],strlen(files[i]));
+        write(fd,"\r\n",2);
+        i++;
+    }
+    i = 0;
+    while(files[i] != NULL)
+    {
+        if (g_strrstr(files[i],".desktop") != NULL)
+        {
+            GetSoftDesktopMsg(split[PK_PACKAGE_ID_NAME],files[i]); 
+            break;
+        }    
+        i++;
+    }   
+
+    close(fd);
+}   
 static void
 pk_console_package_cb (PkPackage *package, SoftAppStore *app)
 {
@@ -225,6 +345,13 @@ pk_console_package_cb (PkPackage *package, SoftAppStore *app)
                                  app,
                                 (GAsyncReadyCallback) GetLocalSoftAppDetails,
                                  pkg);
+    pk_client_get_files_async (PK_CLIENT (pkg->task), 
+                               package_ids, 
+                               pkg->cancellable,
+                              (PkProgressCallback)  GetLocalSoftFilesProgress, 
+                               app,
+                              (GAsyncReadyCallback) GetLocalSoftFilesFinished, 
+                               app);
 }
 
 static void
@@ -374,6 +501,8 @@ static void soft_app_remove_progress_cb (PkProgress     *progress,
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->details->progressbar),
 										  1.00);
 			UpdateLocalInstallPage(app);
+            app->page = app->parent_page--;
+            SwitchPage(app);
 		}
 	} 
     else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
@@ -455,6 +584,9 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	const char  *url;
 	const char  *size;
 	const char  *pkgid;
+	const char  *summary;
+	const char  *arch;
+	const char  *package;
 	float        score;
 	GtkWidget   *remove_button;
 	GtkWidget   *install_bar;
@@ -473,10 +605,13 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     url     = soft_app_message_get_url(row->Message);
     size    = soft_app_message_get_size(row->Message);
     pkgid   = soft_app_message_get_pkgid(row->Message);
+    summary = soft_app_message_get_summary(row->Message);
+    arch    = soft_app_message_get_arch(row->Message);
+    package = soft_app_message_get_package(row->Message);
 
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
-	soft_app_info_set_comment(info,"manage local time and time zone");
+	soft_app_info_set_comment(info,summary);
 	soft_app_info_set_button(info,_("removed"));
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot(info,"/tmp/time.png");
@@ -486,6 +621,8 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_source(info,url);
 	soft_app_info_set_size(info,size);
 	soft_app_info_set_pkgid(info,pkgid);
+	soft_app_info_set_arch(info,arch);
+	soft_app_info_set_package(info,package);
 	
 	details = soft_app_details_new(info);
 	app->details = SOFT_APP_DETAILS(details);	

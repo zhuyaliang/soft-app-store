@@ -25,14 +25,12 @@ G_DEFINE_TYPE (SoftAppMessage, soft_app_message, G_TYPE_OBJECT)
 static void
 soft_app_row_refresh (SoftAppRow *row)
 {
-	GdkPixbuf *pixbuf;
+	//GdkPixbuf *pixbuf;
 	float      level;
 	const char *icon_name;
 
 	icon_name = soft_app_message_get_icon(row->Message);
-	pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
-	//soft_app_image_set_from_pixbuf(GTK_IMAGE(row->image),pixbuf,50);
-    gtk_image_set_from_icon_name(GTK_IMAGE(row->image),soft_app_message_get_name (row->Message),GTK_ICON_SIZE_DIALOG);
+    gtk_image_set_from_icon_name(GTK_IMAGE(row->image),icon_name,GTK_ICON_SIZE_DIALOG);
 	SetLableFontType(row->label_name,
                     "black",
                      10,
@@ -323,6 +321,20 @@ soft_app_message_set_files (SoftAppMessage  *Message,
     g_strfreev (Message->soft_files);
     Message->soft_files = g_strdupv (files);
 }    
+
+const gchar *
+soft_app_message_get_summary (SoftAppMessage *Message)
+{
+    return Message->soft_summary;
+}
+
+void
+soft_app_message_set_summary (SoftAppMessage  *Message, 
+                              const gchar     *summary)
+{
+    g_free (Message->soft_summary);
+    Message->soft_summary = g_strdup (summary);
+}  
 void soft_app_local_soft_detalis   (SoftAppMessage *Message,
 		                            PkClient     *client,
 			                        const char  **package_ids,
@@ -363,6 +375,7 @@ soft_app_message_finalize (GObject *object)
     g_free (Message->soft_package);
     g_free (Message->soft_ids);
     g_free (Message->soft_license);
+    g_free (Message->soft_summary);
     g_strfreev (Message->soft_files);
 }
 

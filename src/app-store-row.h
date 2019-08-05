@@ -57,6 +57,7 @@ typedef struct SoftAppMessage
 	char        *soft_size;
 	char        *soft_ids;
 	char       **soft_files;
+	char        *soft_summary;
 }SoftAppMessage;
 
 typedef struct SoftAppMessageClass
@@ -162,6 +163,11 @@ char            **soft_app_message_get_files           (SoftAppMessage *Message)
 
 void              soft_app_message_set_files           (SoftAppMessage *Message,
                                                         gchar         **files);
+
+const char       *soft_app_message_get_summary         (SoftAppMessage *Message);
+
+void              soft_app_message_set_summary         (SoftAppMessage *Message,
+                                                        const char     *summary);
 
 void              soft_app_local_soft_detalis          (SoftAppMessage *Message,
 		                                                PkClient       *client,

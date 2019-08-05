@@ -87,6 +87,16 @@ soft_app_details_refresh (SoftAppDetails *details)
                      10,
                      soft_app_info_get_size (details->info),
                      FALSE);
+    SetLableFontType(details->label_arch,
+                    "black",
+                     10,
+                     soft_app_info_get_arch (details->info),
+                     FALSE);
+    SetLableFontType(details->label_package,
+                    "black",
+                     10,
+                     soft_app_info_get_package (details->info),
+                     FALSE);
 }    
 void
 soft_app_details_set_info (SoftAppDetails *details, SoftAppInfo *info)
@@ -162,6 +172,8 @@ soft_app_details_init (SoftAppDetails *details)
     GtkWidget *source_tile;
     GtkWidget *size_tile;
     GtkWidget *protocol_tile;
+    GtkWidget *package_tile;
+    GtkWidget *arch_tile;
 
     main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_fixed_put(GTK_FIXED(details),main_vbox, 0, 0);
@@ -279,6 +291,27 @@ soft_app_details_init (SoftAppDetails *details)
     gtk_grid_attach(GTK_GRID(table) , size_tile , 0 , 3 , 1 , 1);
     details->label_size = gtk_label_new(NULL);
     gtk_grid_attach(GTK_GRID(table) , details->label_size , 1 , 3 , 1 , 1);
+
+    arch_tile = gtk_label_new(NULL);
+	SetLableFontType(arch_tile,
+                    "black",
+                     12,
+                    _("arch"),
+                     TRUE);
+    gtk_grid_attach(GTK_GRID(table) , arch_tile , 0 , 4 , 1 , 1);
+    details->label_arch = gtk_label_new(NULL);
+    gtk_grid_attach(GTK_GRID(table) , details->label_arch , 1 , 4 , 1 , 1);
+    
+    package_tile = gtk_label_new(NULL);
+	SetLableFontType(package_tile,
+                    "black",
+                     12,
+                    _("package"),
+                     TRUE);
+    gtk_grid_attach(GTK_GRID(table) , package_tile , 0 , 5 , 1 , 1);
+    details->label_package = gtk_label_new(NULL);
+    gtk_grid_attach(GTK_GRID(table) , details->label_package , 1 , 5 , 1 , 1);
+    
     gtk_grid_set_row_spacing(GTK_GRID(table), 12);
     gtk_grid_set_column_spacing(GTK_GRID(table), 12);
     
@@ -441,6 +474,29 @@ void soft_app_info_set_pkgid (SoftAppInfo *info,
 	g_free (info->pkgid);
     info->pkgid = g_strdup (pkgid);
 }
+
+const char *soft_app_info_get_arch (SoftAppInfo *info)
+{
+	return info->arch; 
+}
+void soft_app_info_set_arch (SoftAppInfo *info,
+		                      const char  *arch)
+{
+	g_free (info->arch);
+    info->arch = g_strdup (arch);
+}
+
+const char *soft_app_info_get_package (SoftAppInfo *info)
+{
+	return info->package; 
+}
+void soft_app_info_set_package (SoftAppInfo *info,
+		                        const char  *package)
+{
+	g_free (info->package);
+    info->package = g_strdup (package);
+}
+
 GtkWidget *soft_app_details_get_button(SoftAppDetails *details)
 {
 	return details->button;
@@ -465,6 +521,8 @@ soft_app_info_finalize (GObject *object)
     g_free (info->source);
     g_free (info->size);
     g_free (info->pkgid);
+    g_free (info->arch);
+    g_free (info->package);
 }
 
 static void
