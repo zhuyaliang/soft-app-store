@@ -21,6 +21,7 @@
 #include "app-store-details.h"
 #include "app-store-pkgkit.h"
  
+#define   UNKNOWPNG               "mp.png"
 static void SetSoftIcon(SoftAppMessage *Message)
 {
     char *user,*fname,*dname;
@@ -521,7 +522,6 @@ soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
     g_autoptr(PkResults) results = NULL;
     g_autoptr(GError)    error = NULL;
     g_autoptr(PkError)   error_code = NULL;
-    guint idle_id;
 
     /* get the results */
     results = pk_task_generic_finish (task, res, &error);
@@ -540,16 +540,113 @@ soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
 
         return;
     }
-	/* idle add in the background */
-    //idle_id = g_idle_add ((GSourceFunc) gpk_application_perform_search_idle_cb, priv);
-    //g_source_set_name_by_id (idle_id, "[GpkApplication] search");
-
-    /* clear if success */
-    //pk_package_sack_clear (priv->package_sack);
-    //priv->action = GPK_ACTION_NONE;
-    //gpk_application_change_queue_status (priv);
 }
 
+static GPtrArray *GetSoftFiles(char *dname,GPtrArray **array)
+{
+    FILE  *s_fp = NULL;
+    char  *user,*fname;
+    char   ReadBuf[128] = { 0 };
+    int i = 0;
+    char *s;
+
+    user = g_get_user_name();
+    fname = g_strconcat("/",user,"/.soft-app-store/",dname,"/files",NULL);
+    s_fp = fopen(fname,"r");
+    if(s_fp == NULL)
+    {
+        return NULL;
+    }   
+    while((fgets(ReadBuf,128,s_fp)) != NULL)
+    {
+        g_ptr_array_add (*array,ReadBuf);
+        g_print("g_ptr_array_index = %s\r\n",g_ptr_array_index(*array,i));
+        i++;
+        g_free(s);
+    }   
+    fclose(s_fp);
+    g_free(fname);
+
+    return *array;
+}   
+static gboolean
+set_dialog_embed_file_list_widget (GtkDialog *dialog,GPtrArray *files)
+{
+    GtkWidget *scroll;
+    GtkWidget *widget;
+    GtkTextBuffer *buffer;
+    g_auto(GStrv) array = NULL;
+    g_autofree gchar *text = NULL;
+    
+    array = pk_ptr_array_to_strv(files);
+    text = g_strjoinv ("\n", array);
+    if (text[0] == '\0') {
+        g_free (text);
+        text = g_strdup (_("No files"));
+    }
+
+    /* create a text view to hold the store */
+    widget = gtk_text_view_new ();
+    gtk_text_view_set_editable (GTK_TEXT_VIEW (widget), FALSE);
+    gtk_text_view_set_left_margin (GTK_TEXT_VIEW (widget), 5);
+    gtk_text_view_set_right_margin (GTK_TEXT_VIEW (widget), 5);
+
+    /* scroll the treeview */
+    scroll = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
+                    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_container_add (GTK_CONTAINER (scroll), widget);
+    gtk_widget_show (scroll);
+
+    /* set in buffer */
+    buffer = gtk_text_buffer_new (NULL);
+    gtk_text_buffer_set_text (buffer, text, -1);
+    gtk_text_view_set_buffer (GTK_TEXT_VIEW (widget), buffer);
+    gtk_widget_show (widget);
+
+    /* add some spacing to conform to the GNOME HIG */
+    gtk_container_set_border_width (GTK_CONTAINER (scroll), 6);
+    gtk_widget_set_size_request (GTK_WIDGET (scroll), -1, 300);
+
+    /* add scrolled window */
+    widget = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
+    gtk_box_pack_start (GTK_BOX (widget), scroll, TRUE, TRUE, 0);
+
+    return TRUE;
+}
+
+static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
+{
+    char      *name;
+    GPtrArray *array;
+    GtkWidget *dialog;
+    g_autofree char *title = NULL;
+    int i;
+
+    array = g_ptr_array_new ();
+    name  = soft_app_info_get_name(app->details->info);
+    GetSoftFiles(name,&array);
+    
+    for (i = 0; i < array->len; i++)
+        g_print("index = %s\r\n",g_ptr_array_index(array,i));
+    /* TRANSLATORS: title: how many files are installed by the application */
+    title = g_strdup_printf ("%u files installed by %s",
+                              array->len,name);
+ 
+    dialog = gtk_message_dialog_new (GTK_WINDOW(app->MainWindow), 
+                                     GTK_DIALOG_DESTROY_WITH_PARENT,
+                                     GTK_MESSAGE_INFO, 
+                                     GTK_BUTTONS_OK, 
+                                     "%s", title);
+
+    set_dialog_embed_file_list_widget (GTK_DIALOG (dialog),array);
+    gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
+    gtk_window_set_default_size (GTK_WINDOW (dialog), 600, 250);
+ 
+    gtk_dialog_run (GTK_DIALOG (dialog));
+    gtk_widget_destroy (GTK_WIDGET (dialog));
+    
+}    
 static void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
 {
 	g_auto(GStrv) package_ids = NULL;
@@ -589,6 +686,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	const char  *package;
 	float        score;
 	GtkWidget   *remove_button;
+	GtkWidget   *files_button;
 	GtkWidget   *install_bar;
 	
     soft_app_container_remove_all (GTK_CONTAINER (app->StackDetailsBox));
@@ -614,7 +712,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_comment(info,summary);
 	soft_app_info_set_button(info,_("removed"));
 	soft_app_info_set_score(info,score);
-	soft_app_info_set_screenshot(info,"/tmp/time.png");
+	soft_app_info_set_screenshot(info,ICONDIR UNKNOWPNG);
 	soft_app_info_set_explain(info,explain);
 	soft_app_info_set_version(info,version);
 	soft_app_info_set_protocol(info,license);
@@ -623,6 +721,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_pkgid(info,pkgid);
 	soft_app_info_set_arch(info,arch);
 	soft_app_info_set_package(info,package);
+	soft_app_info_set_action(info,LOCALINSTALL);
 	
 	details = soft_app_details_new(info);
 	app->details = SOFT_APP_DETAILS(details);	
@@ -630,6 +729,11 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     g_signal_connect (remove_button, 
                      "clicked",
                       G_CALLBACK (RemoveLocalSoftApp), 
+					  app);
+	files_button = SOFT_APP_DETAILS(details)->files_button;
+    g_signal_connect (files_button, 
+                     "clicked",
+                      G_CALLBACK (ViewLocalSoftFiles), 
 					  app);
 					  
     gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);

@@ -28,12 +28,21 @@ soft_app_details_refresh (SoftAppDetails *details)
 {
 	GdkPixbuf *pixbuf;
 	float      level;
+    int        action;
 	const char *icon_name,*screenshot_name;
 
 	icon_name = soft_app_info_get_icon(details->info);
-	pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
-	soft_app_image_set_from_pixbuf(GTK_IMAGE(details->soft_image),pixbuf,65);
-    g_object_unref(pixbuf);
+    action = soft_app_info_get_action(details->info);
+	if(action == LOCALINSTALL)
+    {
+        gtk_image_set_from_icon_name(GTK_IMAGE(details->soft_image),icon_name,GTK_ICON_SIZE_DIALOG);
+    }
+    else
+    {    
+        pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
+	    soft_app_image_set_from_pixbuf(GTK_IMAGE(details->soft_image),pixbuf,65);
+        g_object_unref(pixbuf);
+    }    
 	SetLableFontType(details->label_name,
                     "black",
                      12,
@@ -59,7 +68,7 @@ soft_app_details_refresh (SoftAppDetails *details)
 	screenshot_name = soft_app_info_get_screenshot(details->info);
 	pixbuf = gdk_pixbuf_new_from_file(screenshot_name,NULL);
 
-    soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,500);
+    soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,400);
     g_object_unref(pixbuf);
     SetLableFontType(details->explain,
                     "black",
@@ -165,7 +174,7 @@ static void
 soft_app_details_init (SoftAppDetails *details)
 {
     GtkWidget *main_vbox;
-    GtkWidget *hbox1,*vbox1,*vbox2,*hbox2,*hbox3,*screenshot_box,*explain_box;
+    GtkWidget *hbox1,*vbox1,*vbox2,*hbox2,*hbox3,*hbox4,*screenshot_box,*explain_box;
     GtkWidget *table;
     GtkWidget *tile;
     GtkWidget *version_tile;
@@ -212,10 +221,20 @@ soft_app_details_init (SoftAppDetails *details)
     
     hbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(main_vbox),hbox3 ,FALSE,FALSE, 10);
+
+    hbox4 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL,12);
+    gtk_box_pack_start(GTK_BOX(hbox3),hbox4 ,TRUE,TRUE, 10);
+
     details->button = gtk_button_new();
-    gtk_widget_set_halign(details->button,GTK_ALIGN_START);
-    gtk_widget_set_valign(details->button,GTK_ALIGN_START);
-    gtk_box_pack_start(GTK_BOX(hbox3),details->button ,FALSE,FALSE, 10);
+    //gtk_widget_set_halign(details->button,GTK_ALIGN_END);
+    //gtk_widget_set_valign(details->button,GTK_ALIGN_END);
+    gtk_box_pack_start(GTK_BOX(hbox4),details->button ,TRUE,TRUE, 10);
+    
+    details->files_button = gtk_button_new_with_label(_("file list"));
+    //gtk_widget_set_halign(details->files_button,GTK_ALIGN_START);
+    //gtk_widget_set_valign(details->files_button,GTK_ALIGN_START);
+    gtk_box_pack_start(GTK_BOX(hbox4),details->files_button ,TRUE,TRUE, 10);
+
 	details->progressbar = gtk_progress_bar_new();
     gtk_box_pack_start(GTK_BOX(hbox3),details->progressbar ,FALSE,FALSE, 10);
 	details->label_progress = gtk_label_new(NULL);
@@ -495,6 +514,16 @@ void soft_app_info_set_package (SoftAppInfo *info,
 {
 	g_free (info->package);
     info->package = g_strdup (package);
+}
+
+int  soft_app_info_get_action (SoftAppInfo *info)
+{
+	return info->action; 
+}
+void soft_app_info_set_action (SoftAppInfo *info,
+		                       int          action)
+{
+    info->action = action;
 }
 
 GtkWidget *soft_app_details_get_button(SoftAppDetails *details)

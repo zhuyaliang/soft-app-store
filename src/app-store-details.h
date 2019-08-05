@@ -29,6 +29,8 @@ G_BEGIN_DECLS
 #define SOFT_APP_INFO(object)                (G_TYPE_CHECK_INSTANCE_CAST ((object),\
                                               SOFT_APP_TYPE_INFO,\
                                               SoftAppInfo))
+#define LOCALINSTALL  0
+#define STOREAPPSOFT  1
 
 typedef struct SoftAppInfo
 {
@@ -47,6 +49,7 @@ typedef struct SoftAppInfo
 	char        *pkgid;
 	char        *arch;
 	char        *package;
+	int          action;
 }SoftAppInfo;
 
 typedef struct SoftAppInfoClass
@@ -68,6 +71,7 @@ typedef struct SoftAppDetails
 	GtkWidget   *stars4;
 	GtkWidget   *stars5;
 	GtkWidget   *button;
+	GtkWidget   *files_button;
 	GtkWidget   *progressbar;
 	GtkWidget   *label_progress;
 	GtkWidget   *screenshot;
@@ -172,6 +176,11 @@ const char       *soft_app_info_get_package         (SoftAppInfo *info);
 
 void              soft_app_info_set_package         (SoftAppInfo *info,
 		                                             const char  *package);
+
+int               soft_app_info_get_action          (SoftAppInfo *info);
+
+void              soft_app_info_set_action          (SoftAppInfo *info,
+		                                             int          action);
 
 void CreateRecommendDetails(gpointer app,gpointer      data);
 G_END_DECLS
