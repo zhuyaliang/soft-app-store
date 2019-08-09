@@ -42,6 +42,7 @@ typedef struct SoftAppPkgkit
 	SoftAppMessage   parent_instance;
     
 	GHashTable      *repos;
+	GHashTable      *phash;
     PkBitfield       filters_current;
     PkBitfield       groups;
     PkBitfield       roles;
@@ -53,7 +54,7 @@ typedef struct SoftAppPkgkit
 	PkTask          *task;
     GPtrArray       *list;
     gint             retval;
-    guint            listlen;
+    guint            phashlen;
 
 }SoftAppPkgkit;
 

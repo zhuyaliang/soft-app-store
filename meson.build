@@ -88,6 +88,7 @@ add_global_link_arguments(
 # Dependencies
 gtk_req_version = '>= 3.0.0'
 packagekit_rep_version = '>=1.0.3'
+appstream_deps = dependency('appstream-glib')
 gtk_deps = dependency('gtk+-3.0', version: gtk_req_version)
 pkgkit_deps = dependency('packagekit-glib2',version: packagekit_rep_version)
 # Configure data
@@ -104,6 +105,8 @@ conf.set_quoted('SYSCONFDIR', join_paths(get_option('prefix'), get_option('sysco
 conf.set_quoted('LOCALSTATEDIR', join_paths(get_option('prefix'), get_option('localstatedir')))
 conf.set_quoted('LIBEXECDIR', join_paths(get_option('prefix'), get_option('libexecdir')))
 conf.set_quoted('ICONDIR', join_paths(get_option('prefix'), get_option('datadir'), meson.project_name(), 'icon/'))
+conf.set_quoted('APPDATA', join_paths(get_option('prefix'), get_option('datadir'), 'appdata/'))
+conf.set_quoted('METAINFO', join_paths(get_option('prefix'), get_option('datadir'), 'metainfo/'))
 configure_file(
   output : 'config.h',
   configuration : conf

@@ -151,7 +151,7 @@ GetLocalSoftAppDetails (PkClient       *client,
 	soft_app_message_set_package(Message,package);
 	soft_app_message_set_summary(Message,summary);
     g_print("count get details %u num len = %u\r\n",soft_sum,pkg->list->len);
-    if(++soft_sum >=pkg->listlen)
+    if(++soft_sum >=pkg->phashlen)
     {
         emit_details_complete(pkg);
         soft_sum = 0;
@@ -179,10 +179,10 @@ GetLocalDetailsProgress(PkProgress    *progress,
     {
         if (status == PK_STATUS_ENUM_FINISHED)
         {    
-            if(++soft_sum <= pkg->listlen)
+            if(++soft_sum <= pkg->phashlen)
             {
-				gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),
-						                      (gfloat) soft_sum /pkg->listlen);
+                gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),
+						                      (gfloat) soft_sum /pkg->phashlen);
 				gtk_progress_bar_set_text(GTK_PROGRESS_BAR(app->LocalSoftBar),NULL);
             }
 			else 
@@ -317,28 +317,12 @@ GetLocalSoftFilesFinished (PkClient       *client,
     close(fd);
 }   
 static void
-pk_console_package_cb (PkPackage *package, SoftAppStore *app)
+soft_app_get_package_details (char *package_id, SoftAppStore *app)
 {
-    PkInfoEnum      info;
-    const gchar    *package_id;
     g_auto(GStrv)   package_ids = NULL;
     
     SoftAppPkgkit *pkg = app->pkg;
-    /* ignore finished */
-    info = pk_package_get_info (package);
-    if (info == PK_INFO_ENUM_FINISHED)
-        return;
 
-    /* split */
-    package_id = pk_package_get_id (package);
-/*
-    soft_app_local_soft_detalis (Message,
-		                         PK_CLIENT(pkg->task),
-			                     package_ids,
-								 pkg->cancellable,
-                                 (GAsyncReadyCallback) GetLocalSoftAppDetails,
-                                 pkg);
-*/
     package_ids = pk_package_ids_from_id (package_id);
     pk_client_get_details_async (PK_CLIENT(pkg->task), 
                                  package_ids, 
@@ -356,79 +340,6 @@ pk_console_package_cb (PkPackage *package, SoftAppStore *app)
                                app);
 }
 
-static void
-pk_console_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
-{
-    const gchar   *filename;
-    GPtrArray     *array;
-    PkPackageSack *sack;
-    PkRoleEnum     role;
-    g_autoptr(GError)    error = NULL;
-    g_autoptr(PkError)   error_code = NULL;
-    g_autoptr(PkResults) results = NULL;
-    SoftAppStore *app = (SoftAppStore *)data;
-
-    SoftAppPkgkit *pkg = app->pkg;
-    results = pk_task_generic_finish (PK_TASK (pkg->task), res, &error);
-    if (results == NULL) 
-    {
-        SoftAppStoreLog ("Error","%s: %s", _("Fatal error"), error->message);
-        goto out;
-    }
-    g_object_get (G_OBJECT(results), "role", &role, NULL);
-    error_code = pk_results_get_error_code (results);
-    if (error_code != NULL) 
-    {
-        if (role == PK_ROLE_ENUM_UPDATE_PACKAGES &&
-            pk_error_get_code (error_code) == PK_ERROR_ENUM_NO_PACKAGES_TO_UPDATE) 
-        {
-            SoftAppStoreLog ("Warning","%s", _("There are no packages to update."));
-        } 
-        else 
-        {
-			SoftAppStoreLog ("Warning","%s: %s, %s", _("The transaction failed"), 
-					          pk_error_enum_to_string (pk_error_get_code (error_code)), 
-					          pk_error_get_details (error_code));
-        }
-        if (pk_error_get_code (error_code) == PK_ERROR_ENUM_NO_PACKAGES_TO_UPDATE)
-            goto out;
-    }
-
-    /* get the sack */
-    sack = pk_results_get_package_sack (results);
-    pk_package_sack_sort (sack, PK_PACKAGE_SACK_SORT_TYPE_NAME);
-    array = pk_package_sack_get_array (sack);
-
-    /* package */
-    pkg->listlen = array->len;
-    g_print("array->len = %u\r\n",array->len);
-    filename = g_object_get_data (G_OBJECT (pkg->task), "PkConsole:list-create-filename");
-    if ((role != PK_ROLE_ENUM_INSTALL_PACKAGES &&
-         role != PK_ROLE_ENUM_UPDATE_PACKAGES &&
-         role != PK_ROLE_ENUM_REMOVE_PACKAGES &&
-         filename == NULL)) {
-        g_ptr_array_foreach (array, (GFunc) pk_console_package_cb, app);
-    }
-
-    if (array->len == 0 &&
-        (role == PK_ROLE_ENUM_GET_UPDATES ||
-         role == PK_ROLE_ENUM_UPDATE_PACKAGES)) {
-         SoftAppStoreLog ("Error","%s\n", _("There are no updates available at this time."));
-         pkg->retval = FALSE;
-    }
-    
-    g_ptr_array_unref (array);
-    g_object_unref (sack);
-/*
-    array = pk_results_get_require_restart_array (results);
-    g_ptr_array_foreach (array, (GFunc) pk_console_require_restart_cb, ctx);
-    g_ptr_array_unref (array);
-*/
-
-out:
-	g_print("error !!!!!!\r\n");
-}
-
 static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
                                           SoftAppStore  *app)
 {
@@ -437,49 +348,119 @@ static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
 	//g_print("get_local_soft_details_ready \r\n");
 }
 
-static void pk_console_progress_cb (PkProgress     *progress, 
-		                            PkProgressType type, 
-									gpointer       app)
+static gchar *
+soft_app_file_get_packageid (SoftAppPkgkit *pkg, const gchar *file_name)
 {
-    PkStatusEnum status;
-    gint percentage;
-    gboolean allow_cancel;
+    gchar *package_id = NULL;
+    PkPackage *package;
+    g_autoptr(GPtrArray) array = NULL;
+    g_autoptr(PkError) error_code = NULL;
+    g_autoptr(PkResults) results = NULL;
+    g_auto(GStrv) tmp = NULL;
 
-    g_object_get (progress,
-                 "status", &status,
-                 "percentage", &percentage,
-                 "allow-cancel", &allow_cancel,
+    tmp = g_strsplit (file_name, ",", -1);
+    results = pk_client_search_files (PK_CLIENT (pkg->task),
+                                 16777284,
+                                 tmp,
+                                 pkg->cancellable,
+                                 NULL, 
+                                 NULL,
+                                 NULL);
+    if (results == NULL)
+        return NULL;
+
+    /* check error code */
+    error_code = pk_results_get_error_code (results);
+    if (error_code != NULL) {
+        return NULL;
+    }
+
+    /* nothing found */
+    array = pk_results_get_package_array (results);
+    if (array->len == 0) {
+        return NULL;
+    }
+
+    package = g_ptr_array_index (array, 0);
+    g_object_get (package,
+                 "package-id", &package_id,
                   NULL);
-
-    if (type == PK_PROGRESS_TYPE_STATUS)
-    {
-        if (status == PK_STATUS_ENUM_FINISHED)
-        {    
-			g_print("finished !!!!\r\n");
-		}
-    } 
-    else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
-    {
-        if (percentage > 0) 
-        {
-            g_print("percentage = %.2f\r\n",(float) percentage / 100.0f);
-		}
-	}	
+    return g_strdup (pk_package_get_id (package));
 }
+
+static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
+{
+    const gchar *fn;
+    g_autoptr(GError) error = NULL;
+    g_autoptr(GDir)   dir;
+    g_autoptr(GFile)  parent;
+    char        *package_id;
+
+    dir = g_dir_open (path, 0, &error);
+    parent = g_file_new_for_path (path);
+
+    if (!g_file_query_exists (parent, NULL))
+        return TRUE;
+    if (dir == NULL)
+        return FALSE;
+    while ((fn = g_dir_read_name (dir)) != NULL) 
+    {
+        if (g_str_has_suffix (fn, ".appdata.xml") ||
+            g_str_has_suffix (fn, ".metainfo.xml")) 
+        {
+            g_autofree gchar *filename = g_build_filename (path, fn, NULL);
+            package_id = soft_app_file_get_packageid (app->pkg,filename);
+            if(package_id == NULL)
+                continue;
+            g_hash_table_insert(app->pkg->phash,package_id,g_strdup(filename));
+        }
+    }
+    return TRUE;
+}   
+static void list_hash_table(gpointer key,gpointer value,gpointer data)
+{
+    SoftAppStore *app = (SoftAppStore *)data;
+
+    soft_app_get_package_details ((char *)key,app);
+}    
+static gpointer ParseLocalSoft (SoftAppStore *app)
+{
+    g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
+
+    g_ptr_array_add (parent_appdata,
+                     g_build_filename ("/usr/share", "appdata", NULL));
+    g_ptr_array_add (parent_appdata,
+                     g_build_filename ("/usr/share", "metainfo", NULL));
+
+    
+    for (guint i = 0; i < parent_appdata->len; i++) 
+    {
+        const gchar *fn = g_ptr_array_index (parent_appdata, i);
+
+        soft_app_load_appdata (app,fn);
+    }
+    app->pkg->phashlen = g_hash_table_size(app->pkg->phash);
+    g_hash_table_foreach(app->pkg->phash,list_hash_table,app);
+    return NULL;
+}    
 static void GetLocalSoftMessage(SoftAppStore *app)
 {
 	app->pkg = g_new0 (SoftAppPkgkit, 1);
 	app->pkg = soft_app_pkgkit_new();
 	app->pkg->list = g_ptr_array_new ();
+    app->pkg->phash = g_hash_table_new (g_str_hash, g_str_equal); 
 	g_signal_connect (app->pkg,
                      "details-ready",
                       G_CALLBACK (get_local_soft_details_ready),
                       app);
+    g_thread_new("GetLocalSoft",(GThreadFunc)ParseLocalSoft,app);
+   /*            
     pk_task_get_packages_async (app->pkg->task,
                                 16777284,
                                 app->pkg->cancellable,
                                 pk_console_progress_cb, app,
                                 pk_console_finished_cb, app);
+   */                             
 }
 static void soft_app_remove_progress_cb (PkProgress     *progress, 
 		                                 PkProgressType  type, 
@@ -542,15 +523,32 @@ soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
         return;
     }
 }
+static char *GetLocalFiles(const char *dname)
+{
+    FILE *fp = NULL;
+    char *home,*fname,*files = NULL;
+    int   flen;
 
-static void GetSoftFiles(const char *dname,GtkDialog *dialog)
+    home = getenv("HOME");
+    fname = g_strconcat(home,"/.soft-app-store/",dname,"/files",NULL);
+    
+    fp = fopen(fname,"r");
+    fseek(fp,0L,SEEK_END);
+    flen = ftell(fp);
+    files = (char *)malloc(flen);
+    fseek(fp,0L,SEEK_SET);
+    fread(files,flen,1,fp);
+    
+    fclose(fp);
+    g_free(fname);
+    return files;
+}    
+static void SetDialogTextView(const char *dname,GtkDialog *dialog)
 {
     GtkWidget     *scroll;
     GtkWidget     *widget;
     GtkTextBuffer *buffer;
-    FILE          *s_fp = NULL;
-    char          *home,*fname,*files;
-    char   ReadBuf[128] = { 0 };
+    char          *files;
     
 	/* create a text view to hold the store */
     widget = gtk_text_view_new ();
@@ -566,15 +564,8 @@ static void GetSoftFiles(const char *dname,GtkDialog *dialog)
     gtk_widget_show (scroll);
 
 	buffer = gtk_text_buffer_new (NULL);
-    home = getenv("HOME");
-    fname = g_strconcat(home,"/.soft-app-store/",dname,"/files",NULL);
-    s_fp = fopen(fname,"r");
-    while((fgets(ReadBuf,128,s_fp)) != NULL)
-    {
-		files = g_strconcat(files,ReadBuf,NULL);
-		/* set in buffer */
-    }   
-	gtk_text_buffer_set_text (buffer,files , -1);
+    files = GetLocalFiles(dname);
+    gtk_text_buffer_set_text (buffer, files, -1);
 	gtk_text_view_set_buffer (GTK_TEXT_VIEW (widget), buffer);
 	gtk_widget_show (widget);
     /* add some spacing to conform to the GNOME HIG */
@@ -585,10 +576,7 @@ static void GetSoftFiles(const char *dname,GtkDialog *dialog)
     widget = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
     gtk_box_pack_start (GTK_BOX (widget), scroll, TRUE, TRUE, 0);
 
-    fclose(s_fp);
-    g_free(fname);
-    g_free(files);
-	
+    free(files);
 }   
 
 static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
@@ -603,7 +591,7 @@ static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
                                      GTK_BUTTONS_OK, 
                                      "%s", name);
 
-    GetSoftFiles(name,GTK_DIALOG (dialog));
+    SetDialogTextView(name,GTK_DIALOG (dialog));
     gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
     gtk_window_set_default_size (GTK_WINDOW (dialog), 600, 250);
     gtk_dialog_run (GTK_DIALOG (dialog));
@@ -618,6 +606,7 @@ static void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
 	gtk_widget_hide(button);
 	gtk_widget_show(app->details->progressbar);
 	package_id = soft_app_info_get_pkgid(app->details->info);
+    g_print("package_id = %s\r\n",package_id);
     package_ids = pk_package_ids_from_id (package_id);
     /* remove */
     pk_task_remove_packages_async (app->pkg->task, 

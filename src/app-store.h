@@ -25,8 +25,9 @@
 #include <gtk/gtk.h>
 #include <libintl.h>   
 #include <locale.h>   
-#include <app-store-pkgkit.h>
-#include <app-store-details.h>
+#include "app-store-pkgkit.h"
+#include "app-store-details.h"
+#include <appstream-glib.h>
 
 #define _(STRING)  gettext(STRING)   
 
@@ -49,6 +50,7 @@ typedef struct
 	GtkWidget        *sw;
     SoftAppPkgkit    *pkg;
 	SoftAppDetails   *details;
+    AsApp            *asapp;
 	gint              index;
 	uint              per;
 	int               page;
