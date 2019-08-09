@@ -21,6 +21,7 @@
 #define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
 #include <packagekit-glib2/packagekit.h>
 #include <gtk/gtk.h>
+#include <appstream-glib.h>
 
 G_BEGIN_DECLS
 #define SOFT_APP_TYPE_MESSAGE            (soft_app_message_get_type ())
@@ -42,12 +43,10 @@ G_BEGIN_DECLS
 
 typedef struct SoftAppMessage
 {
-    GObject      parent_instance;
+    AsApp        parent_instance;
     
-    char        *soft_name;
     char        *icon_name;
     float        soft_score;
-	char        *soft_describe;
     char        *soft_arch;
     char        *soft_version;
     char        *soft_url;
@@ -57,12 +56,11 @@ typedef struct SoftAppMessage
 	char        *soft_size;
 	char        *soft_ids;
 	char       **soft_files;
-	char        *soft_summary;
 }SoftAppMessage;
 
 typedef struct SoftAppMessageClass
 {
-    GObjectClass parent_instance_class;
+    AsAppClass parent_instance_class;
 	void        (*get_local_soft_detalis)   (SoftAppMessage *m,
 			                                 PkClient       *client,
 			                                 const char    **package_ids,
@@ -103,11 +101,6 @@ SoftAppMessage   *soft_app_message_new                 (void);
 
 GtkWidget        *soft_app_row_new                     (SoftAppMessage *Message);
 
-const gchar      *soft_app_message_get_name            (SoftAppMessage *Message);
-
-void              soft_app_message_set_name            (SoftAppMessage *Message,
-                                                        const gchar    *name);
-
 const gchar      *soft_app_message_get_icon            (SoftAppMessage *Message);
 
 void              soft_app_message_set_icon            (SoftAppMessage *Message,
@@ -117,11 +110,6 @@ float             soft_app_message_get_score           (SoftAppMessage *Message)
 
 void              soft_app_message_set_score           (SoftAppMessage *Message,
                                                         float           soft_score);
-
-const gchar      *soft_app_message_get_describe        (SoftAppMessage *Message);
-
-void              soft_app_message_set_describe        (SoftAppMessage *Message,
-                                                        const gchar    *soft_describe);
 
 const gchar      *soft_app_message_get_size            (SoftAppMessage *Message);
 
@@ -163,11 +151,6 @@ char            **soft_app_message_get_files           (SoftAppMessage *Message)
 
 void              soft_app_message_set_files           (SoftAppMessage *Message,
                                                         gchar         **files);
-
-const char       *soft_app_message_get_summary         (SoftAppMessage *Message);
-
-void              soft_app_message_set_summary         (SoftAppMessage *Message,
-                                                        const char     *summary);
 
 void              soft_app_local_soft_detalis          (SoftAppMessage *Message,
 		                                                PkClient       *client,

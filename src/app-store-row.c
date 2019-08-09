@@ -20,7 +20,7 @@
 #include "app-store-thumbnail.h"
 
 G_DEFINE_TYPE (SoftAppRow,     soft_app_row,     GTK_TYPE_LIST_BOX_ROW)
-G_DEFINE_TYPE (SoftAppMessage, soft_app_message, G_TYPE_OBJECT)
+G_DEFINE_TYPE (SoftAppMessage, soft_app_message, AS_TYPE_APP)
 
 static void
 soft_app_row_refresh (SoftAppRow *row)
@@ -34,7 +34,7 @@ soft_app_row_refresh (SoftAppRow *row)
 	SetLableFontType(row->label_name,
                     "black",
                      10,
-                     soft_app_message_get_name (row->Message),
+                     as_app_get_name(AS_APP(row->Message),NULL),
                      TRUE);
 	
 	level = soft_app_message_get_score(row->Message);
@@ -48,7 +48,7 @@ soft_app_row_refresh (SoftAppRow *row)
 	SetLableFontType(row->label_describe,
                     "black",
                      10,
-                     soft_app_message_get_describe (row->Message),
+                     as_app_get_comment (AS_APP(row->Message),NULL),
                      FALSE);
 	
 	gtk_button_set_label(GTK_BUTTON(row->button),_("uninstall"));
@@ -185,34 +185,6 @@ soft_app_message_set_size (SoftAppMessage  *Message,
 }  
 
 const gchar *
-soft_app_message_get_describe (SoftAppMessage *Message)
-{
-    return Message->soft_describe;
-}
-
-void
-soft_app_message_set_describe (SoftAppMessage  *Message, 
-                               const gchar     *soft_describe)
-{
-    g_free (Message->soft_describe);
-    Message->soft_describe = g_strdup (soft_describe);
-}  
-
-const gchar *
-soft_app_message_get_name (SoftAppMessage *Message)
-{
-    return Message->soft_name;
-}
-
-void
-soft_app_message_set_name (SoftAppMessage  *Message, 
-                           const gchar     *name)
-{
-    g_free (Message->soft_name);
-    Message->soft_name = g_strdup (name);
-}  
-
-const gchar *
 soft_app_message_get_version (SoftAppMessage *Message)
 {
     return Message->soft_version;
@@ -321,20 +293,6 @@ soft_app_message_set_files (SoftAppMessage  *Message,
     g_strfreev (Message->soft_files);
     Message->soft_files = g_strdupv (files);
 }    
-
-const gchar *
-soft_app_message_get_summary (SoftAppMessage *Message)
-{
-    return Message->soft_summary;
-}
-
-void
-soft_app_message_set_summary (SoftAppMessage  *Message, 
-                              const gchar     *summary)
-{
-    g_free (Message->soft_summary);
-    Message->soft_summary = g_strdup (summary);
-}  
 void soft_app_local_soft_detalis   (SoftAppMessage *Message,
 		                            PkClient     *client,
 			                        const char  **package_ids,
@@ -365,9 +323,7 @@ soft_app_message_finalize (GObject *object)
 {
     SoftAppMessage *Message = SOFT_APP_MESSAGE (object);
 
-    g_free (Message->soft_name);
     g_free (Message->icon_name);
-    g_free (Message->soft_describe);
     g_free (Message->soft_size);
     g_free (Message->soft_url);
     g_free (Message->soft_version);
@@ -375,7 +331,6 @@ soft_app_message_finalize (GObject *object)
     g_free (Message->soft_package);
     g_free (Message->soft_ids);
     g_free (Message->soft_license);
-    g_free (Message->soft_summary);
     g_strfreev (Message->soft_files);
 }
 
