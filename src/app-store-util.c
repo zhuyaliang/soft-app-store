@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#define __USE_SOURCE
+#include <time.h> 
 #include "app-store-util.h"
 
 #define  GSM_GSETTINGS_SCHEMA "org.mate.interface"
@@ -293,7 +295,7 @@ void CreateCacheDir (const char *dirname)
     {
         mkdir(dname,0755);
     }    
-    
+	    
     g_free(dname);
 }
 
@@ -323,3 +325,51 @@ int OpenCacheFile(const char *dirname,const char *cname)
 	g_free(fname);
 	return fd;
 }		
+gboolean CacheFileIsEmpty (GFile *file)
+{
+    g_autoptr(GFileInfo) info = NULL;
+
+	info = g_file_query_info (file,
+                              G_FILE_ATTRIBUTE_STANDARD_SIZE,
+                              G_FILE_QUERY_INFO_NONE,
+                              NULL,
+                              NULL);
+	if (info == NULL)
+		return FALSE;
+
+	if(g_file_info_get_size(info) <= 0)
+		return FALSE;
+
+	return TRUE;
+}
+
+gboolean CacheFileExpiration (GFile *file)
+{
+	GTimeVal time_val;
+    g_autoptr(GDateTime) date_time = NULL;
+    g_autoptr(GFileInfo) info = NULL;
+    g_autofree gchar *mod_date = NULL;
+    int    t_stamp;
+    time_t ct;
+	
+    t_stamp = time(&ct);
+	info = g_file_query_info (file,
+                              G_FILE_ATTRIBUTE_TIME_MODIFIED,
+                              G_FILE_QUERY_INFO_NONE,
+                              NULL,
+                              NULL);
+	if (info == NULL)
+		return FALSE;
+
+	g_file_info_get_modification_time (info, &time_val);
+	date_time = g_date_time_new_from_timeval_local (&time_val);
+	mod_date = g_date_time_format (date_time, "%Y%m%d%H%M%S");
+	struct tm* tmp_time = (struct tm*)malloc(sizeof(struct tm));
+	strptime(mod_date,"%Y%m%d%H%M%S",tmp_time); 
+	time_t t = mktime(tmp_time);  
+	free(tmp_time);
+	if(t_stamp - t >= 60000)
+		return FALSE;
+	
+	return TRUE;
+}

@@ -125,6 +125,8 @@ soft_app_pkgkit_init (SoftAppPkgkit *pkg)
     pkg->repos        = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	pkg->task         = pk_task_new ();
 	pkg->action       = GPK_ACTION_NONE;	
+	pkg->cache_cnt    = 0;	
+	pkg->metadata_cnt = 0;	
     pk_client_get_repo_list_async (PK_CLIENT (pkg->task),
                                    pk_bitfield_value (PK_FILTER_ENUM_NONE),
                                    pkg->cancellable,

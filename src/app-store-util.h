@@ -69,4 +69,8 @@ char       *CreateCacheFile                (const char *dirname,
 
 int         OpenCacheFile                  (const char *dirname,
 		                                    const char *cname);
+
+gboolean    CacheFileIsEmpty               (GFile      *file);
+
+gboolean    CacheFileExpiration            (GFile      *file);
 #endif

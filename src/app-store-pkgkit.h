@@ -54,6 +54,8 @@ typedef struct SoftAppPkgkit
 	PkTask          *task;
     GPtrArray       *list;
     gint             retval;
+    gint             cache_cnt;
+    gint             metadata_cnt;
     guint            phashlen;
 
 }SoftAppPkgkit;

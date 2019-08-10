@@ -20,7 +20,7 @@
 #include "app-store-row.h"
 #include "app-store-details.h"
 #include "app-store-pkgkit.h"
- 
+
 #define   UNKNOWPNG               "mp.png"
 
 static char *GetMetadataFileName(char *path)
@@ -45,7 +45,6 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
-		g_print("name = %s\r\n",soft_app_message_get_cache(Message));
 	}
 	gtk_widget_show_all(app->MainWindow);
 	gtk_widget_hide(app->LocalSoftBar);
@@ -87,63 +86,50 @@ GetLocalSoftAppDetails (PkClient       *client,
     g_autofree gchar *package = NULL;
     g_autofree gchar *url = NULL;
     g_autofree gchar *s_size = NULL;
-    PkGroupEnum       group;
     g_auto(GStrv)     split = NULL;
 	SoftAppMessage   *Message;
     g_autofree gchar *cache_file = NULL;
-    static uint soft_sum = 0;
+    uint              soft_sum = 0;
 	GKeyFile         *kconfig;
 
     results = pk_client_generic_finish (client, res, &error);
     if (results == NULL) 
     {
-        SoftAppStoreLog("Error","failed to get list of categories: %s", error->message);
+        SoftAppStoreLog("Warning","get package details faild: %s", error->message);
         return;
     }
     error_code = pk_results_get_error_code (results);
     if (error_code != NULL) 
     {
-        SoftAppStoreLog("Error","failed to get details: %s, %s", 
+        SoftAppStoreLog("Warning","failed to get details: %s, %s", 
                          pk_error_enum_to_string (pk_error_get_code (error_code)), 
                          pk_error_get_details (error_code));
- 
-        if (pk_error_get_code (error_code) != PK_ERROR_ENUM_TRANSACTION_CANCELLED) 
-        {
-            //MessageReport(pk_error_get_code (error_code));
-        }
         return;
     }
    
     array = pk_results_get_details_array (results);
     if (array->len != 1) 
     {
-        SoftAppStoreLog("Debug","not one entry %u", array->len);
+        SoftAppStoreLog("Warning","get package details not one entry %u", array->len);
         return;
     }
     item = g_ptr_array_index (array, 0);
     g_object_get (item,
-                 "package-id", &package_id,
-                 "url", &url,
-                 "group", &group,
-                 "license", &license,
-                 "size", &size,
+                 "package-id",&package_id,
+                 "url",       &url,
+                 "license",   &license,
+                 "size",      &size,
                   NULL);
-    s_size = g_strdup_printf ("%.2f",(float)size/(1024*1024));
-    package = pk_package_id_to_printable (package_id);
     split = pk_package_id_split (package_id);
-    if (split == NULL)
-    {    
-        return;
-    }
 	
+	/*get metadata file path eg /usr/share/metainfo/yelp.appdata.xml */
 	xml = g_hash_table_lookup(pkg->phash,package_id);
-	if(xml == NULL)
-	{
-		return;
-	}
+	/*get metadata file name eg yelp.appdata.xml */
 	dname = GetMetadataFileName(xml);
+	/*get cache data path eg /home/user/.soft-app-store/yelp.appdata.xml/soft_msg */
 	cache_file = CreateCacheFile(dname,"soft_msg");
-    kconfig = g_key_file_new();
+    
+	kconfig = g_key_file_new();
 	Message = soft_app_message_new ();
 
 	soft_app_message_set_cache (Message,dname);
@@ -151,6 +137,7 @@ GetLocalSoftAppDetails (PkClient       *client,
                       xml,
                       AS_APP_PARSE_FLAG_USE_HEURISTICS,
                       NULL);
+
 	icon = GetCacheFileIcon(dname);
 	if(icon == NULL)
 	{
@@ -183,6 +170,7 @@ GetLocalSoftAppDetails (PkClient       *client,
 						 "score",
 						  0.5);
 
+    s_size = g_strdup_printf ("%.2f",(float)size/(1024*1024));
 	soft_app_message_set_size(Message,s_size);
 	g_key_file_set_string(kconfig,
 			             "soft-app-store",
@@ -201,15 +189,23 @@ GetLocalSoftAppDetails (PkClient       *client,
 						 "license",
 						  license);
 
+    package = pk_package_id_to_printable (package_id);
 	soft_app_message_set_package(Message,package);
 	g_key_file_set_string(kconfig,
 			             "soft-app-store",
 						 "package",
 						  package);
+	
 	g_key_file_save_to_file(kconfig,cache_file,NULL);
+	SoftAppStoreLog ("Debug","wriet cache %s Successfu",cache_file);
 	g_key_file_free(kconfig);
-    if(++soft_sum >=pkg->phashlen)
+
+	pkg->cache_cnt +=1;
+	soft_sum = pkg->metadata_cnt + pkg->cache_cnt;
+
+    if(soft_sum >= pkg->phashlen)
     {
+		SoftAppStoreLog ("Debug","not caceh emmit signal package count %u",pkg->metadata_cnt);
         emit_details_complete(pkg);
         soft_sum = 0;
     }
@@ -224,9 +220,11 @@ GetLocalDetailsProgress(PkProgress    *progress,
     PkStatusEnum status;
     gint percentage;
     gboolean allow_cancel;
-    static uint soft_sum = 0;
+    uint soft_sum;
+
     SoftAppPkgkit *pkg = app->pkg;
 
+	soft_sum = pkg->metadata_cnt + pkg->cache_cnt;
     g_object_get (progress,
                  "status", &status,
                  "percentage", &percentage,
@@ -237,7 +235,7 @@ GetLocalDetailsProgress(PkProgress    *progress,
     {
         if (status == PK_STATUS_ENUM_FINISHED)
         {    
-            if(++soft_sum <= pkg->phashlen)
+            if(soft_sum <= pkg->phashlen)
             {
                 gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),
 						                      (gfloat) soft_sum /pkg->phashlen);
@@ -377,7 +375,7 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
     g_auto(GStrv)     split = NULL;
 	SoftAppMessage   *Message;
     g_autofree gchar *cache_file = NULL;
-    static uint soft_sum = 0;
+    uint              soft_sum = 0;
 	GKeyFile         *kconfig;
 
     split = pk_package_id_split (package_id);
@@ -419,24 +417,28 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
 	package = g_key_file_get_string(kconfig,"soft-app-store","package",NULL);
 	soft_app_message_set_package(Message,package);
 	g_key_file_free(kconfig);
-    if(++soft_sum >= app->pkg->phashlen)
+
+	soft_sum = app->pkg->cache_cnt + app->pkg->metadata_cnt;
+    if(soft_sum >= app->pkg->phashlen)
     {
+		SoftAppStoreLog ("Debug","use caceh emmit signal package count %u",app->pkg->cache_cnt);
         emit_details_complete(app->pkg);
         soft_sum = 0;
     }
     g_ptr_array_add (app->pkg->list, Message);
 }
 static void
-soft_app_get_package_details (char *package_id, char *path,SoftAppStore *app)
+soft_app_get_package_details (char         *package_id, 
+		                      char         *dname,
+							  SoftAppStore *app)
 {
     g_auto(GStrv)   package_ids = NULL;
-	g_autofree gchar *dname = NULL;
     
 	SoftAppPkgkit *pkg = app->pkg;
-	dname = GetMetadataFileName(path);
+
 	/* Create Cache dir eg /home/user/.soft-app-store/mate-desktop.metainfo.xml */
 	CreateCacheDir(dname);
-	
+	SoftAppStoreLog ("Debug","Cache Directory %s Creation Successfu",dname);	
 	/*Get detailed information about the software*/
     package_ids = pk_package_ids_from_id (package_id);
     pk_client_get_details_async (PK_CLIENT(pkg->task), 
@@ -458,9 +460,8 @@ soft_app_get_package_details (char *package_id, char *path,SoftAppStore *app)
 static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
                                           SoftAppStore  *app)
 {
-    g_print("list len = %u\r\n",app->pkg->list->len);
+	SoftAppStoreLog ("Debug","get_local_soft_details_ready all package count %u",app->pkg->list->len);
     UpdateLocalInstallPage(app);
-	//g_print("get_local_soft_details_ready \r\n");
 }
 
 static gchar *
@@ -483,16 +484,16 @@ soft_app_file_get_packageid (SoftAppPkgkit *pkg, const gchar *file_name)
                                  NULL);
     if (results == NULL)
         return NULL;
-
     /* check error code */
     error_code = pk_results_get_error_code (results);
-    if (error_code != NULL) {
+    if (error_code != NULL) 
+	{
         return NULL;
     }
-
     /* nothing found */
     array = pk_results_get_package_array (results);
-    if (array->len == 0) {
+    if (array->len == 0) 
+	{
         return NULL;
     }
 
@@ -520,36 +521,18 @@ static gboolean HavingCache(const char *dname)
 {
     const char       *home; 
 	g_autofree gchar *cache_file = NULL;
-	GTimeVal time_val;
-    g_autoptr(GDateTime) date_time = NULL;
-    g_autoptr(GFileInfo) info = NULL;
-    g_autofree gchar *mod_date = NULL;
 
 	home = getenv("HOME");
 	cache_file = g_build_filename (home,".soft-app-store",dname,"soft_msg", NULL);
 	if (g_file_test (cache_file, G_FILE_TEST_EXISTS)) 
 	{
-		return TRUE;
         g_autoptr(GFile) file = g_file_new_for_path (cache_file);
-		info = g_file_query_info (file,
-                                  G_FILE_ATTRIBUTE_TIME_MODIFIED,
-                                  G_FILE_QUERY_INFO_NONE,
-                                  NULL,
-                                  NULL);
-		if (info == NULL)
+		if(!CacheFileIsEmpty(file))
 			return FALSE;
-
-		g_file_info_get_modification_time (info, &time_val);
-		date_time = g_date_time_new_from_timeval_local (&time_val);
-		mod_date = g_date_time_format (date_time, "%a, %d %b %Y %H:%M:%S %Z");
-		if(g_file_info_get_size(info) <= 0)
-		{
+		if(!CacheFileExpiration(file))
 			return FALSE;
-		}
 		return TRUE;
-		//struct tm* tmp_time = (struct tm*)malloc(sizeof(struct tm));
-		//strptime("20131120","%Y%m%d",tmp_time);
-    }
+	}
 
 	return FALSE;
 }
@@ -558,16 +541,15 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
     const gchar *fn;
     g_autoptr(GError) error = NULL;
     g_autoptr(GDir)   dir;
-    g_autoptr(GFile)  parent;
     char        *package_id;
 
     dir = g_dir_open (path, 0, &error);
-    parent = g_file_new_for_path (path);
-
-    if (!g_file_query_exists (parent, NULL))
-        return TRUE;
     if (dir == NULL)
+	{
+		MessageReport(_("open metadata"),error->message,ERROR);	
+		SoftAppStoreLog("Error","open metadata error %s",error->message);
         return FALSE;
+	}
     while ((fn = g_dir_read_name (dir)) != NULL) 
     {
         if (g_str_has_suffix (fn, ".appdata.xml") ||
@@ -581,7 +563,7 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
 			else
 			{
 				package_id = soft_app_file_get_packageid (app->pkg,filename);
-			}
+			}	
 			if(package_id == NULL)
                 continue;
             g_hash_table_insert(app->pkg->phash,package_id,g_strdup(filename));
@@ -596,9 +578,14 @@ static void list_hash_table(gpointer key,gpointer value,gpointer data)
 
 	dname = GetMetadataFileName((char *)value);
 	if(!HavingCache(dname))
-		soft_app_get_package_details ((char *)key,(char *)value,app);
+	{
+		SoftAppStoreLog ("Debug","metadata not cache %s",dname);
+		soft_app_get_package_details ((char *)key,dname,app);
+	}
 	else
 	{
+		SoftAppStoreLog ("Debug","metadata use cache %s",dname);
+		app->pkg->metadata_cnt +=1;
 		soft_app_get_package_details_use_cache((char *)key,app);
 	}
 }    
@@ -615,10 +602,11 @@ static gpointer ParseLocalSoft (SoftAppStore *app)
     for (guint i = 0; i < parent_appdata->len; i++) 
     {
         const gchar *fn = g_ptr_array_index (parent_appdata, i);
+		SoftAppStoreLog("Debug","Acquiring Metadata %s",fn);
         soft_app_load_appdata (app,fn);
     }
     app->pkg->phashlen = g_hash_table_size(app->pkg->phash);
-	g_print("app->pkg->phashlen = %u\r\n",app->pkg->phashlen);
+	SoftAppStoreLog ("Debug","soft app count %u",app->pkg->phashlen);
 	g_hash_table_foreach(app->pkg->phash,list_hash_table,app);
     return NULL;
 }    
@@ -627,7 +615,7 @@ static void GetLocalSoftMessage(SoftAppStore *app)
 	app->pkg = g_new0 (SoftAppPkgkit, 1);
 	app->pkg = soft_app_pkgkit_new();
 	app->pkg->list = g_ptr_array_new ();
-    app->pkg->phash = g_hash_table_new (g_str_hash, g_str_equal); 
+    app->pkg->phash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	g_signal_connect (app->pkg,
                      "details-ready",
                       G_CALLBACK (get_local_soft_details_ready),
