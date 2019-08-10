@@ -70,11 +70,8 @@ soft_app_details_refresh (SoftAppDetails *details)
 
     soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,400);
     g_object_unref(pixbuf);
-    SetLableFontType(details->explain,
-                    "black",
-                     11,
-                     soft_app_info_get_explain (details->info),
-                     FALSE);
+    gtk_label_set_text(GTK_LABEL(details->explain),
+			           soft_app_info_get_explain (details->info));
     
     SetLableFontType(details->label_version,
                     "black",
@@ -374,7 +371,6 @@ void soft_app_info_set_name (SoftAppInfo *info,
 }
 const char *soft_app_info_get_icon (SoftAppInfo *info)
 {
-
 	return info->icon_name; 
 }
 void soft_app_info_set_icon (SoftAppInfo *info,
@@ -382,8 +378,18 @@ void soft_app_info_set_icon (SoftAppInfo *info,
 {
 	g_free (info->icon_name);
     info->icon_name = g_strdup (icon);
-
 }
+
+const char *soft_app_info_get_cache (SoftAppInfo *info)
+{
+	return info->cache; 
+}
+void soft_app_info_set_cache (SoftAppInfo *info,
+		                     const char   *cache)
+{
+	g_free (info->cache);
+    info->cache = g_strdup (cache);
+}	
 const char *soft_app_info_get_comment (SoftAppInfo *info)
 
 {
@@ -550,6 +556,7 @@ soft_app_info_finalize (GObject *object)
     g_free (info->source);
     g_free (info->size);
     g_free (info->pkgid);
+    g_free (info->cache);
     g_free (info->arch);
     g_free (info->package);
 }

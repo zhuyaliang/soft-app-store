@@ -55,6 +55,7 @@ typedef struct SoftAppMessage
 	gboolean     soft_type;
 	char        *soft_size;
 	char        *soft_ids;
+	char        *cache;
 	char       **soft_files;
 }SoftAppMessage;
 
@@ -146,6 +147,11 @@ const gchar      *soft_app_message_get_pkgid           (SoftAppMessage *Message)
 
 void              soft_app_message_set_pkgid           (SoftAppMessage *Message,
                                                         const gchar    *ids);
+
+const gchar      *soft_app_message_get_cache           (SoftAppMessage *Message);
+
+void              soft_app_message_set_cache           (SoftAppMessage *Message,
+                                                        const gchar    *cache);
 
 char            **soft_app_message_get_files           (SoftAppMessage *Message);
 

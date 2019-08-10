@@ -28,14 +28,13 @@ soft_app_row_refresh (SoftAppRow *row)
 	//GdkPixbuf *pixbuf;
 	float      level;
 	const char *icon_name;
-
+	const char *soft_name;
+	const char *sumary;
 	icon_name = soft_app_message_get_icon(row->Message);
-    gtk_image_set_from_icon_name(GTK_IMAGE(row->image),icon_name,GTK_ICON_SIZE_DIALOG);
-	SetLableFontType(row->label_name,
-                    "black",
-                     10,
-                     as_app_get_name(AS_APP(row->Message),NULL),
-                     TRUE);
+	gtk_image_set_from_icon_name(GTK_IMAGE(row->image),icon_name,GTK_ICON_SIZE_DIALOG);
+	
+	soft_name = as_app_get_name(AS_APP(row->Message),NULL);
+	gtk_label_set_text(GTK_LABEL(row->label_name),soft_name);
 	
 	level = soft_app_message_get_score(row->Message);
 
@@ -44,12 +43,9 @@ soft_app_row_refresh (SoftAppRow *row)
     soft_app_star_widget_set_rating (row->stars3,level--);
     soft_app_star_widget_set_rating (row->stars4,level--);
     soft_app_star_widget_set_rating (row->stars5,level--);
-    
-	SetLableFontType(row->label_describe,
-                    "black",
-                     10,
-                     as_app_get_comment (AS_APP(row->Message),NULL),
-                     FALSE);
+   
+	sumary = as_app_get_comment (AS_APP(row->Message),NULL);
+	gtk_label_set_text(GTK_LABEL(row->label_describe),sumary);
 	
 	gtk_button_set_label(GTK_BUTTON(row->button),_("uninstall"));
 	
@@ -280,6 +276,20 @@ soft_app_message_set_icon (SoftAppMessage  *Message,
     g_free (Message->icon_name);
     Message->icon_name = g_strdup (icon);
 }  
+
+const gchar *
+soft_app_message_get_cache (SoftAppMessage *Message)
+{
+    return Message->cache;
+}
+
+void
+soft_app_message_set_cache (SoftAppMessage  *Message, 
+                           const gchar      *cache)
+{
+    g_free (Message->cache);
+    Message->cache = g_strdup (cache);
+}  
 gchar **
 soft_app_message_get_files (SoftAppMessage *Message)
 {
@@ -331,6 +341,7 @@ soft_app_message_finalize (GObject *object)
     g_free (Message->soft_package);
     g_free (Message->soft_ids);
     g_free (Message->soft_license);
+    g_free (Message->cache);
     g_strfreev (Message->soft_files);
 }
 

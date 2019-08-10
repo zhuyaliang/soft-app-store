@@ -281,3 +281,45 @@ soft_app_container_remove_all (GtkContainer *container)
 {
     gtk_container_foreach (container, remove_all_cb, container);
 }
+
+void CreateCacheDir (const char *dirname)
+{
+	const char *home;
+	char       *dname;
+
+	home = getenv("HOME");
+    dname = g_strconcat(home,"/.soft-app-store/",dirname,NULL);
+    if(access(dname,F_OK) != 0)
+    {
+        mkdir(dname,0755);
+    }    
+    
+    g_free(dname);
+}
+
+char *CreateCacheFile(const char *dirname,const char *cname)
+{
+    char *home,*fname;
+    int   fd = -1;
+
+	home = getenv("HOME");
+    fname = g_strconcat(home,"/.soft-app-store/",dirname,"/",cname,NULL);
+    fd = open(fname,O_RDWR|O_CREAT,S_IRUSR|S_IWUSR);
+	if(fd > 0)
+	{
+		close(fd);
+	}
+	return fname;
+}
+int OpenCacheFile(const char *dirname,const char *cname)
+{
+    char *home,*fname;
+    int   fd = -1;
+
+	home = getenv("HOME");
+    fname = g_strconcat(home,"/.soft-app-store/",dirname,"/",cname,NULL);
+    fd = open(fname,O_RDWR|O_CREAT,S_IRUSR|S_IWUSR);
+
+	g_free(fname);
+	return fd;
+}		

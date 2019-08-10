@@ -63,4 +63,10 @@ void        soft_app_image_set_from_pixbuf (GtkImage        *image,
                                             int              size);
 
 void        soft_app_container_remove_all  (GtkContainer    *container);
+void        CreateCacheDir                 (const char *dirname);
+char       *CreateCacheFile                (const char *dirname,
+		                                    const char *cname);
+
+int         OpenCacheFile                  (const char *dirname,
+		                                    const char *cname);
 #endif

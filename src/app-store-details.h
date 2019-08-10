@@ -49,6 +49,7 @@ typedef struct SoftAppInfo
 	char        *pkgid;
 	char        *arch;
 	char        *package;
+	char        *cache;
 	int          action;
 }SoftAppInfo;
 
@@ -166,6 +167,11 @@ const char       *soft_app_info_get_pkgid           (SoftAppInfo *info);
 
 void              soft_app_info_set_pkgid           (SoftAppInfo *info,
 		                                             const char  *pkgid);
+
+const char       *soft_app_info_get_cache           (SoftAppInfo *info);
+
+void              soft_app_info_set_cache           (SoftAppInfo *info,
+		                                             const char  *cache);
 
 const char       *soft_app_info_get_arch            (SoftAppInfo *info);
 
