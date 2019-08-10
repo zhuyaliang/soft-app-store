@@ -45,6 +45,7 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
+		g_print("name = %s\r\n",soft_app_message_get_cache(Message));
 	}
 	gtk_widget_show_all(app->MainWindow);
 	gtk_widget_hide(app->LocalSoftBar);
@@ -60,13 +61,11 @@ static char *GetCacheFileIcon(char *dname)
     
 	kconfig = g_key_file_new();
 	cache_file = CreateCacheFile(dname,"soft_icon");
-	g_print("dname = %s\r\n",dname);
 	g_key_file_load_from_file(kconfig, cache_file, G_KEY_FILE_NONE,NULL);
 
 	icon = g_key_file_get_string(kconfig,"soft-app-store","icon",NULL);
 	g_key_file_free(kconfig);
 	
-	g_print("icon = %s\r\n",icon);
 	return g_strdup(icon);
 }
 static void
@@ -147,7 +146,7 @@ GetLocalSoftAppDetails (PkClient       *client,
     kconfig = g_key_file_new();
 	Message = soft_app_message_new ();
 
-	soft_app_message_set_cache (Message,xml);
+	soft_app_message_set_cache (Message,dname);
     as_app_parse_file(AS_APP(Message),
                       xml,
                       AS_APP_PARSE_FLAG_USE_HEURISTICS,
@@ -209,7 +208,6 @@ GetLocalSoftAppDetails (PkClient       *client,
 						  package);
 	g_key_file_save_to_file(kconfig,cache_file,NULL);
 	g_key_file_free(kconfig);
-    g_print("count get details %u num len = %u\r\n",soft_sum,pkg->list->len);
     if(++soft_sum >=pkg->phashlen)
     {
         emit_details_complete(pkg);
@@ -391,8 +389,6 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
 	}
 	Message = soft_app_message_new ();
 
-	soft_app_message_set_cache (Message,xml);
-
     as_app_parse_file(AS_APP(Message),
                       xml,
                       AS_APP_PARSE_FLAG_USE_HEURISTICS,
@@ -402,6 +398,7 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
     kconfig = g_key_file_new();
 	g_key_file_load_from_file(kconfig, cache_file, G_KEY_FILE_NONE, NULL);
 
+	soft_app_message_set_cache (Message,dname);
     soft_app_message_set_pkgid(Message,package_id);
 	soft_app_message_set_version(Message,split[PK_PACKAGE_ID_VERSION]);
 	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
@@ -422,7 +419,6 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
 	package = g_key_file_get_string(kconfig,"soft-app-store","package",NULL);
 	soft_app_message_set_package(Message,package);
 	g_key_file_free(kconfig);
-    g_print("cache get details %u num len = %u\r\n",soft_sum,app->pkg->list->len);
     if(++soft_sum >= app->pkg->phashlen)
     {
         emit_details_complete(app->pkg);
@@ -546,7 +542,6 @@ static gboolean HavingCache(const char *dname)
 		g_file_info_get_modification_time (info, &time_val);
 		date_time = g_date_time_new_from_timeval_local (&time_val);
 		mod_date = g_date_time_format (date_time, "%a, %d %b %Y %H:%M:%S %Z");
-		g_print("mod_date = %s\r\n",mod_date);
 		if(g_file_info_get_size(info) <= 0)
 		{
 			return FALSE;
@@ -581,7 +576,6 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
             g_autofree gchar *filename = g_build_filename (path, fn, NULL);
 			if(HavingCache(fn))
 			{
-				g_print("cache fn %s\r\n",fn);
 				package_id = soft_app_file_get_packageid_use_cache(fn);
 			}
 			else
@@ -621,7 +615,6 @@ static gpointer ParseLocalSoft (SoftAppStore *app)
     for (guint i = 0; i < parent_appdata->len; i++) 
     {
         const gchar *fn = g_ptr_array_index (parent_appdata, i);
-		g_print("fn = %s\r\n",fn);
         soft_app_load_appdata (app,fn);
     }
     app->pkg->phashlen = g_hash_table_size(app->pkg->phash);
@@ -705,7 +698,8 @@ soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
 static char *GetLocalFiles(const char *dname)
 {
     FILE *fp = NULL;
-    char *home,*fname,*files = NULL;
+    char *home,*fname;
+	char *files = NULL;
     int   flen;
 
     home = getenv("HOME");
@@ -714,10 +708,10 @@ static char *GetLocalFiles(const char *dname)
     fp = fopen(fname,"r");
     fseek(fp,0L,SEEK_END);
     flen = ftell(fp);
-    files = (char *)malloc(flen);
-    fseek(fp,0L,SEEK_SET);
-    fread(files,flen,1,fp);
-    
+	files = (char *)malloc(flen+1);
+    memset(files,'\0',flen);
+	fseek(fp,0L,SEEK_SET);
+    fread(files,1,flen-2,fp);
     fclose(fp);
     g_free(fname);
     return files;
@@ -727,7 +721,7 @@ static void SetDialogTextView(const char *dname,GtkDialog *dialog)
     GtkWidget     *scroll;
     GtkWidget     *widget;
     GtkTextBuffer *buffer;
-    char          *files;
+    g_autofree char *files = NULL;
     
 	/* create a text view to hold the store */
     widget = gtk_text_view_new ();
@@ -755,7 +749,6 @@ static void SetDialogTextView(const char *dname,GtkDialog *dialog)
     widget = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
     gtk_box_pack_start (GTK_BOX (widget), scroll, TRUE, TRUE, 0);
 
-    free(files);
 }   
 
 static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
@@ -764,6 +757,7 @@ static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
 	GtkWidget  *dialog;
 
     name  = soft_app_info_get_cache(app->details->info);
+	g_print("name = %s\r\n",name);
     dialog = gtk_message_dialog_new (GTK_WINDOW(app->MainWindow), 
                                      GTK_DIALOG_DESTROY_WITH_PARENT,
                                      GTK_MESSAGE_INFO, 
@@ -852,6 +846,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_source(info,url);
 	soft_app_info_set_size(info,size);
 	soft_app_info_set_pkgid(info,pkgid);
+	soft_app_info_set_cache(info,cache_file);
 	soft_app_info_set_arch(info,arch);
 	soft_app_info_set_package(info,package);
 	soft_app_info_set_action(info,LOCALINSTALL);
