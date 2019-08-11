@@ -11,6 +11,7 @@ sources = [
 'app-store-thumbnail.c',
 'app-store-row.c',
 'app-store-details.c',
+'app-store-search.c',
 ]
 
 executable('soft-app-store',

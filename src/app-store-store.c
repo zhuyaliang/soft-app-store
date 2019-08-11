@@ -20,6 +20,7 @@
 #include "app-store-category.h"
 #include "app-store-thumbnail.h"
 #include "app-store-details.h"
+#include "app-store-search.h"
 
 typedef struct {
     const gchar *name;
@@ -105,22 +106,21 @@ static GtkWidget *LoadHeader_bar(GtkWidget  *header,
 {
     GtkWidget *button;
 
-    button = gtk_button_new (); 
-    gtk_container_add (GTK_CONTAINER (button),
-                       gtk_image_new_from_icon_name (icon,
-                       GTK_ICON_SIZE_BUTTON));
-
 	if(mode)
 	{
+		button = gtk_button_new (); 
 		gtk_header_bar_pack_start (GTK_HEADER_BAR (header), button);
 	}
 	else
 	{
+		button = gtk_toggle_button_new ();
 		gtk_header_bar_pack_end (GTK_HEADER_BAR (header), button);
 	}
+    gtk_container_add (GTK_CONTAINER (button),
+                       gtk_image_new_from_icon_name (icon,
+                       GTK_ICON_SIZE_BUTTON));
 	return button;
 }
-
 
 static void SwitchPageToReturn (GtkWidget *button, SoftAppStore *app)
 {
@@ -288,7 +288,7 @@ static GtkWidget *RecommendSoftWindow (GtkWidget *vbox)
 GtkWidget *LoadStoreSoft(SoftAppStore *app)
 {
     GtkWidget *vbox;
-    GtkWidget *flowbox;
+	GtkWidget *flowbox;
     GPtrArray *CategoryList;
     GPtrArray *RecommendList;
     GtkWidget *tile;
@@ -297,16 +297,23 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     GtkWidget *fixed;
     GtkWidget *Recom;
     GtkWidget *hbox;
-    GtkWidget *button;
+    GtkWidget *button_return;
+    GtkWidget *button_search;
     guint      i;
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
-    flowbox = CategorySoftWindow(vbox);
+  
+	flowbox = CategorySoftWindow(vbox);
     CategoryList = GetCategoryInfo(app);
 	
-	//button = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
-	button = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
-	g_signal_connect (button, 
+	button_search = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
+	
+	g_signal_connect (button_search, 
+                     "clicked",
+                      G_CALLBACK (SwitchPageToSearch),
+					  app);
+	button_return = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
+	g_signal_connect (button_return, 
                      "clicked",
                       G_CALLBACK (SwitchPageToReturn), 
                       app);

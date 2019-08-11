@@ -143,6 +143,10 @@ static void InitNoteBook (SoftAppStore *app)
                          app->StackDetailsBox,
                         "details-page");
     
+    app->StackSearchBox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
+    gtk_stack_add_named (GTK_STACK (app->StoreStack), 
+                         app->StackSearchBox,
+                        "search-page");
 	gtk_widget_show_all(app->MainWindow);
 }    
 static int RecordPid(void)

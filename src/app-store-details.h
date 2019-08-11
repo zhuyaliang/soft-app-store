@@ -189,5 +189,8 @@ void              soft_app_info_set_action          (SoftAppInfo *info,
 		                                             int          action);
 
 void CreateRecommendDetails(gpointer app,gpointer      data);
+void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,
+                                        GtkListBoxRow *Row,
+                                        gpointer       app);
 G_END_DECLS
 #endif

@@ -21,7 +21,6 @@
 #include "app-store-details.h"
 #include "app-store-pkgkit.h"
 
-#define   UNKNOWPNG               "mp.png"
 
 static char *GetMetadataFileName(char *path)
 {
@@ -48,6 +47,7 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
 	}
 	gtk_widget_show_all(app->LocalSoftListBox);
+	app->pkg->action = GPK_ACTION_DONE;
 	SoftAppStoreLog ("Debug","load all local soft %u to listrowboxi Successfu",i);
 }
 static char *GetCacheFileIcon(char *dname)
@@ -741,7 +741,7 @@ static void SetDialogTextView(const char *dname,GtkDialog *dialog)
 
 }   
 
-static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
+void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
 {
     const char *name;
 	GtkWidget  *dialog;
@@ -761,7 +761,7 @@ static void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
     gtk_widget_destroy (GTK_WIDGET (dialog));
     
 }    
-static void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
+void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
 {
 	g_auto(GStrv) package_ids = NULL;
     g_autofree const gchar *package_id = NULL;
@@ -782,97 +782,6 @@ static void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
                                   (GAsyncReadyCallback) soft_app_remove_packages_cb, 
 								   app);
 
-}
-static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
-{
-    GtkWidget   *sw;
-	SoftAppInfo *info;
-	GtkFixed    *details;
-	const char  *name;
-	const char  *icon;
-	const char  *explain;
-	const char  *version;
-	const char  *license;
-	const char  *url;
-	const char  *size;
-	const char  *pkgid;
-	const char  *summary;
-	const char  *arch;
-	const char  *package;
-	const char  *cache_file;
-	float        score;
-	GtkWidget   *remove_button;
-	GtkWidget   *files_button;
-	GtkWidget   *install_bar;
-	
-    soft_app_container_remove_all (GTK_CONTAINER (app->StackDetailsBox));
-    sw = gtk_scrolled_window_new (NULL, NULL);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
-
-	name = as_app_get_name(AS_APP(row->Message),NULL); 
-	cache_file = soft_app_message_get_cache(row->Message);
-    icon = soft_app_message_get_icon(row->Message);
-	score = soft_app_message_get_score(row->Message);
-    explain = as_app_get_description(AS_APP(row->Message),NULL);
-    version = soft_app_message_get_version(row->Message);
-    license = soft_app_message_get_license(row->Message);
-    url     = soft_app_message_get_url(row->Message);
-    size    = soft_app_message_get_size(row->Message);
-    pkgid   = soft_app_message_get_pkgid(row->Message);
-    summary = as_app_get_comment(AS_APP(row->Message),NULL);
-    arch    = soft_app_message_get_arch(row->Message);
-    package = soft_app_message_get_package(row->Message);
-
-	info = soft_app_info_new(name);
-	soft_app_info_set_icon(info,icon);
-	soft_app_info_set_comment(info,summary);
-	soft_app_info_set_button(info,_("removed"));
-	soft_app_info_set_score(info,score);
-	soft_app_info_set_screenshot(info,ICONDIR UNKNOWPNG);
-	soft_app_info_set_explain(info,explain);
-	soft_app_info_set_version(info,version);
-	soft_app_info_set_protocol(info,license);
-	soft_app_info_set_source(info,url);
-	soft_app_info_set_size(info,size);
-	soft_app_info_set_pkgid(info,pkgid);
-	soft_app_info_set_cache(info,cache_file);
-	soft_app_info_set_arch(info,arch);
-	soft_app_info_set_package(info,package);
-	soft_app_info_set_action(info,LOCALINSTALL);
-	
-	details = soft_app_details_new(info);
-	app->details = SOFT_APP_DETAILS(details);	
-	remove_button = soft_app_details_get_button(SOFT_APP_DETAILS(details));
-    g_signal_connect (remove_button, 
-                     "clicked",
-                      G_CALLBACK (RemoveLocalSoftApp), 
-					  app);
-	files_button = SOFT_APP_DETAILS(details)->files_button;
-    g_signal_connect (files_button, 
-                     "clicked",
-                      G_CALLBACK (ViewLocalSoftFiles), 
-					  app);
-					  
-    gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
-    gtk_widget_set_valign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
-    gtk_container_add (GTK_CONTAINER (sw), GTK_WIDGET(details));
-
-    gtk_widget_show_all(app->StackDetailsBox);
-	install_bar = soft_app_details_get_bar(SOFT_APP_DETAILS(details));
-	gtk_widget_hide(install_bar);
-}
-static void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,
-                                               GtkListBoxRow *Row,
-                                               SoftAppStore  *app)
-
-{
-	SoftAppRow *row = SOFT_APP_ROW(Row); 
-
-    app->page = INDIVIDUAL_SOFT_PAGE;
-	SwitchPage(app);
-	app->index = gtk_list_box_row_get_index(Row);
-    CreateLocalSoftDetails(app,row);
 }
 GtkWidget *LoadLocalInstall(SoftAppStore *app)
 {

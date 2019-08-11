@@ -33,6 +33,7 @@
 #define MAIN_PAGE                 0
 #define CATEGORY_LIST_PAGE        1
 #define INDIVIDUAL_SOFT_PAGE      2
+#define SEARCH_SOFT_PAGE          3
 
 void         SoftAppStoreLog       (const char  *level,
                                     const char  *message,

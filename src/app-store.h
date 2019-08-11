@@ -43,7 +43,9 @@ typedef struct
     GtkWidget        *UpdateBox;
     GtkWidget        *StackCategoryBox;
     GtkWidget        *StackDetailsBox;
+    GtkWidget        *StackSearchBox;
 	GtkWidget        *LocalSoftListBox;
+	GtkWidget        *SearchSoftListBox;
 	GtkWidget        *LocalSoftBar;
 	GtkWidget        *LocalSoftLabel;
 	GtkWidget        *LocalSoftSpinner;

@@ -1,5 +1,5 @@
 /*  soft-app-store 
-*   Copyright (C) 2018  zhuyaliang https://github.com/zhuyaliang/
+*   Copyright (C) 2019  zhuyaliang https://github.com/zhuyaliang/
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -15,12 +15,12 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef __APP_STORE_LOCAL_H__
-#define __APP_STORE_LOCAL_H__
+#ifndef __APP_STORE_SEARCH_H__
+#define __APP_STORE_SEARCH_H__
 
 #include "app-store.h"
 
-GtkWidget *LoadLocalInstall(SoftAppStore *app);
-void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app);
-void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app);
+
+void SwitchPageToSearch (GtkWidget *button, SoftAppStore *app);
+
 #endif
