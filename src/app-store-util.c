@@ -368,7 +368,7 @@ gboolean CacheFileExpiration (GFile *file)
 	strptime(mod_date,"%Y%m%d%H%M%S",tmp_time); 
 	time_t t = mktime(tmp_time);  
 	free(tmp_time);
-	if(t_stamp - t >= 60000)
+	if(t_stamp - t >= 604800)
 		return FALSE;
 	
 	return TRUE;

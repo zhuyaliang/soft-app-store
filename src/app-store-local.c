@@ -37,7 +37,8 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 	GtkWidget  *row;
 	guint       i;
 	app->page = MAIN_PAGE;
-    
+	
+	SoftAppStoreLog ("Debug","start load all local soft %u to listrowbox",app->pkg->list->len);
     for (i = 0; i < app->pkg->list->len; i++)
     {
         Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
@@ -46,11 +47,8 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
 	}
-	gtk_widget_show_all(app->MainWindow);
-	gtk_widget_hide(app->LocalSoftBar);
-	gtk_widget_hide(app->LocalSoftLabel);
-	gtk_spinner_stop (GTK_SPINNER (app->LocalSoftSpinner));
-	gtk_widget_hide(app->LocalSoftSpinner);
+	gtk_widget_show_all(app->LocalSoftListBox);
+	SoftAppStoreLog ("Debug","load all local soft %u to listrowboxi Successfu",i);
 }
 static char *GetCacheFileIcon(char *dname)
 {
@@ -203,13 +201,13 @@ GetLocalSoftAppDetails (PkClient       *client,
 	pkg->cache_cnt +=1;
 	soft_sum = pkg->metadata_cnt + pkg->cache_cnt;
 
+    g_ptr_array_add (pkg->list, Message);
     if(soft_sum >= pkg->phashlen)
     {
 		SoftAppStoreLog ("Debug","not caceh emmit signal package count %u",pkg->metadata_cnt);
         emit_details_complete(pkg);
         soft_sum = 0;
     }
-    g_ptr_array_add (pkg->list, Message);
 
 }    
 static void
@@ -418,6 +416,7 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
 	soft_app_message_set_package(Message,package);
 	g_key_file_free(kconfig);
 
+    g_ptr_array_add (app->pkg->list, Message);
 	soft_sum = app->pkg->cache_cnt + app->pkg->metadata_cnt;
     if(soft_sum >= app->pkg->phashlen)
     {
@@ -425,7 +424,6 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
         emit_details_complete(app->pkg);
         soft_sum = 0;
     }
-    g_ptr_array_add (app->pkg->list, Message);
 }
 static void
 soft_app_get_package_details (char         *package_id, 
@@ -462,6 +460,10 @@ static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
 {
 	SoftAppStoreLog ("Debug","get_local_soft_details_ready all package count %u",app->pkg->list->len);
     UpdateLocalInstallPage(app);
+	gtk_widget_hide(app->LocalSoftBar);
+	gtk_widget_hide(app->LocalSoftLabel);
+	gtk_spinner_stop (GTK_SPINNER (app->LocalSoftSpinner));
+	gtk_widget_hide(app->LocalSoftSpinner);
 }
 
 static gchar *

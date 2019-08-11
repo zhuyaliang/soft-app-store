@@ -97,9 +97,9 @@ static void InitMainWindow(SoftAppStore *app)
     
 	home = getenv("HOME");
     dname = g_strconcat(home,"/.soft-app-store",NULL);
-    g_print("dname = %s\r\n",dname);
     if(access(dname,F_OK) != 0)
     {
+		SoftAppStoreLog ("Debug","Create cache dir %s",dname);
         mkdir(dname,0755);
     }    
     g_free(dname);
