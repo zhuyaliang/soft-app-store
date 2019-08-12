@@ -12,11 +12,12 @@ sources = [
 'app-store-row.c',
 'app-store-details.c',
 'app-store-search.c',
+'app-store-screenshot.c',
 ]
 
 executable('soft-app-store',
   sources : sources,
-  dependencies : [gtk_deps,pkgkit_deps,appstream_deps],
+  dependencies : [gtk_deps,pkgkit_deps,appstream_deps,libsoup_deps],
   include_directories: top_srcdir,
   install : true,
   install_dir : get_option('bindir')

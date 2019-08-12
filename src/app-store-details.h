@@ -17,7 +17,7 @@
 
 #ifndef __APP_STORE_DETAILS_H__
 #define __APP_STORE_DETAILS_H__
-
+#include "app-store-screenshot.h"
  
 G_BEGIN_DECLS
 #define SOFT_APP_TYPE_DETAILS                (soft_app_details_get_type ())
@@ -41,6 +41,7 @@ typedef struct SoftAppInfo
 	char        *button_name;
 	float        score;
 	char        *screenshot;
+	char        *screenshot_url;
 	char        *explain;
 	char        *version;
 	char        *protocol;
@@ -75,8 +76,9 @@ typedef struct SoftAppDetails
 	GtkWidget   *files_button;
 	GtkWidget   *progressbar;
 	GtkWidget   *label_progress;
-	GtkWidget   *screenshot;
-	GtkWidget   *explain;
+	//GtkWidget   *screenshot;
+	SoftAppScreenshot *screenshot;
+    GtkWidget   *explain;
 	GtkWidget   *label_version;
 	GtkWidget   *label_protocol;
 	GtkWidget   *label_source;
@@ -137,6 +139,11 @@ const char       *soft_app_info_get_screenshot      (SoftAppInfo *info);
 
 void              soft_app_info_set_screenshot      (SoftAppInfo *info,
 		                                             const char  *screenshot_name);
+
+const char       *soft_app_info_get_screenshot_url  (SoftAppInfo *info);
+
+void              soft_app_info_set_screenshot_url  (SoftAppInfo *info,
+		                                             const char  *screenshot_url);
 
 const char       *soft_app_info_get_explain         (SoftAppInfo *info);
 

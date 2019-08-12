@@ -17,6 +17,7 @@
 
 #include "app-store-util.h"
 #include "app-store-details.h"
+#include "app-store-screenshot.h"
 #include "app-store-thumbnail.h"
 #include "app-store-local.h"
 #include "app-store.h"
@@ -31,7 +32,7 @@ soft_app_details_refresh (SoftAppDetails *details)
 	GdkPixbuf *pixbuf;
 	float      level;
     int        action;
-	const char *icon_name,*screenshot_name;
+	const char *icon_name,*screenshot_url;
 
 	icon_name = soft_app_info_get_icon(details->info);
     action = soft_app_info_get_action(details->info);
@@ -67,11 +68,16 @@ soft_app_details_refresh (SoftAppDetails *details)
     gtk_button_set_label(GTK_BUTTON(details->button),
                          soft_app_info_get_button(details->info));	
 	
+    screenshot_url = soft_app_info_get_screenshot_url(details->info);
+    soft_app_screenshot_load_async (details->screenshot,
+                                    screenshot_url);
+	/*
 	screenshot_name = soft_app_info_get_screenshot(details->info);
 	pixbuf = gdk_pixbuf_new_from_file(screenshot_name,NULL);
-
     soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,400);
     g_object_unref(pixbuf);
+    */
+
     gtk_label_set_text(GTK_LABEL(details->explain),
 			           soft_app_info_get_explain (details->info));
     
@@ -182,6 +188,8 @@ soft_app_details_init (SoftAppDetails *details)
     GtkWidget *protocol_tile;
     GtkWidget *package_tile;
     GtkWidget *arch_tile;
+    GtkWidget *ss;
+    SoupSession *session;
 
     main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_fixed_put(GTK_FIXED(details),main_vbox, 0, 0);
@@ -225,13 +233,9 @@ soft_app_details_init (SoftAppDetails *details)
     gtk_box_pack_start(GTK_BOX(hbox3),hbox4 ,TRUE,TRUE, 10);
 
     details->button = gtk_button_new();
-    //gtk_widget_set_halign(details->button,GTK_ALIGN_END);
-    //gtk_widget_set_valign(details->button,GTK_ALIGN_END);
     gtk_box_pack_start(GTK_BOX(hbox4),details->button ,TRUE,TRUE, 10);
     
     details->files_button = gtk_button_new_with_label(_("file list"));
-    //gtk_widget_set_halign(details->files_button,GTK_ALIGN_START);
-    //gtk_widget_set_valign(details->files_button,GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(hbox4),details->files_button ,TRUE,TRUE, 10);
 
 	details->progressbar = gtk_progress_bar_new();
@@ -242,8 +246,15 @@ soft_app_details_init (SoftAppDetails *details)
     screenshot_box = gtk_box_new (GTK_ORIENTATION_VERTICAL,6);
     gtk_widget_set_size_request(screenshot_box,600,-1);
     gtk_box_pack_start(GTK_BOX(main_vbox),screenshot_box ,FALSE,FALSE, 10);
-    details->screenshot = gtk_image_new();
-    gtk_box_pack_start(GTK_BOX(screenshot_box),details->screenshot ,FALSE,FALSE, 10);
+    
+    session = soup_session_new ();
+    ss = soft_app_screenshot_new (session);
+    soft_app_screenshot_set_size (SOFT_APP_SCREENSHOT (ss),
+                                  AS_IMAGE_LARGE_WIDTH,
+                                  AS_IMAGE_LARGE_HEIGHT);
+
+    gtk_container_add(GTK_CONTAINER(screenshot_box),ss);
+	g_set_object (&details->screenshot,SOFT_APP_SCREENSHOT(ss));
 
     explain_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start(GTK_BOX(main_vbox),explain_box ,FALSE,FALSE, 6);
@@ -338,7 +349,8 @@ soft_app_details_init (SoftAppDetails *details)
 
     details->button_discuss = gtk_button_new_with_label(_("discuss"));
     gtk_box_pack_start(GTK_BOX(vbox2),details->button_discuss ,FALSE,FALSE, 10);
-
+    
+    gtk_widget_show_all (GTK_WIDGET(details));
 }
 static void
 soft_app_details_class_init (SoftAppDetailsClass *klass)
@@ -440,11 +452,22 @@ const char *soft_app_info_get_explain (SoftAppInfo *info)
 {
 	return info->explain; 
 }
+
 void soft_app_info_set_explain (SoftAppInfo *info,
 		                        const char  *explain)
 {
 	g_free (info->explain);
     info->explain = g_strdup (explain);
+}
+const char *soft_app_info_get_screenshot_url (SoftAppInfo *info)
+{
+	return info->screenshot_url; 
+}
+void soft_app_info_set_screenshot_url (SoftAppInfo *info,
+		                               const char  *screenshot_url)
+{
+	g_free (info->screenshot_url);
+    info->screenshot_url = g_strdup (screenshot_url);
 }
 const char *soft_app_info_get_version (SoftAppInfo *info)
 {
@@ -552,6 +575,7 @@ soft_app_info_finalize (GObject *object)
     g_free (info->comment);
     g_free (info->button_name);
     g_free (info->screenshot);
+    g_free (info->screenshot_url);
     g_free (info->explain);
     g_free (info->version);
     g_free (info->protocol);
@@ -653,7 +677,11 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	GtkWidget   *remove_button;
 	GtkWidget   *files_button;
 	GtkWidget   *install_bar;
-	
+    GPtrArray   *screenshots;
+	AsScreenshot *as_shot;
+    AsImage     *im = NULL;
+    const char  *screenshot_url;
+
     soft_app_container_remove_all (GTK_CONTAINER (app->StackDetailsBox));
     sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -663,6 +691,10 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	cache_file = soft_app_message_get_cache(row->Message);
     icon = soft_app_message_get_icon(row->Message);
 	score = soft_app_message_get_score(row->Message);
+    screenshots = as_app_get_screenshots(AS_APP(row->Message));
+    as_shot = g_ptr_array_index (screenshots, 0);
+    im = as_screenshot_get_image (as_shot,AS_IMAGE_LARGE_WIDTH,AS_IMAGE_LARGE_HEIGHT);
+    screenshot_url = as_image_get_url (im);
     explain = as_app_get_description(AS_APP(row->Message),NULL);
     version = soft_app_message_get_version(row->Message);
     license = soft_app_message_get_license(row->Message);
@@ -679,6 +711,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_button(info,_("removed"));
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot(info,ICONDIR UNKNOWPNG);
+	soft_app_info_set_screenshot_url(info,screenshot_url);
 	soft_app_info_set_explain(info,explain);
 	soft_app_info_set_version(info,version);
 	soft_app_info_set_protocol(info,license);

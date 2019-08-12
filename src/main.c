@@ -130,9 +130,10 @@ static void InitNoteBook (SoftAppStore *app)
 			                 app->UpdateBox,
 							 NoteName);
     
-    gtk_stack_add_named (GTK_STACK (app->StoreStack),app->NoteBook,"main-page");
+    gtk_stack_add_named (GTK_STACK (app->StoreStack),
+                         app->NoteBook,
+                        "main-page");
 	
-
     app->StackCategoryBox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
     gtk_stack_add_named (GTK_STACK (app->StoreStack), 
                          app->StackCategoryBox,
