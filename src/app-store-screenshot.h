@@ -29,7 +29,6 @@ G_BEGIN_DECLS
 typedef struct SoftAppScreenshot
 {
     GtkStack     parent_instance;
-    AsScreenshot    *screenshot;
     GtkWidget   *box_error;
     GtkWidget   *image1;
     GtkWidget   *image2;

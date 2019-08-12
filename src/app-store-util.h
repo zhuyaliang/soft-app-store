@@ -73,5 +73,6 @@ int         OpenCacheFile                  (const char *dirname,
 
 gboolean    CacheFileIsEmpty               (GFile      *file);
 
-gboolean    CacheFileExpiration            (GFile      *file);
+uint        GetCacheFileAge            (GFile      *file);
+gboolean    SoftApprmtree              (const gchar *directory, GError **error);
 #endif

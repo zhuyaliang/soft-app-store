@@ -345,12 +345,11 @@ gboolean CacheFileIsEmpty (GFile *file)
 	return TRUE;
 }
 
-gboolean CacheFileExpiration (GFile *file)
+uint GetCacheFileAge (GFile *file)
 {
 	GTimeVal time_val;
     g_autoptr(GDateTime) date_time = NULL;
     g_autoptr(GFileInfo) info = NULL;
-    g_autofree gchar *mod_date = NULL;
     int    t_stamp;
     time_t ct;
     int    file_time;
@@ -362,14 +361,54 @@ gboolean CacheFileExpiration (GFile *file)
                               NULL,
                               NULL);
 	if (info == NULL)
-		return FALSE;
+		return G_MAXUINT;
 
 	g_file_info_get_modification_time (info, &time_val);
 	date_time = g_date_time_new_from_timeval_local (&time_val);
     file_time = g_date_time_to_unix (date_time);
 	
-    if(t_stamp - file_time >= 604800)
-		return FALSE;
-	
-	return TRUE;
+	return t_stamp - file_time;
 }
+static gboolean
+SoftAppRealrmtree (const gchar *directory, GError **error)
+{
+    const gchar *filename;
+    g_autoptr(GDir) dir = NULL;
+
+    dir = g_dir_open (directory, 0, error);
+    if (dir == NULL) 
+        return FALSE;
+
+    while ((filename = g_dir_read_name (dir))) 
+	{
+        g_autofree gchar *src = NULL;
+        src = g_build_filename (directory, filename, NULL);
+        if (g_file_test (src, G_FILE_TEST_IS_DIR) && 
+            !g_file_test (src, G_FILE_TEST_IS_SYMLINK)) 
+		{
+            if (!SoftAppRealrmtree (src, error))
+                return FALSE;
+        } 
+		else 
+		{
+            if (g_unlink (src) != 0) 
+			{
+                return FALSE;
+            }
+        }
+    }
+
+    if (g_rmdir (directory) != 0) 
+	{
+        return FALSE;
+    }
+    return TRUE;
+}
+
+gboolean
+SoftApprmtree (const gchar *directory, GError **error)
+{
+    SoftAppStoreLog ("Debug","recursively removing directory '%s'", directory);
+    return SoftAppRealrmtree (directory, error);
+}
+

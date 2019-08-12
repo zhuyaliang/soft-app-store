@@ -530,7 +530,7 @@ static gboolean HavingCache(const char *dname)
         {    
 			return FALSE;
         }    
-		if(!CacheFileExpiration(file))
+		if(GetCacheFileAge(file) >= 604800)
         {    
 			return FALSE;
         }    
