@@ -168,7 +168,7 @@ GetLocalSoftAppDetails (PkClient       *client,
 						 "score",
 						  0.5);
 
-    s_size = g_strdup_printf ("%.2f",(float)size/(1024*1024));
+    s_size = g_strdup_printf ("%.2f MB",(float)size/(1024*1024));
 	soft_app_message_set_size(Message,s_size);
 	g_key_file_set_string(kconfig,
 			             "soft-app-store",
@@ -254,12 +254,10 @@ GetLocalDetailsProgress(PkProgress    *progress,
 static void SetSoftIconMsg(const char *dirname,const char *desktop_name)
 {
     FILE *s_fp = NULL;
-    int   d_fd = 0;
-    char *home,*fname;
+    char *fname;
     char  ReadBuf[1024] = { 0 };
 	GKeyFile         *kconfig;
 
-	home = getenv("HOME");
     s_fp = fopen(desktop_name,"r");
     if(s_fp == NULL)
     {
@@ -267,7 +265,6 @@ static void SetSoftIconMsg(const char *dirname,const char *desktop_name)
     }   
     kconfig = g_key_file_new();
 	fname = CreateCacheFile(dirname,"soft_icon");
-    d_fd = open(fname,O_RDWR|O_CREAT,S_IRUSR|S_IWUSR);
     while((fgets(ReadBuf,1024,s_fp)) != NULL)
     {
         if(g_strrstr(ReadBuf,"Icon=") != NULL)
@@ -530,9 +527,13 @@ static gboolean HavingCache(const char *dname)
 	{
         g_autoptr(GFile) file = g_file_new_for_path (cache_file);
 		if(!CacheFileIsEmpty(file))
+        {    
 			return FALSE;
+        }    
 		if(!CacheFileExpiration(file))
+        {    
 			return FALSE;
+        }    
 		return TRUE;
 	}
 
@@ -558,7 +559,7 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
             g_str_has_suffix (fn, ".metainfo.xml")) 
         {
             g_autofree gchar *filename = g_build_filename (path, fn, NULL);
-			if(HavingCache(fn))
+            if(HavingCache(fn))
 			{
 				package_id = soft_app_file_get_packageid_use_cache(fn);
 			}
@@ -747,7 +748,6 @@ void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
 	GtkWidget  *dialog;
 
     name  = soft_app_info_get_cache(app->details->info);
-	g_print("name = %s\r\n",name);
     dialog = gtk_message_dialog_new (GTK_WINDOW(app->MainWindow), 
                                      GTK_DIALOG_DESTROY_WITH_PARENT,
                                      GTK_MESSAGE_INFO, 

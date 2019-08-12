@@ -353,7 +353,8 @@ gboolean CacheFileExpiration (GFile *file)
     g_autofree gchar *mod_date = NULL;
     int    t_stamp;
     time_t ct;
-	
+    int    file_time;
+
     t_stamp = time(&ct);
 	info = g_file_query_info (file,
                               G_FILE_ATTRIBUTE_TIME_MODIFIED,
@@ -365,12 +366,9 @@ gboolean CacheFileExpiration (GFile *file)
 
 	g_file_info_get_modification_time (info, &time_val);
 	date_time = g_date_time_new_from_timeval_local (&time_val);
-	mod_date = g_date_time_format (date_time, "%Y%m%d%H%M%S");
-	struct tm* tmp_time = (struct tm*)malloc(sizeof(struct tm));
-	strptime(mod_date,"%Y%m%d%H%M%S",tmp_time); 
-	time_t t = mktime(tmp_time);  
-	free(tmp_time);
-	if(t_stamp - t >= 604800)
+    file_time = g_date_time_to_unix (date_time);
+	
+    if(t_stamp - file_time >= 604800)
 		return FALSE;
 	
 	return TRUE;
