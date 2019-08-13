@@ -41,6 +41,7 @@ typedef struct SoftAppCategory
     char        *soft_name;
     char        *icon_name;
     GPtrArray   *key_colors;
+
 }SoftAppCategory;
 typedef struct SoftAppCategoryClass
 {

@@ -22,6 +22,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "app-store.h"
+#include <json-c/json_tokener.h>
+#include <json-c/json.h>
+#include <json-c/bits.h>
 
 #define TYPEMSG    "<span foreground='red'font_desc='13'>%s </span>"
 
@@ -75,4 +78,6 @@ gboolean    CacheFileIsEmpty               (GFile      *file);
 
 uint        GetCacheFileAge            (GFile      *file);
 gboolean    SoftApprmtree              (const gchar *directory, GError **error);
+GPtrArray *GetJsonCategory(const char *data);
+char * GetJsonSpecifiedData (json_object *js,const char *SpecifiedData);
 #endif

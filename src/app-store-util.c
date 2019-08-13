@@ -18,7 +18,10 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
+#include <glib/gstdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -411,4 +414,108 @@ SoftApprmtree (const gchar *directory, GError **error)
     SoftAppStoreLog ("Debug","recursively removing directory '%s'", directory);
     return SoftAppRealrmtree (directory, error);
 }
+GPtrArray *GetJsonCategory(const char *data)
+{
+    json_object *js,*jvalue;
+    int i,len;
+    GPtrArray *array;
 
+    if(data == NULL)
+    {
+        SoftAppStoreLog ("Warning","GetJsonCategory data is NULL");
+        return NULL;
+    }    
+    js = json_tokener_parse(data);
+    if (is_error (js))
+    {
+        SoftAppStoreLog ("Warning","GetJsonCategory data in wrong format");
+        return NULL;
+    }
+    array = g_ptr_array_new ();
+    len = json_object_array_length (js);
+    for (i = 0; i < len; i++)
+    {
+        jvalue = json_object_array_get_idx(js, i);
+        g_ptr_array_add (array,jvalue);
+    }
+    json_object_put (js);
+    return array;
+}  
+static json_object *json_parse_array(json_object *js, const char *SpecifiedData) 
+{
+    enum json_type type;
+    int arraylen,i;
+    json_object *j;
+   
+    arraylen = json_object_array_length(js); /*Getting the length of the array*/
+    for (i = 0; i < arraylen; i++)
+    {
+        j = json_object_array_get_idx(js, i); /*Getting the array element at position i*/
+        type = json_object_get_type(j);
+        if (type == json_type_array)
+        {
+            json_parse_array(j, SpecifiedData);
+        }
+        else if(type != json_type_object)
+        {
+            return j;
+        }
+        else
+        {
+            GetJsonSpecifiedData(j,SpecifiedData);
+        }
+   }
+    
+    return NULL;
+}
+static char *JsonValue (enum json_type type,json_object *js)
+{
+    switch (type)
+    {
+        case json_type_boolean:
+            return g_strdup_printf ("%d",json_object_get_boolean(js));    
+        case json_type_double:
+            return g_strdup_printf ("%f",json_object_get_double(js));
+        case json_type_int:
+            return g_strdup_printf ("%d",json_object_get_int(js));
+        case json_type_string:
+            return json_object_get_string(js);
+        case json_type_null:
+            return NULL;
+        default:
+            return NULL;
+    }           
+}    
+char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
+{
+    enum json_type type;
+    json_object *j,*ja;
+
+    if (js == NULL)
+    {
+        SoftAppStoreLog ("Warning","GetJsonSpecifiedData %s is NULL",SpecifiedData);
+        return NULL;
+    }    
+    json_object_object_foreach(js, key, value)  /*Passing through every array element*/
+    {
+        type = json_object_get_type(value);
+        if (type == json_type_array)
+        {
+            ja = json_parse_array(js, SpecifiedData);
+            type = json_object_get_type (ja);
+            return JsonValue (type,ja);
+        }
+        else if (type == json_type_object)
+        {
+            j = json_object_object_get(js, key);
+            GetJsonSpecifiedData (j,SpecifiedData); 
+        }    
+        if (g_strcmp0(key,"url") != 0)
+        {
+            continue;
+        }   
+        return JsonValue(type,value);
+
+    }
+    return NULL;
+}    

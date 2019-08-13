@@ -90,6 +90,7 @@ gtk_req_version = '>= 3.0.0'
 packagekit_rep_version = '>=1.0.3'
 appstream_deps = dependency('appstream-glib')
 libsoup_deps = dependency('libsoup-2.4')
+jsonc_deps  = dependency('json-c')
 gtk_deps = dependency('gtk+-3.0', version: gtk_req_version)
 pkgkit_deps = dependency('packagekit-glib2',version: packagekit_rep_version)
 # Configure data
