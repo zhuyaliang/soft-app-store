@@ -28,8 +28,11 @@
 #include "app-store-pkgkit.h"
 #include "app-store-details.h"
 #include <appstream-glib.h>
+#include <libsoup/soup.h>
 
 #define _(STRING)  gettext(STRING)   
+#define STORESERVERADDR    "http://127.0.0.1"
+#define STORESERVERPOER     8000
 
 typedef struct 
 {
@@ -41,6 +44,8 @@ typedef struct
     GtkWidget        *StoreStack;
     GtkWidget        *LocalBox;
     GtkWidget        *UpdateBox;
+	GtkWidget        *StoreFlowbox;
+    GtkWidget        *StoreRecmHbox;
     GtkWidget        *StackCategoryBox;
     GtkWidget        *StackDetailsBox;
     GtkWidget        *StackSearchBox;
@@ -52,6 +57,8 @@ typedef struct
 	GtkWidget        *sw;
     SoftAppPkgkit    *pkg;
 	SoftAppDetails   *details;
+	SoupSession      *SoupSession;
+    SoupMessage      *SoupMessage;
     AsApp            *asapp;
 	gint              index;
 	uint              per;
