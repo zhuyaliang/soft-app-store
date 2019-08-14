@@ -79,5 +79,6 @@ gboolean    CacheFileIsEmpty               (GFile      *file);
 uint        GetCacheFileAge            (GFile      *file);
 gboolean    SoftApprmtree              (const gchar *directory, GError **error);
 GPtrArray *GetJsonCategory(const char *data);
-char * GetJsonSpecifiedData (json_object *js,const char *SpecifiedData);
+GPtrArray *GetJsonSubCategory (const char *data);
+const char * GetJsonSpecifiedData (json_object *js,const char *SpecifiedData);
 #endif

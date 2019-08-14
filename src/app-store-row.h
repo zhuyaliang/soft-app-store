@@ -52,7 +52,6 @@ typedef struct SoftAppMessage
     char        *soft_url;
     char        *soft_license;
     char        *soft_package;
-	gboolean     soft_type;
 	char        *soft_size;
 	char        *soft_ids;
 	char        *cache;

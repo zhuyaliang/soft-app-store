@@ -36,6 +36,15 @@ typedef struct SoftAppThumbnail
     GObject parent_instance;
     char   *soft_name;
     char   *icon_name;
+    char   *description;
+    char   *sumary;
+    char   *pkgname;
+    char   *version;
+    char   *licenses;
+    char   *arch;
+    char   *size;
+    char   *homepage;
+    char   *screenshot_url;
     float   soft_score;
 }SoftAppThumbnail;
 
@@ -83,6 +92,51 @@ const gchar      *soft_app_thumbnail_get_icon                (SoftAppThumbnail *
 
 void              soft_app_thumbnail_set_icon                (SoftAppThumbnail *thb,
                                                               const gchar      *soft_icon);
+
+const gchar      *soft_app_thumbnail_get_sumary              (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_sumary              (SoftAppThumbnail *thb,
+                                                              const gchar      *sumary);
+
+const gchar      *soft_app_thumbnail_get_description         (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_description         (SoftAppThumbnail *thb,
+                                                              const gchar      *description);
+
+const gchar      *soft_app_thumbnail_get_pkgname             (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_pkgname             (SoftAppThumbnail *thb,
+                                                              const gchar      *pkgname);
+
+const gchar      *soft_app_thumbnail_get_arch                (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_arch                (SoftAppThumbnail *thb,
+                                                              const gchar      *arch);
+
+const gchar      *soft_app_thumbnail_get_size                (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_size                (SoftAppThumbnail *thb,
+                                                              const gchar      *size);
+
+const gchar      *soft_app_thumbnail_get_version             (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_version             (SoftAppThumbnail *thb,
+                                                              const gchar      *version);
+
+const gchar      *soft_app_thumbnail_get_licenses            (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_licenses            (SoftAppThumbnail *thb,
+                                                              const gchar      *licenses);
+
+const gchar      *soft_app_thumbnail_get_homepage            (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_homepage            (SoftAppThumbnail *thb,
+                                                              const gchar      *homepage);
+
+const gchar      *soft_app_thumbnail_get_screenurl           (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_screenurl           (SoftAppThumbnail *thb,
+                                                              const gchar      *screenshot_url);
 
 float             soft_app_thumbnail_get_score               (SoftAppThumbnail *thb);
 

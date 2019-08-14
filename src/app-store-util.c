@@ -438,7 +438,6 @@ GPtrArray *GetJsonCategory(const char *data)
         jvalue = json_object_array_get_idx(js, i);
         g_ptr_array_add (array,jvalue);
     }
-    json_object_put (js);
     return array;
 }  
 static json_object *json_parse_array(json_object *js, const char *SpecifiedData) 
@@ -468,7 +467,7 @@ static json_object *json_parse_array(json_object *js, const char *SpecifiedData)
     
     return NULL;
 }
-static char *JsonValue (enum json_type type,json_object *js)
+static const char *JsonValue (enum json_type type,json_object *js)
 {
     switch (type)
     {
@@ -486,7 +485,7 @@ static char *JsonValue (enum json_type type,json_object *js)
             return NULL;
     }           
 }    
-char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
+const char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
 {
     enum json_type type;
     json_object *j,*ja;
@@ -501,7 +500,7 @@ char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
         type = json_object_get_type(value);
         if (type == json_type_array)
         {
-            ja = json_parse_array(js, SpecifiedData);
+            ja = json_parse_array(value, SpecifiedData);
             type = json_object_get_type (ja);
             return JsonValue (type,ja);
         }
@@ -510,7 +509,7 @@ char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
             j = json_object_object_get(js, key);
             GetJsonSpecifiedData (j,SpecifiedData); 
         }    
-        if (g_strcmp0(key,"url") != 0)
+        if (g_strcmp0(key,SpecifiedData) != 0)
         {
             continue;
         }   
@@ -518,4 +517,38 @@ char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
 
     }
     return NULL;
+}    
+GPtrArray *GetJsonSubCategory (const char *data)
+{
+    json_object *js,*jvalue;
+    enum json_type type;
+    GPtrArray *array;
+    int i,len;
+
+    if(data == NULL)
+    {
+        SoftAppStoreLog ("Warning","GetJsonSubCategory data is NULL");
+        return NULL;
+    }    
+    js = json_tokener_parse(data);
+    if (is_error (js))
+    {
+        SoftAppStoreLog ("Warning","GetJsonSubCategory data in wrong format");
+        return NULL;
+    }
+    array = g_ptr_array_new ();
+    json_object_object_foreach(js, key, value)  /*Passing through every array element*/
+    {
+        type = json_object_get_type(value);
+        if (type == json_type_array)
+        {
+            len = json_object_array_length (value);
+            for (i = 0; i < len; i++)
+            {
+                jvalue = json_object_array_get_idx(value, i);
+                g_ptr_array_add (array,jvalue);
+            }
+        }
+    }
+    return array;
 }    

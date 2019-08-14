@@ -124,8 +124,33 @@ soft_app_category_set_icon (SoftAppCategory *category,
 {
     g_free (category->icon_name);
     category->icon_name = g_strdup (icon);
+}
+void
+soft_app_category_set_suburl (SoftAppCategory *category, 
+                              const gchar     *url)
+{
+    g_free (category->suburl);
+    category->suburl = g_strdup (url);
 }  
 
+const gchar *
+soft_app_category_get_suburl (SoftAppCategory *category)
+{
+    return category->suburl;
+}
+
+void
+soft_app_category_set_subnum (SoftAppCategory *category, 
+                              int              subnum)
+{
+    category->subnum = subnum;
+}  
+
+int
+soft_app_category_get_subnum (SoftAppCategory *category)
+{
+    return category->subnum;
+}
 GPtrArray *
 soft_app_category_get_key_colors (SoftAppCategory *category)
 {
@@ -148,6 +173,7 @@ soft_app_category_finalize (GObject *object)
     g_ptr_array_unref (category->key_colors);
     g_free (category->soft_name);
     g_free (category->icon_name);
+    g_free (category->suburl);
 }
 
 static void

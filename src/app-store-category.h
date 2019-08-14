@@ -40,6 +40,8 @@ typedef struct SoftAppCategory
     
     char        *soft_name;
     char        *icon_name;
+    char        *suburl;
+    int          subnum;
     GPtrArray   *key_colors;
 
 }SoftAppCategory;
@@ -82,6 +84,16 @@ const gchar      *soft_app_category_get_icon                (SoftAppCategory *ca
 
 void              soft_app_category_set_icon                (SoftAppCategory *category,
                                                              const gchar     *icon);
+
+const gchar      *soft_app_category_get_suburl              (SoftAppCategory *category);
+
+void              soft_app_category_set_suburl              (SoftAppCategory *category,
+                                                             const gchar     *suburl);
+
+int               soft_app_category_get_subnum              (SoftAppCategory *category);
+
+void              soft_app_category_set_subnum              (SoftAppCategory *category,
+                                                             int              subnum);
 
 GPtrArray        *soft_app_category_get_key_colors          (SoftAppCategory *category);
 

@@ -40,7 +40,6 @@ typedef struct SoftAppInfo
 	char        *comment;
 	char        *button_name;
 	float        score;
-	char        *screenshot;
 	char        *screenshot_url;
 	char        *explain;
 	char        *version;

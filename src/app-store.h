@@ -45,6 +45,7 @@ typedef struct
     GtkWidget        *LocalBox;
     GtkWidget        *UpdateBox;
 	GtkWidget        *StoreFlowbox;
+	GtkWidget        *SubFlowbox;
     GtkWidget        *StoreRecmHbox;
     GtkWidget        *StackCategoryBox;
     GtkWidget        *StackDetailsBox;

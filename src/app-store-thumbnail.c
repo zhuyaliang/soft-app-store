@@ -225,6 +225,62 @@ soft_app_thumbnail_set_icon (SoftAppThumbnail  *thb,
     thb->icon_name = g_strdup (icon);
 }  
 
+const gchar *
+soft_app_thumbnail_get_sumary (SoftAppThumbnail *thb)
+{
+    return thb->sumary;
+}
+
+void
+soft_app_thumbnail_set_sumary (SoftAppThumbnail  *thb, 
+                               const gchar       *sumary)
+{
+    g_free (thb->sumary);
+    thb->sumary = g_strdup (sumary);
+}  
+
+const gchar *
+soft_app_thumbnail_get_description (SoftAppThumbnail *thb)
+{
+    return thb->description;
+}
+
+void
+soft_app_thumbnail_set_description (SoftAppThumbnail  *thb, 
+                                    const gchar       *description)
+{
+    g_free (thb->description);
+    thb->description = g_strdup (description);
+}  
+
+const gchar *
+soft_app_thumbnail_get_pkgname (SoftAppThumbnail *thb)
+{
+    return thb->pkgname;
+}
+
+void
+soft_app_thumbnail_set_pkgname (SoftAppThumbnail  *thb, 
+                                const gchar       *pkgname)
+{
+    g_free (thb->pkgname);
+    thb->pkgname = g_strdup (pkgname);
+}  
+
+const gchar *
+soft_app_thumbnail_get_version (SoftAppThumbnail *thb)
+{
+    return thb->version;
+}
+
+void
+soft_app_thumbnail_set_version (SoftAppThumbnail  *thb, 
+                                const gchar       *version)
+{
+    g_free (thb->version);
+    thb->version = g_strdup (version);
+}  
+
 static void
 soft_app_thumbnail_finalize (GObject *object)
 {
@@ -232,7 +288,85 @@ soft_app_thumbnail_finalize (GObject *object)
 
     g_free (thb->soft_name);
     g_free (thb->icon_name);
+    g_free (thb->sumary);
+    g_free (thb->description);
+    g_free (thb->pkgname);
+    g_free (thb->version);
+    g_free (thb->arch);
+    g_free (thb->size);
+    g_free (thb->licenses);
+    g_free (thb->homepage);
+    g_free (thb->screenshot_url);
 }
+
+const gchar *
+soft_app_thumbnail_get_screenurl (SoftAppThumbnail *thb)
+{
+    return thb->screenshot_url;
+}
+
+void
+soft_app_thumbnail_set_screenurl (SoftAppThumbnail  *thb, 
+                                  const gchar       *screenshot_url)
+{
+    g_free (thb->screenshot_url);
+    thb->screenshot_url = g_strdup (screenshot_url);
+}  
+const gchar *
+soft_app_thumbnail_get_licenses (SoftAppThumbnail *thb)
+{
+    return thb->licenses;
+}
+
+void
+soft_app_thumbnail_set_licenses (SoftAppThumbnail  *thb, 
+                                 const gchar       *licenses)
+{
+    g_free (thb->licenses);
+    thb->licenses = g_strdup (licenses);
+}  
+
+const gchar *
+soft_app_thumbnail_get_arch (SoftAppThumbnail *thb)
+{
+    return thb->arch;
+}
+
+void
+soft_app_thumbnail_set_size (SoftAppThumbnail  *thb, 
+                             const gchar       *size)
+{
+    g_free (thb->size);
+    thb->size = g_strdup (size);
+}  
+
+const gchar *
+soft_app_thumbnail_get_size (SoftAppThumbnail *thb)
+{
+    return thb->size;
+}
+
+void
+soft_app_thumbnail_set_arch (SoftAppThumbnail  *thb, 
+                             const gchar       *size)
+{
+    g_free (thb->size);
+    thb->size = g_strdup (size);
+}
+
+const gchar *
+soft_app_thumbnail_get_homepage (SoftAppThumbnail *thb)
+{
+    return thb->homepage;
+}
+
+void
+soft_app_thumbnail_set_homepage (SoftAppThumbnail  *thb, 
+                                 const gchar       *homepage)
+{
+    g_free (thb->homepage);
+    thb->homepage = g_strdup (homepage);
+}  
 
 static void
 soft_app_thumbnail_class_init (SoftAppThumbnailClass *klass)

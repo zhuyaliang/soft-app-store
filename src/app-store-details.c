@@ -438,16 +438,6 @@ void soft_app_info_set_button (SoftAppInfo *info,
 	g_free (info->button_name);
     info->button_name = g_strdup (button_name);
 }
-const char *soft_app_info_get_screenshot (SoftAppInfo *info)
-{
-	return info->screenshot; 
-}
-void soft_app_info_set_screenshot (SoftAppInfo *info,
-		                           const char  *screenshot_name)
-{
-	g_free (info->screenshot);
-    info->screenshot = g_strdup (screenshot_name);
-}
 const char *soft_app_info_get_explain (SoftAppInfo *info)
 {
 	return info->explain; 
@@ -574,7 +564,6 @@ soft_app_info_finalize (GObject *object)
     g_free (info->icon_name);
     g_free (info->comment);
     g_free (info->button_name);
-    g_free (info->screenshot);
     g_free (info->screenshot_url);
     g_free (info->explain);
     g_free (info->version);
@@ -619,6 +608,11 @@ void CreateRecommendDetails(gpointer d,gpointer data)
 	GtkFixed    *details;
 	const char  *name;
 	const char  *icon;
+	const char  *size;
+    const char  *pkgname;
+    const char  *version;
+	const char  *describing;
+	const char  *screenshot;
 	float        score;
 	GtkWidget   *install_button;
 	GtkWidget   *install_bar;
@@ -629,18 +623,26 @@ void CreateRecommendDetails(gpointer d,gpointer data)
 	
 	name = soft_app_thumbnail_get_name(tile->thb);
 	icon = soft_app_thumbnail_get_icon(tile->thb);
+    pkgname = soft_app_thumbnail_get_pkgname (tile->thb);
+    version = soft_app_thumbnail_get_version (tile->thb);
 	score = soft_app_thumbnail_get_score(tile->thb);
+	size  = soft_app_thumbnail_get_size(tile->thb);
+    describing = soft_app_thumbnail_get_description (tile->thb); 
+    screenshot = soft_app_thumbnail_get_screenurl (tile->thb);
+
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
 	soft_app_info_set_comment(info,"manage local time and time zone");
 	soft_app_info_set_button(info,"install");
 	soft_app_info_set_score(info,score);
-	soft_app_info_set_screenshot(info,"/tmp/time.png");
-	soft_app_info_set_explain(info,"This function simply calls local time zone date ntp sync net time hellow world world hello  get depends on some condition.");
-	soft_app_info_set_version(info,"v1.1.1");
+	soft_app_info_set_screenshot_url(info,screenshot);
+    soft_app_info_set_explain(info,describing);
+	soft_app_info_set_version(info,version);
 	soft_app_info_set_protocol(info,"GPL-3.0");
 	soft_app_info_set_source(info,"github.com/zhuyaliang");
-	soft_app_info_set_size(info,"12M");
+	soft_app_info_set_size(info,size);
+	soft_app_info_set_package(info,pkgname);
+	soft_app_info_set_action(info,STOREAPPSOFT);
 	
 	details = soft_app_details_new(info);
     gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
@@ -680,7 +682,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     GPtrArray   *screenshots;
 	AsScreenshot *as_shot;
     AsImage     *im = NULL;
-    const char  *screenshot_url;
+    const char  *screenshot_url = NULL;
 
     soft_app_container_remove_all (GTK_CONTAINER (app->StackDetailsBox));
     sw = gtk_scrolled_window_new (NULL, NULL);
@@ -692,9 +694,12 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     icon = soft_app_message_get_icon(row->Message);
 	score = soft_app_message_get_score(row->Message);
     screenshots = as_app_get_screenshots(AS_APP(row->Message));
-    as_shot = g_ptr_array_index (screenshots, 0);
-    im = as_screenshot_get_image (as_shot,AS_IMAGE_LARGE_WIDTH,AS_IMAGE_LARGE_HEIGHT);
-    screenshot_url = as_image_get_url (im);
+    if (screenshots->len >= 1)
+    {    
+        as_shot = g_ptr_array_index (screenshots, 0);
+        im = as_screenshot_get_image (as_shot,AS_IMAGE_LARGE_WIDTH,AS_IMAGE_LARGE_HEIGHT);
+        screenshot_url = as_image_get_url (im);
+    }
     explain = as_app_get_description(AS_APP(row->Message),NULL);
     version = soft_app_message_get_version(row->Message);
     license = soft_app_message_get_license(row->Message);
@@ -710,7 +715,6 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_comment(info,summary);
 	soft_app_info_set_button(info,_("removed"));
 	soft_app_info_set_score(info,score);
-	soft_app_info_set_screenshot(info,ICONDIR UNKNOWPNG);
 	soft_app_info_set_screenshot_url(info,screenshot_url);
 	soft_app_info_set_explain(info,explain);
 	soft_app_info_set_version(info,version);
