@@ -7,4 +7,6 @@ src/app-store-pkgkit.c
 src/app-store-row.c
 src/app-store-thumbnail.c
 src/app-store-details.c
+src/app-store-search.c
+src/app-store-screenshot.c
 src/main.c

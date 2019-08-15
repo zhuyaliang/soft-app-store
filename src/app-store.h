@@ -38,6 +38,7 @@ typedef struct
 {
     GtkWidget        *MainWindow;
     GtkWidget        *Header;
+	GtkWidget        *WelcomeBar;
     GtkWidget        *NoteBook;
     GtkWidget        *NoteName;
 	GtkWidget        *StoreBox;

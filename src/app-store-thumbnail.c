@@ -142,14 +142,20 @@ static void
 soft_app_thumbnail_tile_init (SoftAppThumbnailTile *tile)
 {
     GtkWidget *vbox,*hbox;
-    
+	//GtkWidget *image;    
     gtk_widget_set_size_request(GTK_WIDGET (tile), 110,100);
     
     tile->event_box = gtk_event_box_new();
     gtk_container_add (GTK_CONTAINER (tile), tile->event_box);
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
     gtk_container_add (GTK_CONTAINER (tile->event_box), vbox);
-    
+/*
+    image = gtk_image_new_from_icon_name ("software-installed-symbolic",GTK_ICON_SIZE_MENU);
+    gtk_widget_set_halign (image,GTK_ALIGN_END);
+    gtk_widget_set_valign (image,GTK_ALIGN_END);
+    gtk_box_pack_start(GTK_BOX(vbox),image ,TRUE, TRUE, 0);
+*/
+
     tile->image = gtk_image_new();
     gtk_box_pack_start(GTK_BOX(vbox),tile->image ,TRUE, TRUE, 0);
     

@@ -74,7 +74,7 @@ static void InitMainWindow(SoftAppStore *app)
     gtk_window_set_position(GTK_WINDOW(app->MainWindow), GTK_WIN_POS_CENTER);
     gtk_window_set_title(GTK_WINDOW(app->MainWindow),_("Soft App Store")); 
     gtk_container_set_border_width(GTK_CONTAINER(app->MainWindow),10);
-    gtk_widget_set_size_request(app->MainWindow, 1000, 600);
+    gtk_widget_set_size_request(app->MainWindow, 1200, 600);
     g_signal_connect(G_OBJECT(app->MainWindow), 
                     "delete-event",
                      G_CALLBACK(on_window_quit),
@@ -103,12 +103,75 @@ static void InitMainWindow(SoftAppStore *app)
     }    
     g_free(dname);
 }
+static gboolean
+draw_text (GtkWidget *da,
+           cairo_t   *cr,
+           gpointer   data)
+{
+	cairo_pattern_t *pattern;
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+	int text_w,text_h,width,higth;
+	const char *text = (const char *)data; 
+	cairo_save (cr);
 
+	layout = gtk_widget_create_pango_layout (da, text);
+	desc = pango_font_description_from_string ("sans bold 23");
+	pango_layout_set_font_description (layout, desc);
+	pango_font_description_free (desc);
+
+	pango_layout_get_size (layout,&text_w,&text_h); 
+	width = (1200  - PANGO_PIXELS_FLOOR(text_w)) / 2;
+	higth = ((600 - PANGO_PIXELS_FLOOR(text_h)) / 4) * 3;
+	cairo_move_to (cr, width, higth);
+	pango_cairo_layout_path (cr, layout);
+	g_object_unref (layout);
+
+	pattern = cairo_pattern_create_linear (0.0, 0.0,
+		                                   gtk_widget_get_allocated_width (da),
+                                           gtk_widget_get_allocated_height (da));
+	cairo_pattern_add_color_stop_rgb (pattern, 0.0, 1.0, 0.0, 0.0);
+	cairo_pattern_add_color_stop_rgb (pattern, 0.2, 1.0, 0.0, 0.0);
+	cairo_pattern_add_color_stop_rgb (pattern, 0.3, 1.0, 1.0, 0.0);
+	cairo_pattern_add_color_stop_rgb (pattern, 0.4, 0.0, 1.0, 0.0);
+	cairo_pattern_add_color_stop_rgb (pattern, 0.6, 0.0, 1.0, 1.0);
+	cairo_pattern_add_color_stop_rgb (pattern, 0.7, 0.0, 0.0, 1.0);
+	cairo_pattern_add_color_stop_rgb (pattern, 0.8, 1.0, 0.0, 1.0);
+	cairo_pattern_add_color_stop_rgb (pattern, 1.0, 1.0, 0.0, 1.0);
+
+	cairo_set_source (cr, pattern);
+	cairo_fill_preserve (cr);
+
+	cairo_pattern_destroy (pattern);
+
+	cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+	cairo_set_line_width (cr, 0.5);
+	cairo_stroke (cr);
+
+	cairo_restore (cr);
+
+	return TRUE;
+}
+static gboolean UpdateProgress (gpointer data)
+{
+	static double i = 0.0;
+	SoftAppStore *app = (SoftAppStore *)data;
+
+	if (i <= 1.0)
+	{
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(app->WelcomeBar),i);
+		i += 0.2;
+		return TRUE;
+	}
+	gtk_stack_set_visible_child_name (GTK_STACK(app->StoreStack),"main-page");
+	return FALSE;
+}
 static void InitWelcomeInterface (SoftAppStore *app)
 {
     GtkWidget *overlay;
     g_autoptr(GdkPixbuf) pixbuf = NULL;
     GtkWidget *image;
+	GtkWidget *da;
 
     overlay = gtk_overlay_new ();
     pixbuf = gdk_pixbuf_new_from_file(ICONDIR APPICON,NULL);
@@ -118,7 +181,18 @@ static void InitWelcomeInterface (SoftAppStore *app)
     gtk_overlay_set_overlay_pass_through (GTK_OVERLAY (overlay), image, TRUE);
     gtk_widget_set_halign (image, GTK_ALIGN_CENTER);
     gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
-    gtk_stack_add_named (GTK_STACK (app->StoreStack), 
+	da = gtk_drawing_area_new ();
+	
+    gtk_overlay_add_overlay (GTK_OVERLAY (overlay), da);
+	g_signal_connect (da, 
+					 "draw",
+                      G_CALLBACK (draw_text), 
+					 _("Loading software catalog"));
+
+    app->WelcomeBar =  gtk_progress_bar_new ();
+    gtk_overlay_add_overlay (GTK_OVERLAY (overlay), app->WelcomeBar);
+	g_timeout_add (250,UpdateProgress,app);
+	gtk_stack_add_named (GTK_STACK (app->StoreStack), 
                          overlay,
                         "welcome-page"); 
 }    

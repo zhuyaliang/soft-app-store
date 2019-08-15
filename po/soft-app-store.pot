@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: soft-app-store\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-25 17:17+0800\n"
+"POT-Creation-Date: 2019-08-15 21:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,116 +17,176 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app-store-local.c:32 src/app-store-store.c:75
-msgid "time-admin"
+#: src/app-store-local.c:552
+msgid "open metadata"
 msgstr ""
 
-#: src/app-store-local.c:35
-msgid ""
-"Marks row as changed, causing any state that depends on this to be updated."
-"This affects sorting, filtering and headers."
+#: src/app-store-local.c:805
+msgid "Efforts are being made to load the local software list"
 msgstr ""
 
-#: src/app-store-store.c:94
-msgid "user-admin"
-msgstr ""
-
-#: src/app-store-store.c:208
+#: src/app-store-store.c:465
 msgid "Subclass"
 msgstr ""
 
-#: src/app-store-store.c:217
+#: src/app-store-store.c:474
 msgid "sort"
 msgstr ""
 
-#: src/app-store-store.c:257
+#: src/app-store-store.c:507
 msgid "soft category"
 msgstr ""
 
-#: src/app-store-store.c:279
+#: src/app-store-store.c:529
 msgid "soft recommend"
 msgstr ""
 
-#: src/app-store-util.c:157
+#: src/app-store-util.c:163
 msgid "_Return"
 msgstr ""
 
-#: src/app-store-util.c:168
+#: src/app-store-util.c:174
 msgid "Message"
 msgstr ""
 
-#: src/app-store-row.c:58
+#: src/app-store-row.c:50
 msgid "uninstall"
 msgstr ""
 
-#: src/app-store-details.c:174
+#: src/app-store-details.c:244
+msgid "file list"
+msgstr ""
+
+#: src/app-store-details.c:278
 msgid "details"
 msgstr ""
 
-#: src/app-store-details.c:184
+#: src/app-store-details.c:294
 msgid "version"
 msgstr ""
 
-#: src/app-store-details.c:189
+#: src/app-store-details.c:304
 msgid "protocol"
 msgstr ""
 
-#: src/app-store-details.c:194
+#: src/app-store-details.c:314
 msgid "sources"
 msgstr ""
 
-#: src/app-store-details.c:199
+#: src/app-store-details.c:324
 msgid "size"
 msgstr ""
 
-#: src/app-store-details.c:207
+#: src/app-store-details.c:334
+msgid "arch"
+msgstr ""
+
+#: src/app-store-details.c:344
+msgid "package"
+msgstr ""
+
+#: src/app-store-details.c:356
 msgid "discuss"
 msgstr ""
 
-#: src/main.c:48
-msgid "Get Icon Fail"
+#: src/app-store-details.c:731
+msgid "removed"
+msgstr ""
+
+#: src/app-store-search.c:83
+msgid "Search for local packages enter the correct software name"
+msgstr ""
+
+#: src/app-store-search.c:87
+msgid "Search for store packages enter the correct software name"
+msgstr ""
+
+#: src/app-store-search.c:138
+msgid "Search soft"
+msgstr ""
+
+#: src/app-store-search.c:138
+msgid "The local package was not loaded successfully. Please try again later"
+msgstr ""
+
+#. TRANSLATORS: this is when we try to download a screenshot and
+#. * we get back 404
+#: src/app-store-screenshot.c:318
+msgid "Screenshot not found"
+msgstr ""
+
+#. TRANSLATORS: possibly image file corrupt or not an image
+#: src/app-store-screenshot.c:334
+msgid "Failed to load image"
+msgstr ""
+
+#: src/app-store-screenshot.c:397
+msgid "Screenshot size not found"
+msgstr ""
+
+#. TRANSLATORS: this is when we try create the cache directory
+#. * but we were out of space or permission was denied
+#: src/app-store-screenshot.c:433
+msgid "Could not create cache"
+msgstr ""
+
+#: src/app-store-screenshot.c:456
+msgid "Screenshot not valid"
+msgstr ""
+
+#. TRANSLATORS: this is when networking is not available
+#: src/app-store-screenshot.c:472
+msgid "Screenshot not available"
 msgstr ""
 
 #: src/main.c:61
+msgid "Get Icon Fail"
+msgstr ""
+
+#: src/main.c:75
 msgid "Soft App Store"
 msgstr ""
 
-#: src/main.c:91
+#: src/main.c:117
+msgid "Loading software catalog"
+msgstr ""
+
+#: src/main.c:187
 msgid "all store"
 msgstr ""
 
-#: src/main.c:97
+#: src/main.c:193
 msgid "local install"
 msgstr ""
 
-#: src/main.c:103
+#: src/main.c:199
 msgid "local update"
 msgstr ""
 
-#: src/main.c:133 src/main.c:175
+#: src/main.c:234 src/main.c:276
 msgid "open file"
 msgstr ""
 
-#: src/main.c:133
+#: src/main.c:234
 msgid "Create pid file failed"
 msgstr ""
 
-#: src/main.c:142
+#: src/main.c:243
 msgid "write file"
 msgstr ""
 
-#: src/main.c:142
+#: src/main.c:243
 msgid "write pid file failed"
 msgstr ""
 
-#: src/main.c:175
+#: src/main.c:276
 msgid "open pid file failed"
 msgstr ""
 
-#: src/main.c:180
+#: src/main.c:281
 msgid "read file"
 msgstr ""
 
-#: src/main.c:180
+#: src/main.c:281
 msgid "read pid file failed"
 msgstr ""
