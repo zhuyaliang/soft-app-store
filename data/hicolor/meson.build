@@ -3,7 +3,8 @@ actions_icons = [
   ['22x22', 'soft-app-store.png'],
   ['24x24', 'soft-app-store.png'],
   ['32x32', 'soft-app-store.png'],
-  ['48x48', 'soft-app-store.png']
+  ['48x48', 'soft-app-store.png'],
+  ['64x64', 'soft-app-store.png']
 ]
 
 foreach icon: actions_icons

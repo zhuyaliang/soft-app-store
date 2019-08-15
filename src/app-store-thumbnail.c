@@ -373,10 +373,10 @@ soft_app_thumbnail_get_size (SoftAppThumbnail *thb)
 
 void
 soft_app_thumbnail_set_arch (SoftAppThumbnail  *thb, 
-                             const gchar       *size)
+                             const gchar       *arch)
 {
-    g_free (thb->size);
-    thb->size = g_strdup (size);
+    g_free (thb->arch);
+    thb->arch = g_strdup (arch);
 }
 
 const gchar *

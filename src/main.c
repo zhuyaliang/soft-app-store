@@ -46,7 +46,6 @@ static gboolean on_window_quit (GtkWidget    *widget,
         g_object_unref (app->pkg->package_sack);
     if (app->pkg->repos != NULL)
         g_hash_table_destroy (app->pkg->repos);
-    //g_free (app->pkg);
 
     gtk_main_quit();
     return TRUE;
@@ -104,6 +103,11 @@ static void InitMainWindow(SoftAppStore *app)
     }    
     g_free(dname);
 }
+
+static void InitWelcomInterface (SoftAppStore *app)
+{
+
+}    
 
 static void InitNoteBook (SoftAppStore *app)
 {
@@ -238,6 +242,10 @@ int main(int argc, char **argv)
     
     /* Create the main window */
 	InitMainWindow(&app);
+
+    /* Create Welcome interface*/
+    InitWelcomInterface (&app);
+
 	/* Create book page*/
 	InitNoteBook(&app);
 

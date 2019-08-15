@@ -173,16 +173,17 @@ SoupGetRichRecomInfo (SoupSession *session,
                           msg->reason_phrase);
         return;
     }
+
     js = json_tokener_parse(msg->response_body->data);
     name = GetJsonSpecifiedData (js,"name");
     icon = GetJsonSpecifiedData (js,"icon");
     score = atoi (GetJsonSpecifiedData (js,"score"));
-    sumary = GetJsonSpecifiedData (js,"sumary");
+    sumary = GetJsonSpecifiedData (js,"summary");
     destination = GetJsonSpecifiedData (js,"description");
     downnum = GetJsonSpecifiedData (js,"downloads");
     pkgname = GetJsonSpecifiedData (js,"pkgname");
-    licenses = GetJsonSpecifiedData (js,"licenses");
-    arch = GetJsonSpecifiedData (js,"arch");
+    licenses = GetJsonSpecifiedData (js,"license");
+    arch = GetJsonSpecifiedData (js,"platform");
     size = GetJsonSpecifiedData (js,"size");
     homepage = GetJsonSpecifiedData (js,"homepage");
     version = GetJsonSpecifiedData (js,"version");
@@ -306,12 +307,12 @@ SoupGetRichSubInfo (SoupSession *session,
     name = GetJsonSpecifiedData (js,"name");
     icon = GetJsonSpecifiedData (js,"icon");
     score = atoi (GetJsonSpecifiedData (js,"score"));
-    sumary = GetJsonSpecifiedData (js,"sumary");
+    sumary = GetJsonSpecifiedData (js,"summary");
     destination = GetJsonSpecifiedData (js,"description");
     downnum = GetJsonSpecifiedData (js,"downloads");
     pkgname = GetJsonSpecifiedData (js,"pkgname");
-    licenses = GetJsonSpecifiedData (js,"licenses");
-    arch = GetJsonSpecifiedData (js,"arch");
+    licenses = GetJsonSpecifiedData (js,"license");
+    arch = GetJsonSpecifiedData (js,"platform");
     size = GetJsonSpecifiedData (js,"size");
     homepage = GetJsonSpecifiedData (js,"homepage");
     version = GetJsonSpecifiedData (js,"version");
