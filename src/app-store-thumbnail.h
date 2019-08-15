@@ -15,6 +15,10 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifndef __APP_STORE_THUMBNAIL_H__
 #define __APP_STORE_THUMBNAIL_H__
 
@@ -36,6 +40,7 @@ typedef struct SoftAppThumbnail
     GObject parent_instance;
     char   *soft_name;
     char   *icon_name;
+    char   *downloads;
     char   *description;
     char   *sumary;
     char   *pkgname;
@@ -92,6 +97,11 @@ const gchar      *soft_app_thumbnail_get_icon                (SoftAppThumbnail *
 
 void              soft_app_thumbnail_set_icon                (SoftAppThumbnail *thb,
                                                               const gchar      *soft_icon);
+
+const gchar      *soft_app_thumbnail_get_downnum             (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_downnum             (SoftAppThumbnail *thb,
+                                                              const gchar      *downnum);
 
 const gchar      *soft_app_thumbnail_get_sumary              (SoftAppThumbnail *thb);
 

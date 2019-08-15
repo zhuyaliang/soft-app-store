@@ -41,6 +41,12 @@ soft_app_category_tile_refresh (SoftAppCategoryTile *tile)
                     soft_app_category_get_name (tile->cate),
                     TRUE);
 
+	SetLableFontType(tile->label_num,
+                    "black",
+                     11,
+                     soft_app_category_get_subnum (tile->cate),
+                     TRUE);
+
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
 				                  soft_app_category_get_icon (tile->cate),
 				                  GTK_ICON_SIZE_MENU);
@@ -84,6 +90,11 @@ soft_app_category_tile_init (SoftAppCategoryTile *tile)
     
     tile->label = gtk_label_new(NULL);
 	gtk_box_pack_start(GTK_BOX(hbox),tile->label ,FALSE,FALSE, 0);
+    
+    tile->label_num  = gtk_label_new(NULL);
+    gtk_widget_set_valign (tile->label_num,GTK_ALIGN_END);
+    gtk_widget_set_halign (tile->label_num,GTK_ALIGN_END);
+	gtk_box_pack_end(GTK_BOX(hbox),tile->label_num ,FALSE,FALSE, 0);
 
 }
 
@@ -141,12 +152,13 @@ soft_app_category_get_suburl (SoftAppCategory *category)
 
 void
 soft_app_category_set_subnum (SoftAppCategory *category, 
-                              int              subnum)
+                              const char      *subnum)
 {
-    category->subnum = subnum;
+    g_free (category->subnum);
+    category->subnum = g_strdup (subnum);
 }  
 
-int
+const char *
 soft_app_category_get_subnum (SoftAppCategory *category)
 {
     return category->subnum;
@@ -174,6 +186,7 @@ soft_app_category_finalize (GObject *object)
     g_free (category->soft_name);
     g_free (category->icon_name);
     g_free (category->suburl);
+    g_free (category->subnum);
 }
 
 static void

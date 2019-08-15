@@ -116,11 +116,11 @@ SoupGetStoreCategory (SoupSession *session,
             continue;
         }    
         cate = soft_app_category_new (name);
-        soft_app_category_set_icon (cate, msdata[i].icon);
-        gdk_rgba_parse (&key_color, msdata[i].key_colors);
+        soft_app_category_set_icon (cate, msdata[i % 9].icon);
+        gdk_rgba_parse (&key_color, msdata[i % 9].key_colors);
         soft_app_category_add_key_color (cate, &key_color);
         soft_app_category_set_suburl (cate,url);
-        soft_app_category_set_subnum (cate,atoi(subnum));
+        soft_app_category_set_subnum (cate,subnum);
         
         tile = soft_app_category_tile_new (cate);
         g_signal_connect (tile, 
@@ -132,60 +132,16 @@ SoupGetStoreCategory (SoupSession *session,
     }
     gtk_widget_show_all (app->StoreFlowbox);
 }    
-static void GetRecommendSoftInfo(SoftAppStore *app)
-{
-    SoftAppThumbnail *thb;
-    gint              i;
-    GtkWidget        *Recom;
-    GtkWidget        *fixed;
-    
-    for (i = 0; i< 8; i++)
-    {
-        thb = soft_app_thumbnail_new ();
-        soft_app_thumbnail_set_icon  (thb,"/tmp/time-admin.png");
-        soft_app_thumbnail_set_name  (thb,_("time-admin"));
-        soft_app_thumbnail_set_score (thb,i%5+0.5);
-
-        Recom = soft_app_thumbnail_tile_new (thb);
-        g_signal_connect (Recom, 
-                         "clicked",
-                          G_CALLBACK (SwitchPageToDetailsPage), 
-                          app);
-		fixed = gtk_fixed_new();
-		gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
-	    gtk_box_pack_start(GTK_BOX(app->StoreRecmHbox),fixed ,FALSE, FALSE, 16);
-
-    }   
-}   
-
-static GPtrArray *GetCategoryListInfo(SoftAppStore *app)
-{
-    SoftAppThumbnail *thb;
-    gint             i;
-    GPtrArray       *list = NULL;
-    
-    list = g_ptr_array_new ();
-    for (i = 0; i< 100; i++)
-    {
-        thb = soft_app_thumbnail_new ();
-        soft_app_thumbnail_set_icon  (thb,"/tmp/user-admin.png");
-        soft_app_thumbnail_set_name  (thb,_("user-admin"));
-        soft_app_thumbnail_set_score (thb,i%5+0.5);
-        g_ptr_array_add (list,thb);
-    }   
-
-    return list;
-}   
-
 static void
-SoupGetRichSubInfo (SoupSession *session,
-                    SoupMessage *msg,
-                    gpointer     data)
+SoupGetRichRecomInfo (SoupSession *session,
+                      SoupMessage *msg,
+                      gpointer     data)
 {
 
     SoftAppThumbnail *thb;
     json_object      *js;
     const char       *name;
+    const char       *icon;
     const char       *sumary;
     const char       *destination;
     const char       *pkgname;
@@ -195,9 +151,140 @@ SoupGetRichSubInfo (SoupSession *session,
     const char       *screenshot_url;
     const char       *version;
     const char       *size;
+    const char       *downnum;
     int               score;
     char             *screenshot;
     char             *s_size;
+    char             *icon_url;
+    GtkWidget        *fixed;
+    GtkWidget        *Recom;
+    
+    SoftAppStore *app = (SoftAppStore *)data;
+    if (msg->status_code == SOUP_STATUS_NOT_MODIFIED)
+    {
+        SoftAppStoreLog ("Warning","get Recommend SOUP_STATUS_NOT_MODIFIED");
+        return;
+    }
+    if (msg->status_code != SOUP_STATUS_OK)
+    {
+        SoftAppStoreLog ("Warning","get Recommend"
+                         "status code '%u': %s",
+                          msg->status_code,
+                          msg->reason_phrase);
+        return;
+    }
+    js = json_tokener_parse(msg->response_body->data);
+    name = GetJsonSpecifiedData (js,"name");
+    icon = GetJsonSpecifiedData (js,"icon");
+    score = atoi (GetJsonSpecifiedData (js,"score"));
+    sumary = GetJsonSpecifiedData (js,"sumary");
+    destination = GetJsonSpecifiedData (js,"description");
+    downnum = GetJsonSpecifiedData (js,"downloads");
+    pkgname = GetJsonSpecifiedData (js,"pkgname");
+    licenses = GetJsonSpecifiedData (js,"licenses");
+    arch = GetJsonSpecifiedData (js,"arch");
+    size = GetJsonSpecifiedData (js,"size");
+    homepage = GetJsonSpecifiedData (js,"homepage");
+    version = GetJsonSpecifiedData (js,"version");
+    screenshot_url = GetJsonSpecifiedData (js,"screenshots");
+    screenshot = g_strdup_printf ("%s:%d/media/%s",STORESERVERADDR,STORESERVERPOER,screenshot_url);
+    s_size = g_strdup_printf ("%.2f MB",atof(size) / 1024);
+    icon_url = g_strdup_printf ("%s:%d%s",STORESERVERADDR,STORESERVERPOER,icon);
+    
+    thb = soft_app_thumbnail_new ();
+    soft_app_thumbnail_set_icon  (thb,icon_url);
+    soft_app_thumbnail_set_name  (thb,name);
+    soft_app_thumbnail_set_score (thb,score);
+    soft_app_thumbnail_set_sumary (thb,sumary);
+    soft_app_thumbnail_set_downnum (thb,downnum);
+    soft_app_thumbnail_set_description (thb,destination);
+    soft_app_thumbnail_set_pkgname (thb,pkgname);
+    soft_app_thumbnail_set_licenses (thb,licenses);
+    soft_app_thumbnail_set_arch (thb,arch);
+    soft_app_thumbnail_set_size (thb,s_size);
+    soft_app_thumbnail_set_homepage (thb,homepage);
+    soft_app_thumbnail_set_version (thb,version);
+    soft_app_thumbnail_set_screenurl (thb,screenshot);
+
+    Recom = soft_app_thumbnail_tile_new (thb);
+    g_signal_connect (Recom, 
+                     "clicked",
+                      G_CALLBACK (SwitchPageToDetailsPage), 
+                      app);
+	fixed = gtk_fixed_new();
+	gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
+    gtk_box_pack_start(GTK_BOX(app->StoreRecmHbox),fixed ,FALSE, FALSE, 16);
+
+    gtk_widget_show_all (app->StoreRecmHbox);
+    g_free (screenshot);
+    g_free (s_size);
+    g_free (icon_url);
+
+}    
+static void
+SoupGetStoreRecommend (SoupSession *session,
+                       SoupMessage *msg,
+                       gpointer     data)
+{
+    GPtrArray       *list = NULL;
+    guint            i;
+    json_object     *js;
+    const char      *url;
+    SoupMessage     *SubMessage;
+    
+    SoftAppStore *app = (SoftAppStore *)data;
+    list = g_ptr_array_new ();
+    if (msg->status_code == SOUP_STATUS_NOT_MODIFIED)
+    {
+        SoftAppStoreLog ("Warning","get Recommend SOUP_STATUS_NOT_MODIFIED");
+        return;
+    }
+    if (msg->status_code != SOUP_STATUS_OK)
+    {
+        SoftAppStoreLog ("Warning","get Recommend"
+                         "status code '%u': %s",
+                          msg->status_code,
+                          msg->reason_phrase);
+        return;
+    }
+    list = GetJsonSubArrayType (msg->response_body->data);
+    for (i = 0; i < 8; i++)
+    {
+        js = g_ptr_array_index (list,i);
+        url = GetJsonSpecifiedData (js,"url");
+        
+	    SubMessage = soup_message_new (SOUP_METHOD_GET,url);
+        soup_session_queue_message (app->SoupSession,
+								    SubMessage,
+								    SoupGetRichRecomInfo,
+								    app);
+    }   
+    
+}    
+static void
+SoupGetRichSubInfo (SoupSession *session,
+                    SoupMessage *msg,
+                    gpointer     data)
+{
+
+    SoftAppThumbnail *thb;
+    json_object      *js;
+    const char       *name;
+    const char       *icon;
+    const char       *sumary;
+    const char       *destination;
+    const char       *pkgname;
+    const char       *licenses;
+    const char       *arch;
+    const char       *homepage;
+    const char       *screenshot_url;
+    const char       *version;
+    const char       *size;
+    const char       *downnum;
+    int               score;
+    char             *screenshot;
+    char             *s_size;
+    char             *icon_url;
     GtkWidget        *fixed;
     GtkWidget        *Recom;
     
@@ -217,9 +304,11 @@ SoupGetRichSubInfo (SoupSession *session,
     }
     js = json_tokener_parse(msg->response_body->data);
     name = GetJsonSpecifiedData (js,"name");
+    icon = GetJsonSpecifiedData (js,"icon");
     score = atoi (GetJsonSpecifiedData (js,"score"));
     sumary = GetJsonSpecifiedData (js,"sumary");
     destination = GetJsonSpecifiedData (js,"description");
+    downnum = GetJsonSpecifiedData (js,"downloads");
     pkgname = GetJsonSpecifiedData (js,"pkgname");
     licenses = GetJsonSpecifiedData (js,"licenses");
     arch = GetJsonSpecifiedData (js,"arch");
@@ -228,15 +317,15 @@ SoupGetRichSubInfo (SoupSession *session,
     version = GetJsonSpecifiedData (js,"version");
     screenshot_url = GetJsonSpecifiedData (js,"screenshots");
     screenshot = g_strdup_printf ("%s:%d/media/%s",STORESERVERADDR,STORESERVERPOER,screenshot_url);
-    //s_size = g_strdup_printf ("%f MB",atof(size) / 1024);
-    //g_print ("msg->response_body->data = %s  size = %s\r\n",screenshot,size);
-
+    s_size = g_strdup_printf ("%.2f MB",atof(size) / 1024);
+    icon_url = g_strdup_printf ("%s:%d%s",STORESERVERADDR,STORESERVERPOER,icon);
     
     thb = soft_app_thumbnail_new ();
-    soft_app_thumbnail_set_icon  (thb,"/tmp/user-admin.png");
+    soft_app_thumbnail_set_icon  (thb,icon_url);
     soft_app_thumbnail_set_name  (thb,name);
     soft_app_thumbnail_set_score (thb,score);
     soft_app_thumbnail_set_sumary (thb,sumary);
+    soft_app_thumbnail_set_downnum (thb,downnum);
     soft_app_thumbnail_set_description (thb,destination);
     soft_app_thumbnail_set_pkgname (thb,pkgname);
     soft_app_thumbnail_set_licenses (thb,licenses);
@@ -254,6 +343,9 @@ SoupGetRichSubInfo (SoupSession *session,
 	fixed = gtk_fixed_new();
     gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
     gtk_container_add (GTK_CONTAINER (app->SubFlowbox),fixed);
+    g_free (screenshot);
+    g_free (s_size);
+    g_free (icon_url);
     gtk_widget_show_all(app->SubFlowbox);
 
 }    
@@ -283,7 +375,7 @@ SoupGetStoreSubCategory (SoupSession *session,
                           msg->reason_phrase);
         return;
     }
-    list = GetJsonSubCategory (msg->response_body->data);
+    list = GetJsonSubArrayType (msg->response_body->data);
     
     for (i = 0; i < list->len; i++)
     {   
@@ -400,21 +492,6 @@ static void CreateStoreCategoryList(SoftAppStore *app,
 								SubMessage,
 								SoupGetStoreSubCategory,
 								app);
-/*
-    list = GetCategoryListInfo(app);
-    for (i = 0; i < list->len; i++)
-    {    
-        thb = SOFT_APP_THUMBNAIL (g_ptr_array_index (list, i));
-        Recom = soft_app_thumbnail_tile_new (thb);
-        g_signal_connect (Recom, 
-                         "clicked",
-                          G_CALLBACK (SwitchPageToDetailsPage), 
-                          app);
-		fixed = gtk_fixed_new();
-		gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
-        gtk_container_add (GTK_CONTAINER (flowbox),fixed);
-    }
-*/    
     gtk_widget_show_all(app->StackCategoryBox);
 }   
 
@@ -488,18 +565,14 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 								app);
     								
 	g_free (request);
-	request = g_strdup_printf ("%s/%d/recommend",STORESERVERADDR,STORESERVERPOER);
+	request = g_strdup_printf ("%s:%d/api/apps/recommend/",STORESERVERADDR,STORESERVERPOER);
 	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
     
 	app->StoreRecmHbox = RecommendSoftWindow(vbox);
-/*    
 	soup_session_queue_message (app->SoupSession,
 								app->SoupMessage,
 								SoupGetStoreRecommend,
-								app)
-*/								
-    GetRecommendSoftInfo(app);
-	
+								app);
 	g_free (request);
     return vbox;
 }

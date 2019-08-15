@@ -29,22 +29,28 @@ G_DEFINE_TYPE (SoftAppInfo,        soft_app_info,     G_TYPE_OBJECT)
 static void
 soft_app_details_refresh (SoftAppDetails *details)
 {
-	GdkPixbuf *pixbuf;
 	float      level;
     int        action;
 	const char *icon_name,*screenshot_url;
 
-	icon_name = soft_app_info_get_icon(details->info);
+    SoupSession *SoupSso;
+    SoupMessage *SoupMsg;
+	
+    icon_name = soft_app_info_get_icon(details->info);
     action = soft_app_info_get_action(details->info);
 	if(action == LOCALINSTALL)
     {
         gtk_image_set_from_icon_name(GTK_IMAGE(details->soft_image),icon_name,GTK_ICON_SIZE_DIALOG);
     }
     else
-    {    
-        pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
-	    soft_app_image_set_from_pixbuf(GTK_IMAGE(details->soft_image),pixbuf,65);
-        g_object_unref(pixbuf);
+    {   
+
+	    SoupSso = soup_session_new ();
+	    SoupMsg = soup_message_new (SOUP_METHOD_GET,icon_name);
+        soup_session_queue_message (SoupSso,
+	    					        SoupMsg,
+								    SoupGetSoftIcon,
+								    details->soft_image);
     }    
 	SetLableFontType(details->label_name,
                     "black",
@@ -608,7 +614,11 @@ void CreateRecommendDetails(gpointer d,gpointer data)
 	GtkFixed    *details;
 	const char  *name;
 	const char  *icon;
+    const char  *summary;
 	const char  *size;
+	const char  *arch;
+	const char  *licenses;
+	const char  *homepage;
     const char  *pkgname;
     const char  *version;
 	const char  *describing;
@@ -621,25 +631,30 @@ void CreateRecommendDetails(gpointer d,gpointer data)
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
 	
-	name = soft_app_thumbnail_get_name(tile->thb);
-	icon = soft_app_thumbnail_get_icon(tile->thb);
+	name = soft_app_thumbnail_get_name (tile->thb);
+	icon = soft_app_thumbnail_get_icon (tile->thb);
+    summary = soft_app_thumbnail_get_sumary (tile->thb);
     pkgname = soft_app_thumbnail_get_pkgname (tile->thb);
     version = soft_app_thumbnail_get_version (tile->thb);
-	score = soft_app_thumbnail_get_score(tile->thb);
-	size  = soft_app_thumbnail_get_size(tile->thb);
+	score = soft_app_thumbnail_get_score (tile->thb);
+	size  = soft_app_thumbnail_get_size (tile->thb);
+	arch  = soft_app_thumbnail_get_arch (tile->thb);
+	homepage  = soft_app_thumbnail_get_homepage (tile->thb);
+	licenses  = soft_app_thumbnail_get_licenses (tile->thb);
     describing = soft_app_thumbnail_get_description (tile->thb); 
     screenshot = soft_app_thumbnail_get_screenurl (tile->thb);
 
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
-	soft_app_info_set_comment(info,"manage local time and time zone");
+	soft_app_info_set_comment(info,summary);
 	soft_app_info_set_button(info,"install");
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot_url(info,screenshot);
     soft_app_info_set_explain(info,describing);
 	soft_app_info_set_version(info,version);
-	soft_app_info_set_protocol(info,"GPL-3.0");
-	soft_app_info_set_source(info,"github.com/zhuyaliang");
+	soft_app_info_set_arch(info,arch);
+	soft_app_info_set_protocol(info,licenses);
+	soft_app_info_set_source(info,homepage);
 	soft_app_info_set_size(info,size);
 	soft_app_info_set_package(info,pkgname);
 	soft_app_info_set_action(info,STOREAPPSOFT);

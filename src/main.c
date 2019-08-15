@@ -46,7 +46,7 @@ static gboolean on_window_quit (GtkWidget    *widget,
         g_object_unref (app->pkg->package_sack);
     if (app->pkg->repos != NULL)
         g_hash_table_destroy (app->pkg->repos);
-    g_free (app->pkg);
+    //g_free (app->pkg);
 
     gtk_main_quit();
     return TRUE;

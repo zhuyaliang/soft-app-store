@@ -306,9 +306,9 @@ soft_app_screenshot_image_complete_cb (SoupSession *session,
     }
     if (msg->status_code != SOUP_STATUS_OK) 
 	{
-		g_warning ("Result of screenshot downloading attempt with "
-                   "status code '%u': %s", msg->status_code,
-                    msg->reason_phrase);
+		SoftAppStoreLog("Warning","Result of screenshot downloading attempt with "
+                        "status code '%u': %s", msg->status_code,
+                         msg->reason_phrase);
         /* if we're already showing an image, then don't set the error
          * as having an image (even if outdated) is better */
         if (ss->showing_image)

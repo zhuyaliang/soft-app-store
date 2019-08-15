@@ -17,6 +17,7 @@
 
 #include "app-store-thumbnail.h"
 #include "app-store-util.h"
+#include <libsoup/soup.h>
 
 G_DEFINE_TYPE (SoftAppThumbnailTile, soft_app_thumbnail_tile, GTK_TYPE_BUTTON)
 G_DEFINE_TYPE (SoftAppThumbnail,     soft_app_thumbnail,      G_TYPE_OBJECT)
@@ -90,14 +91,16 @@ void soft_app_star_widget_set_rating (GtkWidget *stars,float level)
                                      "non-starred",
                                       GTK_ICON_SIZE_MENU);
     }    
-}    
+}   
 static void
 soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)
 {
-    GdkPixbuf *pixbuf;
-    float      level;
-	const char *icon_name;
-	const char *soft_name;
+    float        level;
+	const char  *icon_url;
+	const char  *soft_name;
+    
+    SoupSession *SoupSso;
+    SoupMessage *SoupMsg;
 
 	level = soft_app_thumbnail_get_score(tile->thb);
     soft_app_star_widget_set_rating (tile->stars1,level--);
@@ -106,9 +109,14 @@ soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)
     soft_app_star_widget_set_rating (tile->stars4,level--);
     soft_app_star_widget_set_rating (tile->stars5,level--);
 
-	icon_name = soft_app_thumbnail_get_icon(tile->thb);
-    pixbuf = gdk_pixbuf_new_from_file(icon_name,NULL);
-    soft_app_image_set_from_pixbuf(GTK_IMAGE(tile->image),pixbuf,64);
+	icon_url = soft_app_thumbnail_get_icon(tile->thb);
+    
+	SoupSso = soup_session_new ();
+	SoupMsg = soup_message_new (SOUP_METHOD_GET,icon_url);
+    soup_session_queue_message (SoupSso,
+	    					    SoupMsg,
+								SoupGetSoftIcon,
+								tile->image);
 	
     soft_name = soft_app_thumbnail_get_name(tile->thb);
     SetLableFontType(tile->label,
@@ -146,6 +154,8 @@ soft_app_thumbnail_tile_init (SoftAppThumbnailTile *tile)
     gtk_box_pack_start(GTK_BOX(vbox),tile->image ,TRUE, TRUE, 0);
     
     tile->label = gtk_label_new(NULL);
+    gtk_label_set_ellipsize (GTK_LABEL(tile->label),PANGO_ELLIPSIZE_END);
+    gtk_label_set_max_width_chars (GTK_LABEL(tile->label),10);
 	gtk_box_pack_start(GTK_BOX(vbox),tile->label ,TRUE, TRUE, 0);
     
     hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,1);
@@ -219,11 +229,25 @@ soft_app_thumbnail_get_icon (SoftAppThumbnail *thb)
 
 void
 soft_app_thumbnail_set_icon (SoftAppThumbnail  *thb, 
-                             const gchar     *icon)
+                             const gchar       *icon)
 {
     g_free (thb->icon_name);
     thb->icon_name = g_strdup (icon);
 }  
+
+const gchar *
+soft_app_thumbnail_get_downnum (SoftAppThumbnail *thb)
+{
+    return thb->downloads;
+}
+
+void
+soft_app_thumbnail_set_downnum (SoftAppThumbnail  *thb, 
+                                const gchar       *downloads)
+{
+    g_free (thb->downloads);
+    thb->downloads = g_strdup (downloads);
+} 
 
 const gchar *
 soft_app_thumbnail_get_sumary (SoftAppThumbnail *thb)
@@ -288,6 +312,7 @@ soft_app_thumbnail_finalize (GObject *object)
 
     g_free (thb->soft_name);
     g_free (thb->icon_name);
+    g_free (thb->downloads);
     g_free (thb->sumary);
     g_free (thb->description);
     g_free (thb->pkgname);

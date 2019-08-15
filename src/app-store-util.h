@@ -79,6 +79,9 @@ gboolean    CacheFileIsEmpty               (GFile      *file);
 uint        GetCacheFileAge            (GFile      *file);
 gboolean    SoftApprmtree              (const gchar *directory, GError **error);
 GPtrArray *GetJsonCategory(const char *data);
-GPtrArray *GetJsonSubCategory (const char *data);
+GPtrArray *GetJsonSubArrayType(const char *data);
 const char * GetJsonSpecifiedData (json_object *js,const char *SpecifiedData);
+void SoupGetSoftIcon (SoupSession *session,
+                 SoupMessage *msg,
+                 gpointer     data);
 #endif

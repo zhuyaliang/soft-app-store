@@ -31,6 +31,7 @@
 #include "app-store-util.h"
 
 #define  GSM_GSETTINGS_SCHEMA "org.mate.interface"
+#define ERRORICON     "Error.png"
 static int file_dp = 0;  /*Log file descriptor*/
 
 static int CreateLogFile (void)
@@ -501,6 +502,10 @@ const char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
         if (type == json_type_array)
         {
             ja = json_parse_array(value, SpecifiedData);
+            if (g_strcmp0(key,SpecifiedData) != 0)
+            {
+                continue;
+            }    
             type = json_object_get_type (ja);
             return JsonValue (type,ja);
         }
@@ -518,7 +523,7 @@ const char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
     }
     return NULL;
 }    
-GPtrArray *GetJsonSubCategory (const char *data)
+GPtrArray *GetJsonSubArrayType (const char *data)
 {
     json_object *js,*jvalue;
     enum json_type type;
@@ -551,4 +556,53 @@ GPtrArray *GetJsonSubCategory (const char *data)
         }
     }
     return array;
+}    
+static void SetErrorIcon (GtkImage *image)
+{    
+    g_autoptr(GdkPixbuf) pixbuf = NULL;
+    
+    pixbuf = gdk_pixbuf_new_from_file(ICONDIR ERRORICON,NULL);
+    soft_app_image_set_from_pixbuf(GTK_IMAGE(image),pixbuf,64);
+    gtk_widget_show (GTK_WIDGET (image));
+}
+void
+SoupGetSoftIcon (SoupSession *session,
+                 SoupMessage *msg,
+                 gpointer     data)
+{
+    GtkImage *image = GTK_IMAGE (data);
+    g_autoptr(GInputStream) stream = NULL;
+    g_autoptr(GdkPixbuf) pixbuf = NULL;
+    
+    if (msg->status_code == SOUP_STATUS_NOT_MODIFIED)
+    {
+        SoftAppStoreLog ("Warning","get icon fail");
+        SetErrorIcon (image);
+        return;
+    }
+    if (msg->status_code != SOUP_STATUS_OK)
+    {
+        SoftAppStoreLog ("Warning","get icon fail"
+                         "status code '%u': %s",
+                          msg->status_code,
+                          msg->reason_phrase);
+        SetErrorIcon (image);
+        return;
+    }
+    stream = g_memory_input_stream_new_from_data (msg->response_body->data,
+                                                  msg->response_body->length,
+                                                  NULL);
+    if (stream == NULL)
+    {
+        SetErrorIcon (image);
+        return;
+    }    
+    pixbuf = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
+    if (pixbuf == NULL) 
+    {
+        SetErrorIcon (image);
+        return;
+    }
+    soft_app_image_set_from_pixbuf(GTK_IMAGE(image),pixbuf,64);
+    gtk_widget_show (GTK_WIDGET (image));
 }    
