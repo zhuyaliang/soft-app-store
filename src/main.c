@@ -104,9 +104,23 @@ static void InitMainWindow(SoftAppStore *app)
     g_free(dname);
 }
 
-static void InitWelcomInterface (SoftAppStore *app)
+static void InitWelcomeInterface (SoftAppStore *app)
 {
+    GtkWidget *overlay;
+    g_autoptr(GdkPixbuf) pixbuf = NULL;
+    GtkWidget *image;
 
+    overlay = gtk_overlay_new ();
+    pixbuf = gdk_pixbuf_new_from_file(ICONDIR APPICON,NULL);
+    image = gtk_image_new ();
+    soft_app_image_set_from_pixbuf(GTK_IMAGE(image),pixbuf,128);
+    gtk_overlay_add_overlay (GTK_OVERLAY (overlay), image);
+    gtk_overlay_set_overlay_pass_through (GTK_OVERLAY (overlay), image, TRUE);
+    gtk_widget_set_halign (image, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+    gtk_stack_add_named (GTK_STACK (app->StoreStack), 
+                         overlay,
+                        "welcome-page"); 
 }    
 
 static void InitNoteBook (SoftAppStore *app)
@@ -244,7 +258,7 @@ int main(int argc, char **argv)
 	InitMainWindow(&app);
 
     /* Create Welcome interface*/
-    InitWelcomInterface (&app);
+    InitWelcomeInterface (&app);
 
 	/* Create book page*/
 	InitNoteBook(&app);
