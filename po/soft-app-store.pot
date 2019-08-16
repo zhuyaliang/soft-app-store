@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: soft-app-store\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-15 21:47+0800\n"
+"POT-Creation-Date: 2019-08-16 11:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,56 +41,66 @@ msgstr ""
 msgid "soft recommend"
 msgstr ""
 
-#: src/app-store-util.c:163
+#: src/app-store-store.c:590 src/app-store-details.c:602
+msgid "install"
+msgstr ""
+
+#: src/app-store-store.c:590
+msgid ""
+"No suitable package can be found in the system warehouse.        Please "
+"update the warehouse."
+msgstr ""
+
+#: src/app-store-util.c:167
 msgid "_Return"
 msgstr ""
 
-#: src/app-store-util.c:174
+#: src/app-store-util.c:178
 msgid "Message"
 msgstr ""
 
-#: src/app-store-row.c:50
+#: src/app-store-util.c:625
+msgid "Failed to contact PackageKit"
+msgstr ""
+
+#: src/app-store-row.c:50 src/app-store-details.c:684
 msgid "uninstall"
 msgstr ""
 
-#: src/app-store-details.c:244
+#: src/app-store-details.c:196
 msgid "file list"
 msgstr ""
 
-#: src/app-store-details.c:278
+#: src/app-store-details.c:230
 msgid "details"
 msgstr ""
 
-#: src/app-store-details.c:294
+#: src/app-store-details.c:246
 msgid "version"
 msgstr ""
 
-#: src/app-store-details.c:304
+#: src/app-store-details.c:256
 msgid "protocol"
 msgstr ""
 
-#: src/app-store-details.c:314
+#: src/app-store-details.c:266
 msgid "sources"
 msgstr ""
 
-#: src/app-store-details.c:324
+#: src/app-store-details.c:276
 msgid "size"
 msgstr ""
 
-#: src/app-store-details.c:334
+#: src/app-store-details.c:286
 msgid "arch"
 msgstr ""
 
-#: src/app-store-details.c:344
+#: src/app-store-details.c:296
 msgid "package"
 msgstr ""
 
-#: src/app-store-details.c:356
+#: src/app-store-details.c:308
 msgid "discuss"
-msgstr ""
-
-#: src/app-store-details.c:731
-msgid "removed"
 msgstr ""
 
 #: src/app-store-search.c:83
@@ -139,54 +149,54 @@ msgstr ""
 msgid "Screenshot not available"
 msgstr ""
 
-#: src/main.c:61
+#: src/main.c:64
 msgid "Get Icon Fail"
 msgstr ""
 
-#: src/main.c:75
+#: src/main.c:78
 msgid "Soft App Store"
 msgstr ""
 
-#: src/main.c:117
+#: src/main.c:193
 msgid "Loading software catalog"
 msgstr ""
 
-#: src/main.c:187
+#: src/main.c:210
 msgid "all store"
 msgstr ""
 
-#: src/main.c:193
+#: src/main.c:216
 msgid "local install"
 msgstr ""
 
-#: src/main.c:199
+#: src/main.c:222
 msgid "local update"
 msgstr ""
 
-#: src/main.c:234 src/main.c:276
+#: src/main.c:257 src/main.c:299
 msgid "open file"
 msgstr ""
 
-#: src/main.c:234
+#: src/main.c:257
 msgid "Create pid file failed"
 msgstr ""
 
-#: src/main.c:243
+#: src/main.c:266
 msgid "write file"
 msgstr ""
 
-#: src/main.c:243
+#: src/main.c:266
 msgid "write pid file failed"
 msgstr ""
 
-#: src/main.c:276
+#: src/main.c:299
 msgid "open pid file failed"
 msgstr ""
 
-#: src/main.c:281
+#: src/main.c:304
 msgid "read file"
 msgstr ""
 
-#: src/main.c:281
+#: src/main.c:304
 msgid "read pid file failed"
 msgstr ""
