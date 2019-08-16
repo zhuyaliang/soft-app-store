@@ -43,7 +43,6 @@ typedef struct SoftAppPkgkit
 {
 	SoftAppMessage   parent_instance;
     
-	GHashTable      *repos;
 	GHashTable      *phash;
     PkBitfield       filters_current;
     PkBitfield       groups;

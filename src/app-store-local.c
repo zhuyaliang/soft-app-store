@@ -45,8 +45,9 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
 		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
+		gtk_widget_show_all(row);
 	}
-	gtk_widget_show_all(app->LocalSoftListBox);
+	//gtk_widget_show(app->LocalSoftListBox);
 	app->pkg->action = GPK_ACTION_DONE;
 	SoftAppStoreLog ("Debug","load all local soft %u to listrowboxi Successfu",i);
 }
@@ -545,6 +546,7 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
     g_autoptr(GError) error = NULL;
     g_autoptr(GDir)   dir;
     char        *package_id;
+	static double i = 0.0;
 
     dir = g_dir_open (path, 0, &error);
     if (dir == NULL)
@@ -570,8 +572,11 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
 			if(package_id == NULL)
                 continue;
             g_hash_table_insert(app->pkg->phash,package_id,g_strdup(filename));
+			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),
+						                                  (i += 0.01));
         }
     }
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->LocalSoftBar),1);
     return TRUE;
 }  
 static void list_hash_table(gpointer key,gpointer value,gpointer data)
@@ -813,6 +818,7 @@ GtkWidget *LoadLocalInstall(SoftAppStore *app)
 	gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(app->LocalSoftBar),TRUE);
 	g_object_set(app->LocalSoftBar,"show-text",TRUE,NULL);
 	gtk_box_pack_start (GTK_BOX (vbox), app->LocalSoftBar, TRUE, TRUE, 0);
+	gtk_widget_show_all(app->LocalSoftListBox);
 
 	GetLocalSoftMessage(app);
 	return vbox;
