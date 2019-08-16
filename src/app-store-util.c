@@ -79,6 +79,7 @@ void SoftAppStoreLog (const char *level,const char *message,...)
     {
         MessageReport("write log","write log error",ERROR);	
     }
+	g_free (file_data);
 }    
 
 void CloseLogFile (void)

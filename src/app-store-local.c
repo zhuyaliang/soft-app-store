@@ -467,7 +467,7 @@ static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
 static gchar *
 soft_app_file_get_packageid (SoftAppPkgkit *pkg, const gchar *file_name)
 {
-    gchar *package_id = NULL;
+    g_autofree gchar *package_id = NULL;
     PkPackage *package;
     g_autoptr(GPtrArray) array = NULL;
     g_autoptr(PkError) error_code = NULL;
@@ -501,13 +501,14 @@ soft_app_file_get_packageid (SoftAppPkgkit *pkg, const gchar *file_name)
     g_object_get (package,
                  "package-id", &package_id,
                   NULL);
+
     return g_strdup (pk_package_get_id (package));
 }
 static char *soft_app_file_get_packageid_use_cache(const char *dname)
 {
 	GKeyFile         *kconfig;
     g_autofree gchar *cache_file = NULL;
-	char             *package_id;
+	g_autofree gchar *package_id = NULL;
     
 	kconfig = g_key_file_new();
 	cache_file = CreateCacheFile(dname,"soft_msg");

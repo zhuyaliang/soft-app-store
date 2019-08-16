@@ -49,7 +49,6 @@ static gboolean on_window_quit (GtkWidget    *widget,
         g_object_unref (app->pkg->package_sack);
     if (app->pkg->phash != NULL)
         g_hash_table_destroy (app->pkg->phash);
-
     gtk_main_quit();
     return TRUE;
 }
@@ -114,7 +113,9 @@ draw_text (GtkWidget *da,
 	cairo_pattern_t *pattern;
 	PangoLayout *layout;
 	PangoFontDescription *desc;
-	int text_w,text_h,width,higth;
+	int text_w;
+	int text_h;
+	int width,higth;
 	const char *text = (const char *)data; 
 	cairo_save (cr);
 

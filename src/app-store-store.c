@@ -130,6 +130,7 @@ SoupGetStoreCategory (SoupSession *session,
         gtk_container_add (GTK_CONTAINER (app->StoreFlowbox),tile);
         g_free (subnum);
     }
+	g_ptr_array_free (list, TRUE);
     gtk_widget_show_all (app->StoreFlowbox);
 }    
 static void
@@ -260,6 +261,7 @@ SoupGetStoreRecommend (SoupSession *session,
 								    SoupGetRichRecomInfo,
 								    app);
     }   
+	g_ptr_array_free (list, FALSE);
     
 }    
 static void
