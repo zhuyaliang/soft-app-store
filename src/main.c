@@ -27,8 +27,11 @@
 #include "app-store-details.h"
 #include "app-store-pkgkit.h"
 #include <sys/stat.h>
+
 #define  LOCKFILE              "/tmp/soft-app-store.pid"
 #define  APPICON               "soft-app-store.png"
+#define  WINWIDTH               1200
+#define  WINHIGTH               640 
 
 static gboolean on_window_quit (GtkWidget    *widget, 
                                 GdkEvent     *event, 
@@ -116,13 +119,13 @@ draw_text (GtkWidget *da,
 	cairo_save (cr);
 
 	layout = gtk_widget_create_pango_layout (da, text);
-	desc = pango_font_description_from_string ("sans bold 23");
+	desc = pango_font_description_from_string ("sans bold 22");
 	pango_layout_set_font_description (layout, desc);
 	pango_font_description_free (desc);
 
 	pango_layout_get_size (layout,&text_w,&text_h); 
-	width = (1200  - PANGO_PIXELS_FLOOR(text_w)) / 2;
-	higth = ((600 - PANGO_PIXELS_FLOOR(text_h)) / 4) * 3;
+	width = (WINWIDTH  - PANGO_PIXELS_FLOOR(text_w)) / 2;
+	higth = ((WINHIGTH - PANGO_PIXELS_FLOOR(text_h)) / 2 + 80);
 	cairo_move_to (cr, width, higth);
 	pango_cairo_layout_path (cr, layout);
 	g_object_unref (layout);
@@ -164,15 +167,20 @@ static gboolean UpdateProgress (gpointer data)
 		return TRUE;
 	}
 	gtk_stack_set_visible_child_name (GTK_STACK(app->StoreStack),"main-page");
-	return FALSE;
+    
+    gtk_widget_show (app->button_search);
+    gtk_widget_show (app->button_return);
+	
+    return FALSE;
 }
+
 static void InitWelcomeInterface (SoftAppStore *app)
 {
     GtkWidget *overlay;
     g_autoptr(GdkPixbuf) pixbuf = NULL;
     GtkWidget *image;
 	GtkWidget *da;
-
+    
     overlay = gtk_overlay_new ();
     pixbuf = gdk_pixbuf_new_from_file(ICONDIR APPICON,NULL);
     image = gtk_image_new ();
@@ -241,6 +249,8 @@ static void InitNoteBook (SoftAppStore *app)
                          app->StackSearchBox,
                         "search-page");
 	gtk_widget_show_all(app->MainWindow);
+    gtk_widget_hide (app->button_search);
+    gtk_widget_hide (app->button_return);
 }    
 static int RecordPid(void)
 {

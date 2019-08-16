@@ -21,5 +21,6 @@
 #include "app-store.h"
 
 GtkWidget *LoadStoreSoft(SoftAppStore *app);
+void InstallStoreSoftApp (GtkWidget *button, SoftAppStore *app);
 
 #endif

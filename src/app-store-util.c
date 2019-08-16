@@ -58,11 +58,15 @@ void SoftAppStoreLog (const char *level,const char *message,...)
     int     fd;
     va_list args;
     char   *file_data;
-    char    buf[256]; 
+    char    buf[1024]; 
     int     len;
 
     fd = CreateLogFile();
     if(fd < 0)
+    {
+        return;
+    }   
+    if (strlen (message) > 1024)
     {
         return;
     }    
@@ -605,4 +609,102 @@ SoupGetSoftIcon (SoupSession *session,
     }
     soft_app_image_set_from_pixbuf(GTK_IMAGE(image),pixbuf,64);
     gtk_widget_show (GTK_WIDGET (image));
-}    
+}
+void InitStorePkCtx (SoftAppStore *app)
+{
+    gboolean ret;
+    g_autoptr(GError) error = NULL;
+
+    app->Ctx = g_new0 (PkCtx, 1);
+    app->Ctx->cancellable = g_cancellable_new ();
+    app->Ctx->control = pk_control_new ();
+    ret = pk_control_get_properties (app->Ctx->control, app->Ctx->cancellable, &error);
+    if (!ret) 
+    {
+        SoftAppStoreLog ("Error","%s: %s\n",
+                       _("Failed to contact PackageKit"), 
+                         error->message);
+        app->Ctx->retval = PK_EXIT_CODE_CANNOT_SETUP;
+        return ;
+    }
+    app->Ctx->task = pk_task_new ();
+}   
+static gchar *
+pk_get_resolve_package (PkCtx *ctx, const gchar *package_name, GError **error)
+{
+    gchar *package_id = NULL;
+    gboolean valid;
+    PkPackage *package;
+    g_autoptr(GPtrArray) array = NULL;
+    g_autoptr(PkError) error_code = NULL;
+    g_autoptr(PkResults) results = NULL;
+    g_auto(GStrv) tmp = NULL;
+
+    valid = pk_package_id_check (package_name);
+    if (valid)
+        return g_strdup (package_name);
+
+    tmp = g_strsplit (package_name, ",", -1);
+    results = pk_client_resolve (PK_CLIENT (ctx->task),
+                                 ctx->filters, tmp,
+                                 ctx->cancellable,
+                                 NULL,NULL,
+                                 error);
+    if (results == NULL)
+        return NULL;
+
+    error_code = pk_results_get_error_code (results);
+    if (error_code != NULL) 
+    {
+        SoftAppStoreLog ("Warning","get pakcge ids %s fails %d %s",
+                          package_name,
+                          pk_error_get_code (error_code),
+                          pk_error_get_details (error_code));
+        return NULL;
+    }
+
+    /* nothing found */
+    array = pk_results_get_package_array (results);
+    if (array->len == 0) 
+    {
+        SoftAppStoreLog ("Warning","could not find %s", package_name);
+        return NULL;
+    }
+
+    package = g_ptr_array_index (array, 0);
+    g_object_get (package,
+                 "package-id", &package_id,
+                  NULL);
+    return g_strdup (pk_package_get_id (package));
+}
+
+gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app)
+{
+    gchar *package_id;
+    GError *error_local = NULL;
+    g_autoptr(GPtrArray) array = NULL;
+
+    array = g_ptr_array_new ();
+    package_id = pk_get_resolve_package (app->Ctx,
+                                         pname,
+                                        &error_local);
+    if (package_id == NULL) 
+    {
+        SoftAppStoreLog ("Warning","%s: %s", 
+                         "Package not found",
+                          pname);
+        return NULL;
+    }
+    g_ptr_array_add (array, package_id);
+
+    if (array->len == 0) 
+    {
+        SoftAppStoreLog ("Warning","%s: %s", 
+                         "No packages were found",
+                          pname);
+        return NULL;
+    }
+
+    g_ptr_array_add (array, NULL);
+    return g_strdupv ((gchar **) array->pdata);
+}

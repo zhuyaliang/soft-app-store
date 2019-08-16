@@ -542,7 +542,8 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     GtkWidget *button_search;
 	char      *request;
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
-	
+
+    InitStorePkCtx (app);
     request = g_strdup_printf ("%s:%d/api/apps/category/",STORESERVERADDR,STORESERVERPOER);
 	app->SoupSession = soup_session_new ();
 	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
@@ -552,13 +553,13 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
                      "clicked",
                       G_CALLBACK (SwitchPageToSearch),
 					  app);
-	
+	app->button_search = button_search;
 	button_return = LoadHeader_bar(app->Header,"go-previous-symbolic",TRUE);    	
 	g_signal_connect (button_return, 
                      "clicked",
                       G_CALLBACK (SwitchPageToReturn), 
                       app);
-	
+    app->button_return = button_return;	
 	app->StoreFlowbox = CategorySoftWindow(vbox);
     soup_session_queue_message (app->SoupSession,
 								app->SoupMessage,
@@ -577,3 +578,112 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 	g_free (request);
     return vbox;
 }
+
+
+static void soft_app_install_progress_cb (PkProgress     *progress, 
+		                                 PkProgressType  type, 
+								   	     SoftAppStore   *app)
+{
+    PkStatusEnum status;
+    gint percentage;
+    gboolean allow_cancel;
+    GtkWidget *button;
+
+    g_object_get (progress,
+                 "status", &status,
+                 "percentage", &percentage,
+                 "allow-cancel", &allow_cancel,
+                  NULL);
+
+    if (type == PK_PROGRESS_TYPE_STATUS)
+    {
+        if (status == PK_STATUS_ENUM_FINISHED)
+		{
+			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->details->progressbar),
+										  1.00);
+            gtk_widget_hide (app->details->progressbar);
+            button = soft_app_details_get_button (app->details);
+            soft_app_info_set_state (app->details->info,TRUE);
+            gtk_button_set_label (GTK_BUTTON(button),_("installed"));
+            gtk_widget_show (button);
+		}
+	} 
+    else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
+    {
+        if (percentage > 0) 
+        {
+			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->details->progressbar),
+										 (float) percentage / 100.0f);
+		}
+	}	
+}
+
+static void
+soft_app_install_finished_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)
+{
+    g_autoptr(PkResults) results = NULL;
+    g_autoptr(GError)    error = NULL;
+    g_autoptr(PkError)   error_code = NULL;
+
+    /* get the results */
+    results = pk_task_generic_finish (task, res, &error);
+    if (results == NULL) 
+    {
+        SoftAppStoreLog ("Warning","failed to remove packages: %s", error->message);
+        return;
+    }
+
+    /* check error code */
+    error_code = pk_results_get_error_code (results);
+    if (error_code != NULL) 
+	{
+		SoftAppStoreLog ("failed to remove packages: %s, %s", 
+				          pk_error_enum_to_string (pk_error_get_code (error_code)), 
+						  pk_error_get_details (error_code));
+
+        return;
+    }
+}
+void InstallStoreSoftApp (GtkWidget *button,SoftAppStore *app)
+{    
+	g_auto(GStrv) package_ids = NULL;
+    const gchar  *package_id = NULL;
+    
+    if (soft_app_info_get_state(app->details->info))
+    {
+        return;
+    }    
+	package_id = soft_app_info_get_package(app->details->info);
+    if (package_id == NULL)
+    {
+        MessageReport (_("install"),_("No package name, maybe the back end is not set."),ERROR);
+        return; 
+    }    
+    if (!pk_bitfield_contain (app->Ctx->filters, PK_FILTER_ENUM_ARCH) &&
+        !pk_bitfield_contain (app->Ctx->filters, PK_FILTER_ENUM_NOT_ARCH))
+        pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_ARCH);
+
+    if (!pk_bitfield_contain (app->Ctx->filters, PK_FILTER_ENUM_SOURCE) &&
+        !pk_bitfield_contain (app->Ctx->filters, PK_FILTER_ENUM_NOT_SOURCE))
+        pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_NOT_SOURCE);
+
+    pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_NOT_INSTALLED);
+    pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_NEWEST);
+    
+    package_ids = PackageNameToPackageids (package_id,app);
+    if (package_ids == NULL)
+    {
+        MessageReport (_("install"),_("No suitable package can be found in the system warehouse.\
+        Please update the warehouse."),ERROR);
+        return;
+    }
+    
+	gtk_widget_hide(button);
+	gtk_widget_show(app->details->progressbar);
+   /* install */
+    pk_task_install_packages_async (PK_TASK (app->Ctx->task),
+                                    package_ids, app->Ctx->cancellable,
+                                    (PkProgressCallback) soft_app_install_progress_cb, app,
+                                    (GAsyncReadyCallback)soft_app_install_finished_cb, app);
+
+}    

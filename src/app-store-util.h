@@ -84,4 +84,7 @@ const char * GetJsonSpecifiedData (json_object *js,const char *SpecifiedData);
 void SoupGetSoftIcon (SoupSession *session,
                  SoupMessage *msg,
                  gpointer     data);
+
+void InitStorePkCtx (SoftAppStore *app);
+gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app);
 #endif

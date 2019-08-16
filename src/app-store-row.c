@@ -25,7 +25,6 @@ G_DEFINE_TYPE (SoftAppMessage, soft_app_message, AS_TYPE_APP)
 static void
 soft_app_row_refresh (SoftAppRow *row)
 {
-	//GdkPixbuf *pixbuf;
 	float      level;
 	const char *icon_name;
 	const char *soft_name;
@@ -46,8 +45,6 @@ soft_app_row_refresh (SoftAppRow *row)
    
 	sumary = as_app_get_comment (AS_APP(row->Message),NULL);
 	gtk_label_set_text(GTK_LABEL(row->label_describe),sumary);
-	
-	gtk_button_set_label(GTK_BUTTON(row->button),_("uninstall"));
 	
 	SetLableFontType(row->label_size,
                     "black",
@@ -113,7 +110,7 @@ soft_app_row_init (SoftAppRow *row)
 	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars5 ,FALSE, FALSE, 0);
     
     described_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);  
-	gtk_widget_set_size_request(described_box,500,-1);
+	gtk_widget_set_size_request(described_box,400,-1);
 	gtk_box_pack_start(GTK_BOX(hbox),described_box ,FALSE,FALSE, 6);
 	row->label_describe = gtk_label_new(NULL);
 	gtk_label_set_max_width_chars(GTK_LABEL(row->label_describe),50);
@@ -125,9 +122,6 @@ soft_app_row_init (SoftAppRow *row)
     h_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);  
 	gtk_box_pack_start(GTK_BOX(hbox),h_vbox ,FALSE,FALSE, 6);
 
-	row->button = gtk_button_new();
-    gtk_box_pack_end(GTK_BOX(h_vbox),row->button ,FALSE,FALSE, 6);
-	
 	row->label_size = gtk_label_new(NULL);
 	gtk_box_pack_start(GTK_BOX(h_vbox),row->label_size ,FALSE,FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(box), gtk_separator_new (GTK_ORIENTATION_HORIZONTAL) ,FALSE,FALSE, 6);

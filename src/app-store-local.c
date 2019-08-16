@@ -580,6 +580,7 @@ static void list_hash_table(gpointer key,gpointer value,gpointer data)
 	g_autofree gchar *dname = NULL;
 
 	dname = GetMetadataFileName((char *)value);
+	app->pkg->action = GPK_ACTION_DETAILS;
 	if(!HavingCache(dname))
 	{
 		SoftAppStoreLog ("Debug","metadata not cache %s",dname);

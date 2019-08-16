@@ -33,11 +33,26 @@
 #define _(STRING)  gettext(STRING)   
 #define STORESERVERADDR    "http://127.0.0.1"
 #define STORESERVERPOER     8000
+#define PK_EXIT_CODE_SYNTAX_INVALID 3
+#define PK_EXIT_CODE_FILE_NOT_FOUND 4
+#define PK_EXIT_CODE_NOTHING_USEFUL 5
+#define PK_EXIT_CODE_CANNOT_SETUP   6
+#define PK_EXIT_CODE_TRANSACTION_FAILED 7
 
+typedef struct 
+{
+    GCancellable    *cancellable;
+    PkControl   *control;
+    PkTask      *task;
+    PkBitfield   filters;
+    gint         retval;
+} PkCtx;
 typedef struct 
 {
     GtkWidget        *MainWindow;
     GtkWidget        *Header;
+    GtkWidget        *button_return;
+    GtkWidget        *button_search;
 	GtkWidget        *WelcomeBar;
     GtkWidget        *NoteBook;
     GtkWidget        *NoteName;
@@ -57,6 +72,7 @@ typedef struct
 	GtkWidget        *LocalSoftLabel;
 	GtkWidget        *LocalSoftSpinner;
 	GtkWidget        *sw;
+    PkCtx            *Ctx;
     SoftAppPkgkit    *pkg;
 	SoftAppDetails   *details;
 	SoupSession      *SoupSession;

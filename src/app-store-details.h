@@ -51,6 +51,7 @@ typedef struct SoftAppInfo
 	char        *package;
 	char        *cache;
 	int          action;
+	gboolean     state;
 }SoftAppInfo;
 
 typedef struct SoftAppInfoClass
@@ -193,6 +194,11 @@ int               soft_app_info_get_action          (SoftAppInfo *info);
 
 void              soft_app_info_set_action          (SoftAppInfo *info,
 		                                             int          action);
+
+void              soft_app_info_set_state           (SoftAppInfo *info,
+		                                             gboolean     state);
+
+gboolean          soft_app_info_get_state           (SoftAppInfo *info);
 
 void CreateRecommendDetails(gpointer app,gpointer      data);
 void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,

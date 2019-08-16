@@ -84,7 +84,6 @@ typedef struct SoftAppRow
 	GtkWidget      *stars4;
 	GtkWidget      *stars5;
 	GtkWidget      *label_describe;
-	GtkWidget      *button;
 	GtkWidget      *label_size;
 
 }SoftAppRow;
