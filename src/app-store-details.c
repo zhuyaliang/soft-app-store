@@ -587,6 +587,7 @@ void CreateRecommendDetails(gpointer d,gpointer data)
 	const char  *describing;
 	const char  *screenshot;
 	float        score;
+	gboolean     state;
 	GtkWidget   *install_button;
 	GtkWidget   *install_bar;
 	
@@ -610,7 +611,11 @@ void CreateRecommendDetails(gpointer d,gpointer data)
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
 	soft_app_info_set_comment(info,summary);
-	soft_app_info_set_button(info,_("install"));
+	state = soft_app_thumbnail_get_state (tile->thb);
+	if (!state)
+		soft_app_info_set_button(info,_("install"));
+	else
+		soft_app_info_set_button(info,_("installed"));
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot_url(info,screenshot);
     soft_app_info_set_explain(info,describing);
@@ -621,7 +626,7 @@ void CreateRecommendDetails(gpointer d,gpointer data)
 	soft_app_info_set_size (info,size);
 	soft_app_info_set_package (info,pkgname);
 	soft_app_info_set_action (info,STOREAPPSOFT);
-	soft_app_info_set_state (info,FALSE);
+	soft_app_info_set_state (info,state);
 	
 	details = soft_app_details_new(info);
     gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);

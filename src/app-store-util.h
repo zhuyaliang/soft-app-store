@@ -87,4 +87,5 @@ void SoupGetSoftIcon (SoupSession *session,
 
 void InitStorePkCtx (SoftAppStore *app);
 gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app);
+gboolean DetermineStoreSoftInstalled (const char *SoftName);
 #endif

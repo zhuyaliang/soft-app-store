@@ -709,3 +709,47 @@ gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app)
     g_ptr_array_add (array, NULL);
     return g_strdupv ((gchar **) array->pdata);
 }
+gboolean DetermineStoreSoftInstalled (const char *SoftName)
+{
+    g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
+    g_autoptr(GDir)   dir;
+    g_autoptr(GError) error = NULL;
+	AsApp *app;
+	const char *name;
+    const char *fn;
+
+    g_ptr_array_add (parent_appdata,
+                     g_build_filename ("/usr/share", "appdata", NULL));
+    g_ptr_array_add (parent_appdata,
+                     g_build_filename ("/usr/share", "metainfo", NULL));
+
+    
+    for (guint i = 0; i < parent_appdata->len; i++) 
+    {
+        const gchar *fn1 = g_ptr_array_index (parent_appdata, i);
+		dir = g_dir_open (fn1, 0, &error);
+		if (dir == NULL)
+		{
+			return FALSE;
+		}
+		while ((fn = g_dir_read_name (dir)) != NULL) 
+		{
+			if (g_str_has_suffix (fn, ".appdata.xml") ||
+				g_str_has_suffix (fn, ".metainfo.xml")) 
+			{
+				g_autofree gchar *filename = g_build_filename (fn1, fn, NULL);
+				app = as_app_new();
+				as_app_parse_file(app,
+								  filename,
+								  AS_APP_PARSE_FLAG_USE_HEURISTICS,
+								  NULL);
+				name = as_app_get_name (app,"en_GB");
+				if (g_strcmp0 (SoftName,name) == 0)
+				{
+					return TRUE;
+				}
+			}
+		}
+	}
+	return FALSE;
+}

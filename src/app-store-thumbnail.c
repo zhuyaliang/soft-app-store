@@ -142,19 +142,28 @@ static void
 soft_app_thumbnail_tile_init (SoftAppThumbnailTile *tile)
 {
     GtkWidget *vbox,*hbox;
-	//GtkWidget *image;    
+	GtkWidget *overlay;
+	GtkWidget *eventbox;
     gtk_widget_set_size_request(GTK_WIDGET (tile), 110,100);
-    
-    tile->event_box = gtk_event_box_new();
-    gtk_container_add (GTK_CONTAINER (tile), tile->event_box);
+   
+	overlay = gtk_overlay_new ();
+    gtk_widget_set_size_request(GTK_WIDGET (overlay), 110,100);
+    gtk_container_add (GTK_CONTAINER (tile), overlay);
+	
+	eventbox = gtk_event_box_new();
+    gtk_widget_set_halign (eventbox,GTK_ALIGN_END);
+    gtk_widget_set_valign (eventbox,GTK_ALIGN_START);
+	gtk_overlay_add_overlay (GTK_OVERLAY (overlay), eventbox);
+    tile->image_install = gtk_image_new_from_icon_name ("software-installed-symbolic",GTK_ICON_SIZE_MENU);
+    gtk_widget_set_halign (tile->image_install,GTK_ALIGN_CENTER);
+    gtk_widget_set_valign (tile->image_install,GTK_ALIGN_CENTER);
+    gtk_container_add (GTK_CONTAINER (eventbox), tile->image_install);
+	
+	tile->event_box = gtk_event_box_new();
+
+    gtk_container_add (GTK_CONTAINER (overlay), tile->event_box);
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
     gtk_container_add (GTK_CONTAINER (tile->event_box), vbox);
-/*
-    image = gtk_image_new_from_icon_name ("software-installed-symbolic",GTK_ICON_SIZE_MENU);
-    gtk_widget_set_halign (image,GTK_ALIGN_END);
-    gtk_widget_set_valign (image,GTK_ALIGN_END);
-    gtk_box_pack_start(GTK_BOX(vbox),image ,TRUE, TRUE, 0);
-*/
 
     tile->image = gtk_image_new();
     gtk_box_pack_start(GTK_BOX(vbox),tile->image ,TRUE, TRUE, 0);
@@ -164,7 +173,7 @@ soft_app_thumbnail_tile_init (SoftAppThumbnailTile *tile)
     gtk_label_set_max_width_chars (GTK_LABEL(tile->label),10);
 	gtk_box_pack_start(GTK_BOX(vbox),tile->label ,TRUE, TRUE, 0);
     
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,1);
+	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,1);
 	gtk_box_pack_start(GTK_BOX(vbox),hbox ,TRUE, TRUE, 0);
 
     tile->stars1 = gtk_image_new();
@@ -213,6 +222,18 @@ soft_app_thumbnail_set_score (SoftAppThumbnail  *thb,
     thb->soft_score = soft_score;
 }  
 
+gboolean
+soft_app_thumbnail_get_state (SoftAppThumbnail *thb)
+{
+    return thb->soft_state;
+}
+
+void
+soft_app_thumbnail_set_state (SoftAppThumbnail  *thb, 
+                              gboolean          soft_state)
+{
+    thb->soft_state = soft_state;
+}  
 const gchar *
 soft_app_thumbnail_get_name (SoftAppThumbnail *thb)
 {

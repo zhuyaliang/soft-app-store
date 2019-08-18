@@ -51,6 +51,7 @@ typedef struct SoftAppThumbnail
     char   *homepage;
     char   *screenshot_url;
     float   soft_score;
+	gboolean soft_state;
 }SoftAppThumbnail;
 
 typedef struct SoftAppThumbnailClass
@@ -66,6 +67,7 @@ typedef struct SoftAppThumbnailTile
     GtkWidget   *event_box;
 	GtkWidget	*label;
 	GtkWidget	*image;
+	GtkWidget	*image_install;
     GtkWidget   *stars1;
     GtkWidget   *stars2;
     GtkWidget   *stars3;
@@ -152,6 +154,11 @@ float             soft_app_thumbnail_get_score               (SoftAppThumbnail *
 
 void              soft_app_thumbnail_set_score               (SoftAppThumbnail *thb,
                                                               float             soft_score);
+
+gboolean          soft_app_thumbnail_get_state               (SoftAppThumbnail *thb);
+
+void              soft_app_thumbnail_set_state               (SoftAppThumbnail *thb,
+                                                              gboolean          soft_state);
 G_END_DECLS
 
 #endif

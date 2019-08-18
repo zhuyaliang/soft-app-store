@@ -128,7 +128,7 @@ SoupGetStoreCategory (SoupSession *session,
                           G_CALLBACK (SwitchPageToCategoryListPage), 
                           app);
         gtk_container_add (GTK_CONTAINER (app->StoreFlowbox),tile);
-        g_free (subnum);
+        g_free ((gpointer)subnum);
     }
 	g_ptr_array_free (list, TRUE);
     gtk_widget_show_all (app->StoreFlowbox);
@@ -153,7 +153,8 @@ SoupGetRichRecomInfo (SoupSession *session,
     const char       *version;
     const char       *size;
     const char       *downnum;
-    int               score;
+	gboolean          state;
+	int               score;
     char             *screenshot;
     char             *s_size;
     char             *icon_url;
@@ -207,6 +208,8 @@ SoupGetRichRecomInfo (SoupSession *session,
     soft_app_thumbnail_set_homepage (thb,homepage);
     soft_app_thumbnail_set_version (thb,version);
     soft_app_thumbnail_set_screenurl (thb,screenshot);
+	state = DetermineStoreSoftInstalled (name);
+	soft_app_thumbnail_set_state (thb,state);
 
     Recom = soft_app_thumbnail_tile_new (thb);
     g_signal_connect (Recom, 
@@ -217,7 +220,9 @@ SoupGetRichRecomInfo (SoupSession *session,
 	gtk_fixed_put(GTK_FIXED(fixed),Recom, 0, 0);
     gtk_box_pack_start(GTK_BOX(app->StoreRecmHbox),fixed ,FALSE, FALSE, 16);
 
-    gtk_widget_show_all (app->StoreRecmHbox);
+    gtk_widget_show_all (fixed);
+	if (!state)
+		gtk_widget_hide (SOFT_APP_THUMBNAIL_TILE (Recom)->image_install);
     g_free (screenshot);
     g_free (s_size);
     g_free (icon_url);
@@ -249,6 +254,7 @@ SoupGetStoreRecommend (SoupSession *session,
                           msg->reason_phrase);
         return;
     }
+	
     list = GetJsonSubArrayType (msg->response_body->data);
     for (i = 0; i < 8; i++)
     {
@@ -262,7 +268,7 @@ SoupGetStoreRecommend (SoupSession *session,
 								    app);
     }   
 	g_ptr_array_free (list, FALSE);
-    
+   
 }    
 static void
 SoupGetRichSubInfo (SoupSession *session,
@@ -284,6 +290,7 @@ SoupGetRichSubInfo (SoupSession *session,
     const char       *version;
     const char       *size;
     const char       *downnum;
+	gboolean          state;
     int               score;
     char             *screenshot;
     char             *s_size;
@@ -337,6 +344,8 @@ SoupGetRichSubInfo (SoupSession *session,
     soft_app_thumbnail_set_homepage (thb,homepage);
     soft_app_thumbnail_set_version (thb,version);
     soft_app_thumbnail_set_screenurl (thb,screenshot);
+	state = DetermineStoreSoftInstalled (name);
+	soft_app_thumbnail_set_state (thb,state);
 
     Recom = soft_app_thumbnail_tile_new (thb);
     g_signal_connect (Recom, 
@@ -349,7 +358,9 @@ SoupGetRichSubInfo (SoupSession *session,
     g_free (screenshot);
     g_free (s_size);
     g_free (icon_url);
-    gtk_widget_show_all(app->SubFlowbox);
+    gtk_widget_show_all(fixed);
+	if (!state)
+		gtk_widget_hide (SOFT_APP_THUMBNAIL_TILE (Recom)->image_install);
 
 }    
 static void
@@ -543,13 +554,15 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     GtkWidget *button_return;
     GtkWidget *button_search;
 	char      *request;
+	SoupMessage *msg;
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
 
     InitStorePkCtx (app);
     request = g_strdup_printf ("%s:%d/api/apps/category/",STORESERVERADDR,STORESERVERPOER);
 	app->SoupSession = soup_session_new ();
 	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
-
+    request = g_strdup_printf ("%s:%d/api/apps/category/",STORESERVERADDR,STORESERVERPOER);
+	
 	button_search = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
 	g_signal_connect (button_search, 
                      "clicked",
@@ -567,17 +580,19 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 								app->SoupMessage,
 								SoupGetStoreCategory,
 								app);
-    								
+   								
 	g_free (request);
 	request = g_strdup_printf ("%s:%d/api/apps/recommend/",STORESERVERADDR,STORESERVERPOER);
-	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
+	msg = soup_message_new (SOUP_METHOD_GET,request);
     
 	app->StoreRecmHbox = RecommendSoftWindow(vbox);
 	soup_session_queue_message (app->SoupSession,
-								app->SoupMessage,
+								msg,
 								SoupGetStoreRecommend,
 								app);
 	g_free (request);
+
+    gtk_widget_show_all (app->StoreRecmHbox);
     return vbox;
 }
 
