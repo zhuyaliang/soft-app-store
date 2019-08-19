@@ -1,0 +1,578 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+APPICON	main.c	32;"	d	file:
+CATEGORY_LIST_PAGE	app-store-util.h	37;"	d
+CacheFileIsEmpty	app-store-util.c	/^gboolean CacheFileIsEmpty (GFile *file)$/;"	f
+CategorySoftWindow	app-store-store.c	/^static GtkWidget *CategorySoftWindow(GtkWidget *vbox)$/;"	f	file:
+CloseLogFile	app-store-util.c	/^void CloseLogFile (void)$/;"	f
+CreateCacheDir	app-store-util.c	/^void CreateCacheDir (const char *dirname)$/;"	f
+CreateCacheFile	app-store-util.c	/^char *CreateCacheFile(const char *dirname,const char *cname)$/;"	f
+CreateLocalSoftDetails	app-store-details.c	/^static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)$/;"	f	file:
+CreateLogFile	app-store-util.c	/^static int CreateLogFile (void)$/;"	f	file:
+CreateRecommendDetails	app-store-details.c	/^void CreateRecommendDetails(gpointer d,gpointer data)$/;"	f
+CreateStoreCategoryList	app-store-store.c	/^static void CreateStoreCategoryList(SoftAppStore *app,$/;"	f	file:
+CreateSubclassCombo	app-store-store.c	/^static GtkWidget *CreateSubclassCombo(SoftAppStore *app)$/;"	f	file:
+Ctx	app-store.h	/^    PkCtx            *Ctx;$/;"	m	struct:__anon3
+DETAILS_READY	app-store-pkgkit.c	/^        DETAILS_READY,$/;"	e	enum:__anon6	file:
+DetermineStoreSoftInstalled	app-store-util.c	/^gboolean DetermineStoreSoftInstalled (const char *pname,SoftAppStore *app)$/;"	f
+ERROR	app-store-util.h	31;"	d
+ERRORICON	app-store-util.c	34;"	d	file:
+GPK_ACTION_DETAILS	app-store-pkgkit.h	/^    GPK_ACTION_DETAILS,$/;"	e	enum:__anon1
+GPK_ACTION_DONE	app-store-pkgkit.h	/^	GPK_ACTION_DONE,$/;"	e	enum:__anon1
+GPK_ACTION_INSTALL	app-store-pkgkit.h	/^    GPK_ACTION_INSTALL,$/;"	e	enum:__anon1
+GPK_ACTION_NONE	app-store-pkgkit.h	/^    GPK_ACTION_NONE,$/;"	e	enum:__anon1
+GPK_ACTION_REMOVE	app-store-pkgkit.h	/^    GPK_ACTION_REMOVE,$/;"	e	enum:__anon1
+GPK_ACTION_UNKNOWN	app-store-pkgkit.h	/^    GPK_ACTION_UNKNOWN$/;"	e	enum:__anon1
+GSM_GSETTINGS_SCHEMA	app-store-util.c	33;"	d	file:
+G_DEFINE_TYPE	app-store-message.c	/^G_DEFINE_TYPE (SoftAppMessage, soft_app_message, AS_TYPE_APP)$/;"	f
+G_DEFINE_TYPE	app-store-pkgkit.c	/^G_DEFINE_TYPE (SoftAppPkgkit, soft_app_pkgkit, SOFT_APP_TYPE_MESSAGE)$/;"	f
+G_DEFINE_TYPE	app-store-thumbnail.c	/^G_DEFINE_TYPE (SoftAppThumbnailTile, soft_app_thumbnail_tile, GTK_TYPE_BUTTON)$/;"	f
+GetAppIcon	main.c	/^static GdkPixbuf * GetAppIcon(void)$/;"	f	file:
+GetCacheFileAge	app-store-util.c	/^uint GetCacheFileAge (GFile *file)$/;"	f
+GetCacheFileIcon	app-store-local.c	/^static char *GetCacheFileIcon(char *dname)$/;"	f	file:
+GetJsonCategory	app-store-util.c	/^GPtrArray *GetJsonCategory(const char *data)$/;"	f
+GetJsonSpecifiedData	app-store-util.c	/^const char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)$/;"	f
+GetJsonSubArrayType	app-store-util.c	/^GPtrArray *GetJsonSubArrayType (const char *data)$/;"	f
+GetLocalDetailsProgress	app-store-local.c	/^GetLocalDetailsProgress(PkProgress    *progress, $/;"	f	file:
+GetLocalFiles	app-store-local.c	/^static char *GetLocalFiles(const char *dname)$/;"	f	file:
+GetLocalSoftAppDetails	app-store-local.c	/^GetLocalSoftAppDetails (PkClient       *client, $/;"	f	file:
+GetLocalSoftFilesFinished	app-store-local.c	/^GetLocalSoftFilesFinished (PkClient       *client, $/;"	f	file:
+GetLocalSoftFilesProgress	app-store-local.c	/^GetLocalSoftFilesProgress(PkProgress    *progress, $/;"	f	file:
+GetLocalSoftMessage	app-store-local.c	/^static void GetLocalSoftMessage(SoftAppStore *app)$/;"	f	file:
+GetLocalSoftSearchResult	app-store-search.c	/^static void GetLocalSoftSearchResult (const char *SoftName,SoftAppStore *app)$/;"	f	file:
+GetMetadataFileName	app-store-local.c	/^static char *GetMetadataFileName(char *path)$/;"	f	file:
+GpkActionMode	app-store-pkgkit.h	/^} GpkActionMode;$/;"	t	typeref:enum:__anon1
+HavingCache	app-store-local.c	/^static gboolean HavingCache(const char *dname)$/;"	f	file:
+Header	app-store.h	/^    GtkWidget        *Header;$/;"	m	struct:__anon3
+INDIVIDUAL_SOFT_PAGE	app-store-util.h	38;"	d
+INFOR	app-store-util.h	33;"	d
+I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	app-store-message.h	21;"	d
+I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	app-store-row.h	21;"	d
+InitMainWindow	main.c	/^static void InitMainWindow(SoftAppStore *app)$/;"	f	file:
+InitNoteBook	main.c	/^static void InitNoteBook (SoftAppStore *app)$/;"	f	file:
+InitStorePkCtx	app-store-util.c	/^void InitStorePkCtx (SoftAppStore *app)$/;"	f
+InitWelcomeInterface	main.c	/^static void InitWelcomeInterface (SoftAppStore *app)$/;"	f	file:
+InstallStoreSoftApp	app-store-store.c	/^void InstallStoreSoftApp (GtkWidget *button,SoftAppStore *app)$/;"	f
+JsonValue	app-store-util.c	/^static const char *JsonValue (enum json_type type,json_object *js)$/;"	f	file:
+LAST_SIGNAL	app-store-pkgkit.c	/^        LAST_SIGNAL$/;"	e	enum:__anon6	file:
+LOCALINSTALL	app-store-details.h	32;"	d
+LOCKFILE	main.c	31;"	d	file:
+LoadHeader_bar	app-store-store.c	/^static GtkWidget *LoadHeader_bar(GtkWidget  *header,$/;"	f	file:
+LoadLocalInstall	app-store-local.c	/^GtkWidget *LoadLocalInstall(SoftAppStore *app)$/;"	f
+LoadLocalUpdate	app-store-update.c	/^GtkWidget *LoadLocalUpdate(SoftAppStore *app)$/;"	f
+LoadSearchSoftPage	app-store-search.c	/^static void LoadSearchSoftPage(SoftAppStore *app,int current_page)$/;"	f	file:
+LoadStoreSoft	app-store-store.c	/^GtkWidget *LoadStoreSoft(SoftAppStore *app)$/;"	f
+LocalBox	app-store.h	/^    GtkWidget        *LocalBox;$/;"	m	struct:__anon3
+LocalSoftBar	app-store.h	/^	GtkWidget        *LocalSoftBar;$/;"	m	struct:__anon3
+LocalSoftLabel	app-store.h	/^	GtkWidget        *LocalSoftLabel;$/;"	m	struct:__anon3
+LocalSoftListBox	app-store.h	/^	GtkWidget        *LocalSoftListBox;$/;"	m	struct:__anon3
+LocalSoftSpinner	app-store.h	/^	GtkWidget        *LocalSoftSpinner;$/;"	m	struct:__anon3
+MAIN_PAGE	app-store-util.h	36;"	d
+MainWindow	app-store.h	/^    GtkWidget        *MainWindow;$/;"	m	struct:__anon3
+Message	app-store-row.h	/^    SoftAppMessage *Message;$/;"	m	struct:SoftAppRow
+MessageReport	app-store-util.c	/^int MessageReport(const char *Title,const char *Msg,int nType)$/;"	f
+NoteBook	app-store.h	/^    GtkWidget        *NoteBook;$/;"	m	struct:__anon3
+NoteName	app-store.h	/^    GtkWidget        *NoteName;$/;"	m	struct:__anon3
+OpenCacheFile	app-store-util.c	/^int OpenCacheFile(const char *dirname,const char *cname)$/;"	f
+PK_EXIT_CODE_CANNOT_SETUP	app-store.h	39;"	d
+PK_EXIT_CODE_FILE_NOT_FOUND	app-store.h	37;"	d
+PK_EXIT_CODE_NOTHING_USEFUL	app-store.h	38;"	d
+PK_EXIT_CODE_SYNTAX_INVALID	app-store.h	36;"	d
+PK_EXIT_CODE_TRANSACTION_FAILED	app-store.h	40;"	d
+PackageNameToPackageids	app-store-util.c	/^gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app)$/;"	f
+ParseLocalSoft	app-store-local.c	/^static gpointer ParseLocalSoft (SoftAppStore *app)$/;"	f	file:
+PkCtx	app-store.h	/^} PkCtx;$/;"	t	typeref:struct:__anon2
+ProcessRuning	main.c	/^static gboolean ProcessRuning(void)$/;"	f	file:
+QUESTION	app-store-util.h	34;"	d
+RecommendSoftWindow	app-store-store.c	/^static GtkWidget *RecommendSoftWindow (GtkWidget *vbox)$/;"	f	file:
+RecordPid	main.c	/^static int RecordPid(void)$/;"	f	file:
+RemoveLocalSoftApp	app-store-local.c	/^void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)$/;"	f
+SEARCH_SOFT_PAGE	app-store-util.h	39;"	d
+SOFT_APP_CATEGORY	app-store-category.h	32;"	d
+SOFT_APP_CATEGORY_TILE	app-store-category.h	26;"	d
+SOFT_APP_DETAILS	app-store-details.h	24;"	d
+SOFT_APP_INFO	app-store-details.h	29;"	d
+SOFT_APP_MESSAGE	app-store-message.h	29;"	d
+SOFT_APP_MESSAGE_CLASS	app-store-message.h	33;"	d
+SOFT_APP_PKGKIT	app-store-pkgkit.h	25;"	d
+SOFT_APP_PKGKIT_CLASS	app-store-pkgkit.h	29;"	d
+SOFT_APP_ROW	app-store-row.h	29;"	d
+SOFT_APP_SCREENSHOT	app-store-screenshot.h	25;"	d
+SOFT_APP_THUMBNAIL	app-store-thumbnail.h	30;"	d
+SOFT_APP_THUMBNAIL_TILE	app-store-thumbnail.h	35;"	d
+SOFT_APP_TYPE_CATEGORY	app-store-category.h	31;"	d
+SOFT_APP_TYPE_CATEGORY_TILE	app-store-category.h	25;"	d
+SOFT_APP_TYPE_DETAILS	app-store-details.h	23;"	d
+SOFT_APP_TYPE_INFO	app-store-details.h	28;"	d
+SOFT_APP_TYPE_MESSAGE	app-store-message.h	27;"	d
+SOFT_APP_TYPE_PKGKIT	app-store-pkgkit.h	23;"	d
+SOFT_APP_TYPE_ROW	app-store-row.h	28;"	d
+SOFT_APP_TYPE_SCREENSHOT	app-store-screenshot.h	24;"	d
+SOFT_APP_TYPE_THUMBNAIL	app-store-thumbnail.h	29;"	d
+SOFT_APP_TYPE_THUMBNAIL_TILE	app-store-thumbnail.h	34;"	d
+STOREAPPSOFT	app-store-details.h	33;"	d
+STORESERVERADDR	app-store.h	34;"	d
+STORESERVERPOER	app-store.h	35;"	d
+SearchSoftListBox	app-store.h	/^	GtkWidget        *SearchSoftListBox;$/;"	m	struct:__anon3
+SetButtonIcon	app-store-util.c	/^GtkWidget *SetButtonIcon(const gchar *button_text,const gchar *icon_name)$/;"	f
+SetDialogTextView	app-store-local.c	/^static void SetDialogTextView(const char *dname,GtkDialog *dialog)$/;"	f	file:
+SetErrorIcon	app-store-util.c	/^static void SetErrorIcon (GtkImage *image)$/;"	f	file:
+SetLableFontType	app-store-util.c	/^void SetLableFontType(GtkWidget  *Lable ,$/;"	f
+SetSoftIconMsg	app-store-local.c	/^static void SetSoftIconMsg(const char *dirname,const char *desktop_name)$/;"	f	file:
+SoftAppCategory	app-store-category.h	/^typedef struct SoftAppCategory$/;"	s
+SoftAppCategory	app-store-category.h	/^}SoftAppCategory;$/;"	t	typeref:struct:SoftAppCategory
+SoftAppCategoryClass	app-store-category.h	/^typedef struct SoftAppCategoryClass$/;"	s
+SoftAppCategoryClass	app-store-category.h	/^}SoftAppCategoryClass;$/;"	t	typeref:struct:SoftAppCategoryClass
+SoftAppCategoryTile	app-store-category.h	/^typedef struct SoftAppCategoryTile$/;"	s
+SoftAppCategoryTile	app-store-category.h	/^}SoftAppCategoryTile;$/;"	t	typeref:struct:SoftAppCategoryTile
+SoftAppCategoryTileClass	app-store-category.h	/^typedef struct SoftAppCategoryTileClass$/;"	s
+SoftAppCategoryTileClass	app-store-category.h	/^}SoftAppCategoryTileClass;$/;"	t	typeref:struct:SoftAppCategoryTileClass
+SoftAppDesktopData	app-store-store.c	/^}SoftAppDesktopData;    $/;"	t	typeref:struct:__anon4	file:
+SoftAppDetails	app-store-details.h	/^typedef struct SoftAppDetails$/;"	s
+SoftAppDetails	app-store-details.h	/^}SoftAppDetails;$/;"	t	typeref:struct:SoftAppDetails
+SoftAppDetailsClass	app-store-details.h	/^typedef struct SoftAppDetailsClass$/;"	s
+SoftAppDetailsClass	app-store-details.h	/^}SoftAppDetailsClass;$/;"	t	typeref:struct:SoftAppDetailsClass
+SoftAppInfo	app-store-details.h	/^typedef struct SoftAppInfo$/;"	s
+SoftAppInfo	app-store-details.h	/^}SoftAppInfo;$/;"	t	typeref:struct:SoftAppInfo
+SoftAppInfoClass	app-store-details.h	/^typedef struct SoftAppInfoClass$/;"	s
+SoftAppInfoClass	app-store-details.h	/^}SoftAppInfoClass;$/;"	t	typeref:struct:SoftAppInfoClass
+SoftAppMessage	app-store-message.h	/^typedef struct SoftAppMessage$/;"	s
+SoftAppMessage	app-store-message.h	/^}SoftAppMessage;$/;"	t	typeref:struct:SoftAppMessage
+SoftAppMessageClass	app-store-message.h	/^typedef struct SoftAppMessageClass$/;"	s
+SoftAppMessageClass	app-store-message.h	/^}SoftAppMessageClass;$/;"	t	typeref:struct:SoftAppMessageClass
+SoftAppPkgkit	app-store-pkgkit.h	/^typedef struct SoftAppPkgkit$/;"	s
+SoftAppPkgkit	app-store-pkgkit.h	/^}SoftAppPkgkit;$/;"	t	typeref:struct:SoftAppPkgkit
+SoftAppPkgkitClass	app-store-pkgkit.h	/^typedef struct SoftAppPkgkitClass$/;"	s
+SoftAppPkgkitClass	app-store-pkgkit.h	/^}SoftAppPkgkitClass;$/;"	t	typeref:struct:SoftAppPkgkitClass
+SoftAppRealrmtree	app-store-util.c	/^SoftAppRealrmtree (const gchar *directory, GError **error)$/;"	f	file:
+SoftAppRow	app-store-row.h	/^typedef struct SoftAppRow$/;"	s
+SoftAppRow	app-store-row.h	/^}SoftAppRow;$/;"	t	typeref:struct:SoftAppRow
+SoftAppRowClass	app-store-row.h	/^typedef struct SoftAppRowClass$/;"	s
+SoftAppRowClass	app-store-row.h	/^}SoftAppRowClass;$/;"	t	typeref:struct:SoftAppRowClass
+SoftAppScreenshot	app-store-screenshot.h	/^typedef struct SoftAppScreenshot$/;"	s
+SoftAppScreenshot	app-store-screenshot.h	/^}SoftAppScreenshot;$/;"	t	typeref:struct:SoftAppScreenshot
+SoftAppScreenshotClass	app-store-screenshot.h	/^typedef struct SoftAppScreenshotClass$/;"	s
+SoftAppScreenshotClass	app-store-screenshot.h	/^}SoftAppScreenshotClass;$/;"	t	typeref:struct:SoftAppScreenshotClass
+SoftAppStore	app-store.h	/^}SoftAppStore;$/;"	t	typeref:struct:__anon3
+SoftAppStoreLog	app-store-util.c	/^void SoftAppStoreLog (const char *level,const char *message,...)$/;"	f
+SoftAppThumbnail	app-store-thumbnail.h	/^typedef struct SoftAppThumbnail$/;"	s
+SoftAppThumbnail	app-store-thumbnail.h	/^}SoftAppThumbnail;$/;"	t	typeref:struct:SoftAppThumbnail
+SoftAppThumbnailClass	app-store-thumbnail.h	/^typedef struct SoftAppThumbnailClass$/;"	s
+SoftAppThumbnailClass	app-store-thumbnail.h	/^}SoftAppThumbnailClass;$/;"	t	typeref:struct:SoftAppThumbnailClass
+SoftAppThumbnailTile	app-store-thumbnail.h	/^typedef struct SoftAppThumbnailTile$/;"	s
+SoftAppThumbnailTile	app-store-thumbnail.h	/^}SoftAppThumbnailTile;$/;"	t	typeref:struct:SoftAppThumbnailTile
+SoftAppThumbnailTileClass	app-store-thumbnail.h	/^typedef struct SoftAppThumbnailTileClass$/;"	s
+SoftAppThumbnailTileClass	app-store-thumbnail.h	/^}SoftAppThumbnailTileClass;$/;"	t	typeref:struct:SoftAppThumbnailTileClass
+SoftApprmtree	app-store-util.c	/^SoftApprmtree (const gchar *directory, GError **error)$/;"	f
+SoupGetRichRecomInfo	app-store-store.c	/^SoupGetRichRecomInfo (SoupSession *session,$/;"	f	file:
+SoupGetRichSubInfo	app-store-store.c	/^SoupGetRichSubInfo (SoupSession *session,$/;"	f	file:
+SoupGetSoftIcon	app-store-util.c	/^SoupGetSoftIcon (SoupSession *session,$/;"	f
+SoupGetStoreCategory	app-store-store.c	/^SoupGetStoreCategory (SoupSession *session,$/;"	f	file:
+SoupGetStoreRecommend	app-store-store.c	/^SoupGetStoreRecommend (SoupSession *session,$/;"	f	file:
+SoupGetStoreSubCategory	app-store-store.c	/^SoupGetStoreSubCategory (SoupSession *session,$/;"	f	file:
+SoupMessage	app-store.h	/^    SoupMessage      *SoupMessage;$/;"	m	struct:__anon3
+SoupSession	app-store.h	/^	SoupSession      *SoupSession;$/;"	m	struct:__anon3
+StackCategoryBox	app-store.h	/^    GtkWidget        *StackCategoryBox;$/;"	m	struct:__anon3
+StackDetailsBox	app-store.h	/^    GtkWidget        *StackDetailsBox;$/;"	m	struct:__anon3
+StackSearchBox	app-store.h	/^    GtkWidget        *StackSearchBox;$/;"	m	struct:__anon3
+StartSearchSoftName	app-store-search.c	/^static void StartSearchSoftName (GtkSearchEntry *entry,SoftAppStore *app)$/;"	f	file:
+StoreBox	app-store.h	/^	GtkWidget        *StoreBox;$/;"	m	struct:__anon3
+StoreFlowbox	app-store.h	/^	GtkWidget        *StoreFlowbox;$/;"	m	struct:__anon3
+StoreRecmHbox	app-store.h	/^    GtkWidget        *StoreRecmHbox;$/;"	m	struct:__anon3
+StoreStack	app-store.h	/^    GtkWidget        *StoreStack;$/;"	m	struct:__anon3
+SubFlowbox	app-store.h	/^	GtkWidget        *SubFlowbox;$/;"	m	struct:__anon3
+SwitchPage	app-store-util.c	/^void SwitchPage (SoftAppStore *app)$/;"	f
+SwitchPageToCategoryListPage	app-store-store.c	/^static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)$/;"	f	file:
+SwitchPageToDetailsPage	app-store-store.c	/^static void SwitchPageToDetailsPage (GtkWidget *button, SoftAppStore *app)$/;"	f	file:
+SwitchPageToIndividualDetailsPage	app-store-details.c	/^void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,$/;"	f
+SwitchPageToReturn	app-store-store.c	/^static void SwitchPageToReturn (GtkWidget *button, SoftAppStore *app)$/;"	f	file:
+SwitchPageToSearch	app-store-search.c	/^void SwitchPageToSearch (GtkWidget *button, SoftAppStore *app)$/;"	f
+TYPEMSG	app-store-util.h	29;"	d
+UNKNOWPNG	app-store-details.c	25;"	d	file:
+UTILS_CACHE_FLAG_ENSURE_EMPTY	app-store-screenshot.c	/^    UTILS_CACHE_FLAG_ENSURE_EMPTY    = 1 << 2,$/;"	e	enum:__anon5	file:
+UTILS_CACHE_FLAG_LAST	app-store-screenshot.c	/^    UTILS_CACHE_FLAG_LAST$/;"	e	enum:__anon5	file:
+UTILS_CACHE_FLAG_NONE	app-store-screenshot.c	/^    UTILS_CACHE_FLAG_NONE        = 0,$/;"	e	enum:__anon5	file:
+UTILS_CACHE_FLAG_USE_HASH	app-store-screenshot.c	/^    UTILS_CACHE_FLAG_USE_HASH        = 1 << 1,$/;"	e	enum:__anon5	file:
+UTILS_CACHE_FLAG_WRITEABLE	app-store-screenshot.c	/^    UTILS_CACHE_FLAG_WRITEABLE       = 1 << 0,$/;"	e	enum:__anon5	file:
+UpdateBox	app-store.h	/^    GtkWidget        *UpdateBox;$/;"	m	struct:__anon3
+UpdateLocalInstallPage	app-store-local.c	/^static void UpdateLocalInstallPage(SoftAppStore *app)$/;"	f	file:
+UpdateProgress	main.c	/^static gboolean UpdateProgress (gpointer data)$/;"	f	file:
+UtilsCacheFlags	app-store-screenshot.c	/^} UtilsCacheFlags;$/;"	t	typeref:enum:__anon5	file:
+ViewLocalSoftFiles	app-store-local.c	/^void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)$/;"	f
+WARING	app-store-util.h	32;"	d
+WINHIGTH	main.c	34;"	d	file:
+WINWIDTH	main.c	33;"	d	file:
+WelcomeBar	app-store.h	/^	GtkWidget        *WelcomeBar;$/;"	m	struct:__anon3
+WhetherUseHeadbar	app-store-util.c	/^gboolean WhetherUseHeadbar (void)$/;"	f
+_	app-store.h	33;"	d
+__APP_STORE_CATEGORY_H__	app-store-category.h	19;"	d
+__APP_STORE_DETAILS_H__	app-store-details.h	19;"	d
+__APP_STORE_H__	app-store.h	19;"	d
+__APP_STORE_LOCAL_H__	app-store-local.h	19;"	d
+__APP_STORE_MESSAGE_H__	app-store-message.h	19;"	d
+__APP_STORE_PKGKIT_H__	app-store-pkgkit.h	19;"	d
+__APP_STORE_ROW_H__	app-store-row.h	19;"	d
+__APP_STORE_SCREENSHOT_H__	app-store-screenshot.h	19;"	d
+__APP_STORE_SEARCH_H__	app-store-search.h	19;"	d
+__APP_STORE_STORE_H__	app-store-store.h	19;"	d
+__APP_STORE_THUMBNAIL_H__	app-store-thumbnail.h	23;"	d
+__APP_STORE_UPDATE_H__	app-store-update.h	19;"	d
+__APP_STORE_UTIL_H__	app-store-util.h	19;"	d
+__USE_SOURCE	app-store-util.c	29;"	d	file:
+action	app-store-details.h	/^	int          action;$/;"	m	struct:SoftAppInfo
+action	app-store-pkgkit.h	/^	GpkActionMode    action;$/;"	m	struct:SoftAppPkgkit
+arch	app-store-details.h	/^	char        *arch;$/;"	m	struct:SoftAppInfo
+arch	app-store-thumbnail.h	/^    char   *arch;$/;"	m	struct:SoftAppThumbnail
+asapp	app-store.h	/^    AsApp            *asapp;$/;"	m	struct:__anon3
+box_error	app-store-screenshot.h	/^    GtkWidget   *box_error;$/;"	m	struct:SoftAppScreenshot
+button	app-store-details.h	/^	GtkWidget   *button;$/;"	m	struct:SoftAppDetails
+button_discuss	app-store-details.h	/^	GtkWidget   *button_discuss;$/;"	m	struct:SoftAppDetails
+button_name	app-store-details.h	/^	char        *button_name;$/;"	m	struct:SoftAppInfo
+button_return	app-store.h	/^    GtkWidget        *button_return;$/;"	m	struct:__anon3
+button_search	app-store.h	/^    GtkWidget        *button_search;$/;"	m	struct:__anon3
+cache	app-store-details.h	/^	char        *cache;$/;"	m	struct:SoftAppInfo
+cache_cnt	app-store-pkgkit.h	/^    gint             cache_cnt;$/;"	m	struct:SoftAppPkgkit
+cache_file	app-store-message.h	/^	char        *cache_file;$/;"	m	struct:SoftAppMessage
+cancellable	app-store-pkgkit.h	/^    GCancellable    *cancellable;$/;"	m	struct:SoftAppPkgkit
+cancellable	app-store.h	/^    GCancellable    *cancellable;$/;"	m	struct:__anon2
+cate	app-store-category.h	/^    SoftAppCategory *cate;$/;"	m	struct:SoftAppCategoryTile
+color	app-store-category.h	/^	char	    *color;$/;"	m	struct:SoftAppCategoryTile
+comment	app-store-details.h	/^	char        *comment;$/;"	m	struct:SoftAppInfo
+control	app-store-pkgkit.h	/^    PkControl       *control;$/;"	m	struct:SoftAppPkgkit
+control	app-store.h	/^    PkControl   *control;$/;"	m	struct:__anon2
+current_image	app-store-screenshot.h	/^    const gchar *current_image;$/;"	m	struct:SoftAppScreenshot
+description	app-store-message.h	/^	char        *description;$/;"	m	struct:SoftAppMessage
+description	app-store-thumbnail.h	/^    char   *description;$/;"	m	struct:SoftAppThumbnail
+details	app-store.h	/^	SoftAppDetails   *details;$/;"	m	struct:__anon3
+downloads	app-store-thumbnail.h	/^    char   *downloads;$/;"	m	struct:SoftAppThumbnail
+draw_text	main.c	/^draw_text (GtkWidget *da,$/;"	f	file:
+event_box	app-store-thumbnail.h	/^    GtkWidget   *event_box;$/;"	m	struct:SoftAppThumbnailTile
+explain	app-store-details.h	/^	char        *explain;$/;"	m	struct:SoftAppInfo
+explain	app-store-details.h	/^    GtkWidget   *explain;$/;"	m	struct:SoftAppDetails
+file_dp	app-store-util.c	/^static int file_dp = 0;  \/*Log file descriptor*\/$/;"	v	file:
+filename	app-store-screenshot.h	/^    gchar       *filename;$/;"	m	struct:SoftAppScreenshot
+filename_array_return_newest	app-store-screenshot.c	/^static gchar * filename_array_return_newest (GPtrArray *array)$/;"	f	file:
+files_button	app-store-details.h	/^	GtkWidget   *files_button;$/;"	m	struct:SoftAppDetails
+filters	app-store.h	/^    PkBitfield   filters;$/;"	m	struct:__anon2
+filters_current	app-store-pkgkit.h	/^    PkBitfield       filters_current;$/;"	m	struct:SoftAppPkgkit
+get_local_soft_details_ready	app-store-local.c	/^static void get_local_soft_details_ready (SoftAppPkgkit *pkg,$/;"	f	file:
+groups	app-store-pkgkit.h	/^    PkBitfield       groups;$/;"	m	struct:SoftAppPkgkit
+height	app-store-screenshot.h	/^    guint        height;$/;"	m	struct:SoftAppScreenshot
+homepage	app-store-thumbnail.h	/^    char   *homepage;$/;"	m	struct:SoftAppThumbnail
+icon	app-store-store.c	/^    const gchar *icon;  $/;"	m	struct:__anon4	file:
+icon_name	app-store-category.h	/^    char        *icon_name;$/;"	m	struct:SoftAppCategory
+icon_name	app-store-details.h	/^	char        *icon_name;$/;"	m	struct:SoftAppInfo
+icon_name	app-store-message.h	/^    char        *icon_name;$/;"	m	struct:SoftAppMessage
+icon_name	app-store-thumbnail.h	/^    char   *icon_name;$/;"	m	struct:SoftAppThumbnail
+image	app-store-category.h	/^	GtkWidget	*image;$/;"	m	struct:SoftAppCategoryTile
+image	app-store-row.h	/^	GtkWidget	   *image;$/;"	m	struct:SoftAppRow
+image	app-store-thumbnail.h	/^	GtkWidget	*image;$/;"	m	struct:SoftAppThumbnailTile
+image1	app-store-screenshot.h	/^    GtkWidget   *image1;$/;"	m	struct:SoftAppScreenshot
+image2	app-store-screenshot.h	/^    GtkWidget   *image2;$/;"	m	struct:SoftAppScreenshot
+image_install	app-store-thumbnail.h	/^	GtkWidget	*image_install;$/;"	m	struct:SoftAppThumbnailTile
+image_name	app-store-category.h	/^    char        *image_name;   $/;"	m	struct:SoftAppCategoryTile
+index	app-store.h	/^	gint              index;$/;"	m	struct:__anon3
+info	app-store-details.h	/^	SoftAppInfo *info;$/;"	m	struct:SoftAppDetails
+json_parse_array	app-store-util.c	/^static json_object *json_parse_array(json_object *js, const char *SpecifiedData) $/;"	f	file:
+key_colors	app-store-category.h	/^    GPtrArray   *key_colors;$/;"	m	struct:SoftAppCategory
+key_colors	app-store-store.c	/^    const gchar *key_colors;$/;"	m	struct:__anon4	file:
+label	app-store-category.h	/^	GtkWidget	*label;$/;"	m	struct:SoftAppCategoryTile
+label	app-store-thumbnail.h	/^	GtkWidget	*label;$/;"	m	struct:SoftAppThumbnailTile
+label_arch	app-store-details.h	/^	GtkWidget   *label_arch;$/;"	m	struct:SoftAppDetails
+label_comment	app-store-details.h	/^	GtkWidget   *label_comment;$/;"	m	struct:SoftAppDetails
+label_describe	app-store-row.h	/^	GtkWidget      *label_describe;$/;"	m	struct:SoftAppRow
+label_error	app-store-screenshot.h	/^    GtkWidget   *label_error;$/;"	m	struct:SoftAppScreenshot
+label_name	app-store-details.h	/^	GtkWidget   *label_name;$/;"	m	struct:SoftAppDetails
+label_name	app-store-row.h	/^	GtkWidget	   *label_name;$/;"	m	struct:SoftAppRow
+label_num	app-store-category.h	/^	GtkWidget	*label_num;$/;"	m	struct:SoftAppCategoryTile
+label_package	app-store-details.h	/^	GtkWidget   *label_package;$/;"	m	struct:SoftAppDetails
+label_progress	app-store-details.h	/^	GtkWidget   *label_progress;$/;"	m	struct:SoftAppDetails
+label_protocol	app-store-details.h	/^	GtkWidget   *label_protocol;$/;"	m	struct:SoftAppDetails
+label_size	app-store-details.h	/^	GtkWidget   *label_size;$/;"	m	struct:SoftAppDetails
+label_size	app-store-row.h	/^	GtkWidget      *label_size;$/;"	m	struct:SoftAppRow
+label_source	app-store-details.h	/^	GtkWidget   *label_source;$/;"	m	struct:SoftAppDetails
+label_version	app-store-details.h	/^	GtkWidget   *label_version;$/;"	m	struct:SoftAppDetails
+licenses	app-store-thumbnail.h	/^    char   *licenses;$/;"	m	struct:SoftAppThumbnail
+list	app-store-pkgkit.h	/^    GPtrArray       *list;$/;"	m	struct:SoftAppPkgkit
+list_hash_table	app-store-local.c	/^static void list_hash_table(gpointer key,gpointer value,gpointer data)$/;"	f	file:
+main	main.c	/^int main(int argc, char **argv)$/;"	f
+message	app-store-screenshot.h	/^    SoupMessage *message;$/;"	m	struct:SoftAppScreenshot
+metadata_cnt	app-store-pkgkit.h	/^    gint             metadata_cnt;$/;"	m	struct:SoftAppPkgkit
+msdata	app-store-store.c	/^static const SoftAppDesktopData msdata[] = $/;"	v	file:
+name	app-store-store.c	/^    const gchar *name;$/;"	m	struct:__anon4	file:
+on_window_quit	main.c	/^static gboolean on_window_quit (GtkWidget    *widget, $/;"	f	file:
+package	app-store-details.h	/^	char        *package;$/;"	m	struct:SoftAppInfo
+package_sack	app-store-pkgkit.h	/^    PkPackageSack   *package_sack;$/;"	m	struct:SoftAppPkgkit
+page	app-store.h	/^	int               page;$/;"	m	struct:__anon3
+parent_instance	app-store-category.h	/^	GtkButton	 parent_instance;$/;"	m	struct:SoftAppCategoryTile
+parent_instance	app-store-category.h	/^    GObject      parent_instance;$/;"	m	struct:SoftAppCategory
+parent_instance	app-store-details.h	/^    GObject      parent_instance;$/;"	m	struct:SoftAppInfo
+parent_instance	app-store-details.h	/^    GtkFixed    parent_instance;$/;"	m	struct:SoftAppDetails
+parent_instance	app-store-message.h	/^    AsApp        parent_instance;$/;"	m	struct:SoftAppMessage
+parent_instance	app-store-pkgkit.h	/^	SoftAppMessage   parent_instance;$/;"	m	struct:SoftAppPkgkit
+parent_instance	app-store-row.h	/^	GtkListBoxRow	parent_instance;$/;"	m	struct:SoftAppRow
+parent_instance	app-store-screenshot.h	/^    GtkStack     parent_instance;$/;"	m	struct:SoftAppScreenshot
+parent_instance	app-store-thumbnail.h	/^	GtkButton	 parent_instance;$/;"	m	struct:SoftAppThumbnailTile
+parent_instance	app-store-thumbnail.h	/^    GObject parent_instance;$/;"	m	struct:SoftAppThumbnail
+parent_instance_calss	app-store-pkgkit.h	/^	SoftAppMessageClass parent_instance_calss;$/;"	m	struct:SoftAppPkgkitClass
+parent_instance_calss	app-store-thumbnail.h	/^    GObjectClass parent_instance_calss;$/;"	m	struct:SoftAppThumbnailClass
+parent_instance_class	app-store-category.h	/^	GtkButtonClass	 parent_instance_class;$/;"	m	struct:SoftAppCategoryTileClass
+parent_instance_class	app-store-category.h	/^    GObjectClass parent_instance_class;$/;"	m	struct:SoftAppCategoryClass
+parent_instance_class	app-store-details.h	/^    GObjectClass parent_instance_class;$/;"	m	struct:SoftAppInfoClass
+parent_instance_class	app-store-details.h	/^    GtkFixedClass parent_instance_class;$/;"	m	struct:SoftAppDetailsClass
+parent_instance_class	app-store-message.h	/^    AsAppClass parent_instance_class;$/;"	m	struct:SoftAppMessageClass
+parent_instance_class	app-store-row.h	/^	GtkListBoxRowClass	 parent_instance_class;$/;"	m	struct:SoftAppRowClass
+parent_instance_class	app-store-screenshot.h	/^    GtkStackClass parent_instance_class;$/;"	m	struct:SoftAppScreenshotClass
+parent_instance_class	app-store-thumbnail.h	/^	GtkButtonClass	 parent_instance_class;$/;"	m	struct:SoftAppThumbnailTileClass
+parent_page	app-store.h	/^	int               parent_page;$/;"	m	struct:__anon3
+per	app-store.h	/^	uint              per;$/;"	m	struct:__anon3
+phash	app-store-pkgkit.h	/^	GHashTable      *phash;$/;"	m	struct:SoftAppPkgkit
+phashlen	app-store-pkgkit.h	/^    guint            phashlen;$/;"	m	struct:SoftAppPkgkit
+pk_get_resolve_package	app-store-util.c	/^pk_get_resolve_package (PkCtx *ctx, const gchar *package_name, GError **error)$/;"	f	file:
+pkg	app-store.h	/^    SoftAppPkgkit    *pkg;$/;"	m	struct:__anon3
+pkgid	app-store-details.h	/^	char        *pkgid;$/;"	m	struct:SoftAppInfo
+pkgname	app-store-thumbnail.h	/^    char   *pkgname;$/;"	m	struct:SoftAppThumbnail
+progressbar	app-store-details.h	/^	GtkWidget   *progressbar;$/;"	m	struct:SoftAppDetails
+protocol	app-store-details.h	/^	char        *protocol;$/;"	m	struct:SoftAppInfo
+remove_all_cb	app-store-util.c	/^remove_all_cb (GtkWidget *widget, gpointer user_data)$/;"	f	file:
+retval	app-store-pkgkit.h	/^    gint             retval;$/;"	m	struct:SoftAppPkgkit
+retval	app-store.h	/^    gint         retval;$/;"	m	struct:__anon2
+roles	app-store-pkgkit.h	/^    PkBitfield       roles;$/;"	m	struct:SoftAppPkgkit
+scale	app-store-screenshot.h	/^    guint        scale;$/;"	m	struct:SoftAppScreenshot
+score	app-store-details.h	/^	float        score;$/;"	m	struct:SoftAppInfo
+screenshot	app-store-details.h	/^	SoftAppScreenshot *screenshot;$/;"	m	struct:SoftAppDetails
+screenshot_url	app-store-details.h	/^	char        *screenshot_url;$/;"	m	struct:SoftAppInfo
+screenshot_url	app-store-message.h	/^	char        *screenshot_url;$/;"	m	struct:SoftAppMessage
+screenshot_url	app-store-thumbnail.h	/^    char   *screenshot_url;$/;"	m	struct:SoftAppThumbnail
+session	app-store-screenshot.h	/^    SoupSession *session;$/;"	m	struct:SoftAppScreenshot
+settings	app-store-screenshot.h	/^    GSettings   *settings;$/;"	m	struct:SoftAppScreenshot
+showing_image	app-store-screenshot.h	/^    gboolean     showing_image;$/;"	m	struct:SoftAppScreenshot
+signals	app-store-pkgkit.c	/^static guint signals[LAST_SIGNAL] = { 0 };$/;"	v	file:
+size	app-store-details.h	/^	char        *size;$/;"	m	struct:SoftAppInfo
+size	app-store-thumbnail.h	/^    char   *size;$/;"	m	struct:SoftAppThumbnail
+soft_app_category_add_key_color	app-store-category.c	/^soft_app_category_add_key_color (SoftAppCategory *category, $/;"	f
+soft_app_category_class_init	app-store-category.c	/^soft_app_category_class_init (SoftAppCategoryClass *klass)$/;"	f	file:
+soft_app_category_finalize	app-store-category.c	/^soft_app_category_finalize (GObject *object)$/;"	f	file:
+soft_app_category_get_icon	app-store-category.c	/^soft_app_category_get_icon (SoftAppCategory *category)$/;"	f
+soft_app_category_get_key_colors	app-store-category.c	/^soft_app_category_get_key_colors (SoftAppCategory *category)$/;"	f
+soft_app_category_get_name	app-store-category.c	/^soft_app_category_get_name (SoftAppCategory *category)$/;"	f
+soft_app_category_get_subnum	app-store-category.c	/^soft_app_category_get_subnum (SoftAppCategory *category)$/;"	f
+soft_app_category_get_suburl	app-store-category.c	/^soft_app_category_get_suburl (SoftAppCategory *category)$/;"	f
+soft_app_category_init	app-store-category.c	/^soft_app_category_init (SoftAppCategory *category)$/;"	f	file:
+soft_app_category_new	app-store-category.c	/^soft_app_category_new (const gchar *name)$/;"	f
+soft_app_category_set_icon	app-store-category.c	/^soft_app_category_set_icon (SoftAppCategory *category, $/;"	f
+soft_app_category_set_subnum	app-store-category.c	/^soft_app_category_set_subnum (SoftAppCategory *category, $/;"	f
+soft_app_category_set_suburl	app-store-category.c	/^soft_app_category_set_suburl (SoftAppCategory *category, $/;"	f
+soft_app_category_tile_class_init	app-store-category.c	/^soft_app_category_tile_class_init (SoftAppCategoryTileClass *klass)$/;"	f	file:
+soft_app_category_tile_destroy	app-store-category.c	/^soft_app_category_tile_destroy (GtkWidget *widget)$/;"	f	file:
+soft_app_category_tile_init	app-store-category.c	/^soft_app_category_tile_init (SoftAppCategoryTile *tile)$/;"	f	file:
+soft_app_category_tile_new	app-store-category.c	/^soft_app_category_tile_new (SoftAppCategory *cate)$/;"	f
+soft_app_category_tile_refresh	app-store-category.c	/^soft_app_category_tile_refresh (SoftAppCategoryTile *tile)$/;"	f	file:
+soft_app_category_tile_set_category	app-store-category.c	/^soft_app_category_tile_set_category (SoftAppCategoryTile *tile, SoftAppCategory *cate)$/;"	f
+soft_app_container_remove_all	app-store-util.c	/^soft_app_container_remove_all (GtkContainer *container)$/;"	f
+soft_app_details_class_init	app-store-details.c	/^soft_app_details_class_init (SoftAppDetailsClass *klass)$/;"	f	file:
+soft_app_details_destroy	app-store-details.c	/^soft_app_details_destroy (GtkWidget *widget)$/;"	f	file:
+soft_app_details_get_bar	app-store-details.c	/^GtkWidget *soft_app_details_get_bar(SoftAppDetails *details)$/;"	f
+soft_app_details_get_button	app-store-details.c	/^GtkWidget *soft_app_details_get_button(SoftAppDetails *details)$/;"	f
+soft_app_details_init	app-store-details.c	/^soft_app_details_init (SoftAppDetails *details)$/;"	f	file:
+soft_app_details_new	app-store-details.c	/^soft_app_details_new (SoftAppInfo *info)$/;"	f
+soft_app_details_refresh	app-store-details.c	/^soft_app_details_refresh (SoftAppDetails *details)$/;"	f	file:
+soft_app_details_set_info	app-store-details.c	/^soft_app_details_set_info (SoftAppDetails *details, SoftAppInfo *info)$/;"	f
+soft_app_file_get_packageid	app-store-local.c	/^soft_app_file_get_packageid (SoftAppPkgkit *pkg, const gchar *file_name)$/;"	f	file:
+soft_app_file_get_packageid_use_cache	app-store-local.c	/^static char *soft_app_file_get_packageid_use_cache(const char *dname)$/;"	f	file:
+soft_app_get_package_details	app-store-local.c	/^soft_app_get_package_details (char         *package_id, $/;"	f	file:
+soft_app_get_package_details_use_cache	app-store-local.c	/^soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)$/;"	f	file:
+soft_app_get_screenshot_cache_filename	app-store-screenshot.c	/^static char *soft_app_get_screenshot_cache_filename (const gchar *kind,$/;"	f	file:
+soft_app_image_set_from_pixbuf	app-store-util.c	/^soft_app_image_set_from_pixbuf (GtkImage        *image, $/;"	f
+soft_app_image_set_from_pixbuf_with_scale	app-store-util.c	/^soft_app_image_set_from_pixbuf_with_scale (GtkImage *image, $/;"	f	file:
+soft_app_info_class_init	app-store-details.c	/^soft_app_info_class_init (SoftAppInfoClass *klass)$/;"	f	file:
+soft_app_info_finalize	app-store-details.c	/^soft_app_info_finalize (GObject *object)$/;"	f	file:
+soft_app_info_get_action	app-store-details.c	/^int  soft_app_info_get_action (SoftAppInfo *info)$/;"	f
+soft_app_info_get_arch	app-store-details.c	/^const char *soft_app_info_get_arch (SoftAppInfo *info)$/;"	f
+soft_app_info_get_button	app-store-details.c	/^const char *soft_app_info_get_button (SoftAppInfo *info)$/;"	f
+soft_app_info_get_cache	app-store-details.c	/^const char *soft_app_info_get_cache (SoftAppInfo *info)$/;"	f
+soft_app_info_get_comment	app-store-details.c	/^const char *soft_app_info_get_comment (SoftAppInfo *info)$/;"	f
+soft_app_info_get_explain	app-store-details.c	/^const char *soft_app_info_get_explain (SoftAppInfo *info)$/;"	f
+soft_app_info_get_icon	app-store-details.c	/^const char *soft_app_info_get_icon (SoftAppInfo *info)$/;"	f
+soft_app_info_get_package	app-store-details.c	/^const char *soft_app_info_get_package (SoftAppInfo *info)$/;"	f
+soft_app_info_get_pkgid	app-store-details.c	/^const char *soft_app_info_get_pkgid (SoftAppInfo *info)$/;"	f
+soft_app_info_get_protocol	app-store-details.c	/^const char *soft_app_info_get_protocol (SoftAppInfo *info)$/;"	f
+soft_app_info_get_score	app-store-details.c	/^float soft_app_info_get_score (SoftAppInfo *info)$/;"	f
+soft_app_info_get_screenshot_url	app-store-details.c	/^const char *soft_app_info_get_screenshot_url (SoftAppInfo *info)$/;"	f
+soft_app_info_get_size	app-store-details.c	/^const char *soft_app_info_get_size (SoftAppInfo *info)$/;"	f
+soft_app_info_get_source	app-store-details.c	/^const char *soft_app_info_get_source (SoftAppInfo *info)$/;"	f
+soft_app_info_get_state	app-store-details.c	/^int  soft_app_info_get_state (SoftAppInfo *info)$/;"	f
+soft_app_info_get_version	app-store-details.c	/^const char *soft_app_info_get_version (SoftAppInfo *info)$/;"	f
+soft_app_info_init	app-store-details.c	/^soft_app_info_init (SoftAppInfo *info)$/;"	f	file:
+soft_app_info_new	app-store-details.c	/^soft_app_info_new (const char *name)$/;"	f
+soft_app_info_set_action	app-store-details.c	/^void soft_app_info_set_action (SoftAppInfo *info,$/;"	f
+soft_app_info_set_arch	app-store-details.c	/^void soft_app_info_set_arch (SoftAppInfo *info,$/;"	f
+soft_app_info_set_button	app-store-details.c	/^void soft_app_info_set_button (SoftAppInfo *info,$/;"	f
+soft_app_info_set_cache	app-store-details.c	/^void soft_app_info_set_cache (SoftAppInfo *info,$/;"	f
+soft_app_info_set_comment	app-store-details.c	/^void soft_app_info_set_comment (SoftAppInfo *info,$/;"	f
+soft_app_info_set_explain	app-store-details.c	/^void soft_app_info_set_explain (SoftAppInfo *info,$/;"	f
+soft_app_info_set_icon	app-store-details.c	/^void soft_app_info_set_icon (SoftAppInfo *info,$/;"	f
+soft_app_info_set_package	app-store-details.c	/^void soft_app_info_set_package (SoftAppInfo *info,$/;"	f
+soft_app_info_set_pkgid	app-store-details.c	/^void soft_app_info_set_pkgid (SoftAppInfo *info,$/;"	f
+soft_app_info_set_protocol	app-store-details.c	/^void soft_app_info_set_protocol (SoftAppInfo *info,$/;"	f
+soft_app_info_set_score	app-store-details.c	/^void soft_app_info_set_score (SoftAppInfo *info,$/;"	f
+soft_app_info_set_screenshot_url	app-store-details.c	/^void soft_app_info_set_screenshot_url (SoftAppInfo *info,$/;"	f
+soft_app_info_set_size	app-store-details.c	/^void soft_app_info_set_size (SoftAppInfo *info,$/;"	f
+soft_app_info_set_source	app-store-details.c	/^void soft_app_info_set_source (SoftAppInfo *info,$/;"	f
+soft_app_info_set_state	app-store-details.c	/^void soft_app_info_set_state (SoftAppInfo *info,$/;"	f
+soft_app_info_set_version	app-store-details.c	/^void soft_app_info_set_version (SoftAppInfo *info,$/;"	f
+soft_app_install_finished_cb	app-store-store.c	/^soft_app_install_finished_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)$/;"	f	file:
+soft_app_install_progress_cb	app-store-store.c	/^static void soft_app_install_progress_cb (PkProgress     *progress, $/;"	f	file:
+soft_app_load_appdata	app-store-local.c	/^static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)$/;"	f	file:
+soft_app_message_class_init	app-store-message.c	/^soft_app_message_class_init (SoftAppMessageClass *klass)$/;"	f	file:
+soft_app_message_finalize	app-store-message.c	/^soft_app_message_finalize (GObject *object)$/;"	f	file:
+soft_app_message_get_arch	app-store-message.c	/^soft_app_message_get_arch (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_cache	app-store-message.c	/^soft_app_message_get_cache (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_description	app-store-message.c	/^soft_app_message_get_description (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_files	app-store-message.c	/^soft_app_message_get_files (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_index	app-store-message.c	/^soft_app_message_get_index (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_license	app-store-message.c	/^soft_app_message_get_license (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_name	app-store-message.c	/^soft_app_message_get_name (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_package	app-store-message.c	/^soft_app_message_get_package (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_pkgname	app-store-message.c	/^soft_app_message_get_pkgname (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_score	app-store-message.c	/^soft_app_message_get_score (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_screenshot	app-store-message.c	/^soft_app_message_get_screenshot (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_size	app-store-message.c	/^soft_app_message_get_size (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_state	app-store-message.c	/^soft_app_message_get_state (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_summary	app-store-message.c	/^soft_app_message_get_summary (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_url	app-store-message.c	/^soft_app_message_get_url (SoftAppMessage *Message)$/;"	f
+soft_app_message_get_version	app-store-message.c	/^soft_app_message_get_version (SoftAppMessage *Message)$/;"	f
+soft_app_message_init	app-store-message.c	/^soft_app_message_init (SoftAppMessage *Message)$/;"	f	file:
+soft_app_message_new	app-store-message.c	/^soft_app_message_new (void)$/;"	f
+soft_app_message_set_arch	app-store-message.c	/^soft_app_message_set_arch (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_cache	app-store-message.c	/^soft_app_message_set_cache (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_description	app-store-message.c	/^soft_app_message_set_description (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_files	app-store-message.c	/^soft_app_message_set_files (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_icon	app-store-message.c	/^soft_app_message_set_icon (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_index	app-store-message.c	/^soft_app_message_set_index (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_license	app-store-message.c	/^soft_app_message_set_license (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_name	app-store-message.c	/^soft_app_message_set_name (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_package	app-store-message.c	/^soft_app_message_set_package (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_pkgname	app-store-message.c	/^soft_app_message_set_pkgname (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_score	app-store-message.c	/^soft_app_message_set_score (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_screenshot	app-store-message.c	/^soft_app_message_set_screenshot (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_size	app-store-message.c	/^soft_app_message_set_size (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_state	app-store-message.c	/^soft_app_message_set_state (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_summary	app-store-message.c	/^soft_app_message_set_summary (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_url	app-store-message.c	/^soft_app_message_set_url (SoftAppMessage  *Message, $/;"	f
+soft_app_message_set_version	app-store-message.c	/^soft_app_message_set_version (SoftAppMessage  *Message, $/;"	f
+soft_app_pkgkit_class_init	app-store-pkgkit.c	/^soft_app_pkgkit_class_init (SoftAppPkgkitClass *klass)$/;"	f	file:
+soft_app_pkgkit_dispose	app-store-pkgkit.c	/^soft_app_pkgkit_dispose (GObject *object)$/;"	f	file:
+soft_app_pkgkit_init	app-store-pkgkit.c	/^soft_app_pkgkit_init (SoftAppPkgkit *pkg)$/;"	f	file:
+soft_app_pkgkit_new	app-store-pkgkit.c	/^SoftAppPkgkit *soft_app_pkgkit_new(void)$/;"	f
+soft_app_remove_packages_cb	app-store-local.c	/^soft_app_remove_packages_cb (PkTask *task, GAsyncResult *res, SoftAppStore *app)$/;"	f	file:
+soft_app_remove_progress_cb	app-store-local.c	/^static void soft_app_remove_progress_cb (PkProgress     *progress, $/;"	f	file:
+soft_app_row_class_init	app-store-row.c	/^soft_app_row_class_init (SoftAppRowClass *klass)$/;"	f	file:
+soft_app_row_destroy	app-store-row.c	/^soft_app_row_destroy (GtkWidget *widget)$/;"	f	file:
+soft_app_row_init	app-store-row.c	/^soft_app_row_init (SoftAppRow *row)$/;"	f	file:
+soft_app_row_new	app-store-row.c	/^soft_app_row_new (SoftAppMessage *Message)$/;"	f
+soft_app_row_refresh	app-store-row.c	/^soft_app_row_refresh (SoftAppRow *row)$/;"	f	file:
+soft_app_row_set_list	app-store-row.c	/^soft_app_row_set_list (SoftAppRow *row, SoftAppMessage *Message)$/;"	f
+soft_app_screenshot_class_init	app-store-screenshot.c	/^soft_app_screenshot_class_init (SoftAppScreenshotClass *klass)$/;"	f	file:
+soft_app_screenshot_destroy	app-store-screenshot.c	/^soft_app_screenshot_destroy (GtkWidget *widget)$/;"	f	file:
+soft_app_screenshot_draw	app-store-screenshot.c	/^soft_app_screenshot_draw (GtkWidget *widget, cairo_t *cr)$/;"	f	file:
+soft_app_screenshot_get_cachefn_for_url	app-store-screenshot.c	/^soft_app_screenshot_get_cachefn_for_url (const gchar *url)$/;"	f	file:
+soft_app_screenshot_image_complete_cb	app-store-screenshot.c	/^soft_app_screenshot_image_complete_cb (SoupSession *session,$/;"	f	file:
+soft_app_screenshot_init	app-store-screenshot.c	/^soft_app_screenshot_init (SoftAppScreenshot *ss)$/;"	f	file:
+soft_app_screenshot_load_async	app-store-screenshot.c	/^void soft_app_screenshot_load_async (SoftAppScreenshot *ss,$/;"	f
+soft_app_screenshot_new	app-store-screenshot.c	/^soft_app_screenshot_new (SoupSession *session)$/;"	f
+soft_app_screenshot_save_downloaded	app-store-screenshot.c	/^soft_app_screenshot_save_downloaded (SoftAppScreenshot *ss,$/;"	f	file:
+soft_app_screenshot_set_error	app-store-screenshot.c	/^soft_app_screenshot_set_error (SoftAppScreenshot *ss, const gchar *message)$/;"	f	file:
+soft_app_screenshot_set_size	app-store-screenshot.c	/^soft_app_screenshot_set_size (SoftAppScreenshot *ss,$/;"	f
+soft_app_screenshot_show_image	app-store-screenshot.c	/^soft_app_screenshot_show_image (SoftAppScreenshot *ss)$/;"	f	file:
+soft_app_screenshot_soup_msg_set_modified_request	app-store-screenshot.c	/^soft_app_screenshot_soup_msg_set_modified_request (SoupMessage *msg, GFile *file)$/;"	f	file:
+soft_app_thumbnail_class_init	app-store-thumbnail.c	/^soft_app_thumbnail_class_init (SoftAppThumbnailClass *klass)$/;"	f	file:
+soft_app_thumbnail_finalize	app-store-thumbnail.c	/^soft_app_thumbnail_finalize (GObject *object)$/;"	f	file:
+soft_app_thumbnail_get_arch	app-store-thumbnail.c	/^soft_app_thumbnail_get_arch (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_description	app-store-thumbnail.c	/^soft_app_thumbnail_get_description (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_downnum	app-store-thumbnail.c	/^soft_app_thumbnail_get_downnum (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_homepage	app-store-thumbnail.c	/^soft_app_thumbnail_get_homepage (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_icon	app-store-thumbnail.c	/^soft_app_thumbnail_get_icon (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_licenses	app-store-thumbnail.c	/^soft_app_thumbnail_get_licenses (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_name	app-store-thumbnail.c	/^soft_app_thumbnail_get_name (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_pkgname	app-store-thumbnail.c	/^soft_app_thumbnail_get_pkgname (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_score	app-store-thumbnail.c	/^soft_app_thumbnail_get_score (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_screenurl	app-store-thumbnail.c	/^soft_app_thumbnail_get_screenurl (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_size	app-store-thumbnail.c	/^soft_app_thumbnail_get_size (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_state	app-store-thumbnail.c	/^soft_app_thumbnail_get_state (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_sumary	app-store-thumbnail.c	/^soft_app_thumbnail_get_sumary (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_get_version	app-store-thumbnail.c	/^soft_app_thumbnail_get_version (SoftAppThumbnail *thb)$/;"	f
+soft_app_thumbnail_init	app-store-thumbnail.c	/^soft_app_thumbnail_init (SoftAppThumbnail *thb)$/;"	f	file:
+soft_app_thumbnail_new	app-store-thumbnail.c	/^soft_app_thumbnail_new (void)$/;"	f
+soft_app_thumbnail_set_arch	app-store-thumbnail.c	/^soft_app_thumbnail_set_arch (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_description	app-store-thumbnail.c	/^soft_app_thumbnail_set_description (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_downnum	app-store-thumbnail.c	/^soft_app_thumbnail_set_downnum (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_homepage	app-store-thumbnail.c	/^soft_app_thumbnail_set_homepage (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_icon	app-store-thumbnail.c	/^soft_app_thumbnail_set_icon (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_licenses	app-store-thumbnail.c	/^soft_app_thumbnail_set_licenses (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_name	app-store-thumbnail.c	/^soft_app_thumbnail_set_name (SoftAppThumbnail  *thb,$/;"	f
+soft_app_thumbnail_set_pkgname	app-store-thumbnail.c	/^soft_app_thumbnail_set_pkgname (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_score	app-store-thumbnail.c	/^soft_app_thumbnail_set_score (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_screenurl	app-store-thumbnail.c	/^soft_app_thumbnail_set_screenurl (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_size	app-store-thumbnail.c	/^soft_app_thumbnail_set_size (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_state	app-store-thumbnail.c	/^soft_app_thumbnail_set_state (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_sumary	app-store-thumbnail.c	/^soft_app_thumbnail_set_sumary (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_set_version	app-store-thumbnail.c	/^soft_app_thumbnail_set_version (SoftAppThumbnail  *thb, $/;"	f
+soft_app_thumbnail_tile_class_init	app-store-thumbnail.c	/^soft_app_thumbnail_tile_class_init (SoftAppThumbnailTileClass *klass)$/;"	f	file:
+soft_app_thumbnail_tile_destroy	app-store-thumbnail.c	/^soft_app_thumbnail_tile_destroy (GtkWidget *widget)$/;"	f	file:
+soft_app_thumbnail_tile_init	app-store-thumbnail.c	/^soft_app_thumbnail_tile_init (SoftAppThumbnailTile *tile)$/;"	f	file:
+soft_app_thumbnail_tile_new	app-store-thumbnail.c	/^soft_app_thumbnail_tile_new (SoftAppThumbnail *app)$/;"	f
+soft_app_thumbnail_tile_set_app	app-store-thumbnail.c	/^soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)$/;"	f	file:
+soft_app_thumbnail_tile_set_data	app-store-thumbnail.c	/^static void soft_app_thumbnail_tile_set_data(SoftAppThumbnailTile *tile, SoftAppThumbnail *app)$/;"	f	file:
+soft_arch	app-store-message.h	/^    char        *soft_arch;$/;"	m	struct:SoftAppMessage
+soft_files	app-store-message.h	/^	char       **soft_files;$/;"	m	struct:SoftAppMessage
+soft_homepage	app-store-message.h	/^    char        *soft_homepage;$/;"	m	struct:SoftAppMessage
+soft_image	app-store-details.h	/^    GtkWidget   *soft_image;$/;"	m	struct:SoftAppDetails
+soft_index	app-store-message.h	/^    int          soft_index;$/;"	m	struct:SoftAppMessage
+soft_license	app-store-message.h	/^    char        *soft_license;$/;"	m	struct:SoftAppMessage
+soft_name	app-store-category.h	/^    char        *soft_name;$/;"	m	struct:SoftAppCategory
+soft_name	app-store-category.h	/^    char        *soft_name;$/;"	m	struct:SoftAppCategoryTile
+soft_name	app-store-details.h	/^	char        *soft_name;$/;"	m	struct:SoftAppInfo
+soft_name	app-store-message.h	/^    char        *soft_name;$/;"	m	struct:SoftAppMessage
+soft_name	app-store-thumbnail.h	/^    char   *soft_name;$/;"	m	struct:SoftAppThumbnail
+soft_package	app-store-message.h	/^    char        *soft_package;$/;"	m	struct:SoftAppMessage
+soft_pkgname	app-store-message.h	/^	char        *soft_pkgname;$/;"	m	struct:SoftAppMessage
+soft_score	app-store-message.h	/^    float        soft_score;$/;"	m	struct:SoftAppMessage
+soft_score	app-store-thumbnail.h	/^    float   soft_score;$/;"	m	struct:SoftAppThumbnail
+soft_size	app-store-message.h	/^	char        *soft_size;$/;"	m	struct:SoftAppMessage
+soft_state	app-store-message.h	/^	gboolean     soft_state;$/;"	m	struct:SoftAppMessage
+soft_state	app-store-thumbnail.h	/^	gboolean soft_state;$/;"	m	struct:SoftAppThumbnail
+soft_summary	app-store-message.h	/^	char        *soft_summary;$/;"	m	struct:SoftAppMessage
+soft_version	app-store-message.h	/^    char        *soft_version;$/;"	m	struct:SoftAppMessage
+source	app-store-details.h	/^	char        *source;$/;"	m	struct:SoftAppInfo
+stars1	app-store-details.h	/^	GtkWidget   *stars1;$/;"	m	struct:SoftAppDetails
+stars1	app-store-row.h	/^	GtkWidget      *stars1;$/;"	m	struct:SoftAppRow
+stars1	app-store-thumbnail.h	/^    GtkWidget   *stars1;$/;"	m	struct:SoftAppThumbnailTile
+stars2	app-store-details.h	/^	GtkWidget   *stars2;$/;"	m	struct:SoftAppDetails
+stars2	app-store-row.h	/^	GtkWidget      *stars2;$/;"	m	struct:SoftAppRow
+stars2	app-store-thumbnail.h	/^    GtkWidget   *stars2;$/;"	m	struct:SoftAppThumbnailTile
+stars3	app-store-details.h	/^	GtkWidget   *stars3;$/;"	m	struct:SoftAppDetails
+stars3	app-store-row.h	/^	GtkWidget      *stars3;$/;"	m	struct:SoftAppRow
+stars3	app-store-thumbnail.h	/^    GtkWidget   *stars3;$/;"	m	struct:SoftAppThumbnailTile
+stars4	app-store-details.h	/^	GtkWidget   *stars4;$/;"	m	struct:SoftAppDetails
+stars4	app-store-row.h	/^	GtkWidget      *stars4;$/;"	m	struct:SoftAppRow
+stars4	app-store-thumbnail.h	/^    GtkWidget   *stars4;$/;"	m	struct:SoftAppThumbnailTile
+stars5	app-store-details.h	/^	GtkWidget   *stars5;$/;"	m	struct:SoftAppDetails
+stars5	app-store-row.h	/^	GtkWidget      *stars5;$/;"	m	struct:SoftAppRow
+stars5	app-store-thumbnail.h	/^    GtkWidget   *stars5;$/;"	m	struct:SoftAppThumbnailTile
+state	app-store-details.h	/^	gboolean     state;$/;"	m	struct:SoftAppInfo
+status_last	app-store-pkgkit.h	/^    PkStatusEnum     status_last;$/;"	m	struct:SoftAppPkgkit
+subnum	app-store-category.h	/^    char        *subnum;$/;"	m	struct:SoftAppCategory
+suburl	app-store-category.h	/^    char        *suburl;$/;"	m	struct:SoftAppCategory
+sumary	app-store-thumbnail.h	/^    char   *sumary;$/;"	m	struct:SoftAppThumbnail
+sw	app-store.h	/^	GtkWidget        *sw;$/;"	m	struct:__anon3
+task	app-store-pkgkit.h	/^	PkTask          *task;$/;"	m	struct:SoftAppPkgkit
+task	app-store.h	/^    PkTask      *task;$/;"	m	struct:__anon2
+thb	app-store-thumbnail.h	/^    SoftAppThumbnail *thb;$/;"	m	struct:SoftAppThumbnailTile
+version	app-store-details.h	/^	char        *version;$/;"	m	struct:SoftAppInfo
+version	app-store-thumbnail.h	/^    char   *version;$/;"	m	struct:SoftAppThumbnail
+width	app-store-screenshot.h	/^    guint        width;$/;"	m	struct:SoftAppScreenshot

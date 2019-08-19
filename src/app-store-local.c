@@ -78,6 +78,9 @@ GetLocalSoftAppDetails (PkClient       *client,
     PkDetails        *item;
     guint64           size;
     char             *xml;
+	const char       *soft_name;
+	const char       *soft_summary;
+	const char       *description;
     g_autofree gchar *dname = NULL;
 	g_autofree gchar *icon = NULL;
     g_autofree gchar *license = NULL;
@@ -155,45 +158,59 @@ GetLocalSoftAppDetails (PkClient       *client,
 							 "icon",
 							  icon);
 	}
-    soft_app_message_set_pkgid(Message,package_id);
-	g_key_file_set_string(kconfig,
-			             "soft-app-store",
-						 "package_id",
-						  package_id);
 
-	soft_app_message_set_version(Message,split[PK_PACKAGE_ID_VERSION]);
-	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
+	soft_name = as_app_get_name(AS_APP(Message),NULL);
+	soft_app_message_set_name (Message,soft_name);
+	
+	soft_summary = as_app_get_comment (AS_APP(Message),NULL);
+	soft_app_message_set_summary (Message,soft_summary);
+
 	soft_app_message_set_score(Message,0.5);
 	g_key_file_set_double(kconfig,
 			             "soft-app-store",
 						 "score",
 						  0.5);
+   
+	description = as_app_get_description (AS_APP(Message),NULL);
+	soft_app_message_set_description (Message,description);
 
+	soft_app_message_set_version(Message,split[PK_PACKAGE_ID_VERSION]);
+	
+	soft_app_message_set_license(Message,license);
+	g_key_file_set_string(kconfig,
+			             "soft-app-store",
+						 "license",
+						  license);
+	
     s_size = g_strdup_printf ("%.2f MB",(float)size/(1024*1024));
 	soft_app_message_set_size(Message,s_size);
 	g_key_file_set_string(kconfig,
 			             "soft-app-store",
 						 "size",
 						  s_size);
-
+	
 	soft_app_message_set_url(Message,url);
 	g_key_file_set_string(kconfig,
 			             "soft-app-store",
 						 "url",
 						  url);
-
-	soft_app_message_set_license(Message,license);
-	g_key_file_set_string(kconfig,
-			             "soft-app-store",
-						 "license",
-						  license);
-
+	
+	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
+	
     package = pk_package_id_to_printable (package_id);
 	soft_app_message_set_package(Message,package);
 	g_key_file_set_string(kconfig,
 			             "soft-app-store",
 						 "package",
 						  package);
+	
+	soft_app_message_set_pkgname(Message,package_id);
+	g_key_file_set_string(kconfig,
+			             "soft-app-store",
+						 "package_id",
+						  package_id);
+
+	soft_app_message_set_state (Message,TRUE);
 	
 	g_key_file_save_to_file(kconfig,cache_file,NULL);
 	SoftAppStoreLog ("Debug","wriet cache %s Successfu",cache_file);
@@ -209,7 +226,6 @@ GetLocalSoftAppDetails (PkClient       *client,
         emit_details_complete(pkg);
         soft_sum = 0;
     }
-
 }    
 static void
 GetLocalDetailsProgress(PkProgress    *progress, 
@@ -362,6 +378,9 @@ static void
 soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
 {
     char             *xml;
+	const char       *name;
+	const char       *summary;
+	const char       *description;
     g_autofree gchar *license = NULL;
     g_autofree gchar *package = NULL;
     g_autofree gchar *icon = NULL;
@@ -393,27 +412,41 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
 	g_key_file_load_from_file(kconfig, cache_file, G_KEY_FILE_NONE, NULL);
 
 	soft_app_message_set_cache (Message,dname);
-    soft_app_message_set_pkgid(Message,package_id);
-	soft_app_message_set_version(Message,split[PK_PACKAGE_ID_VERSION]);
-	soft_app_message_set_arch(Message,split[PK_PACKAGE_ID_ARCH]);
-	soft_app_message_set_score(Message,0.5);
 
 	icon = g_key_file_get_string(kconfig,"soft-app-store","icon",NULL);
     soft_app_message_set_icon(Message,icon);
-
-	s_size =  g_key_file_get_string(kconfig,"soft-app-store","size",NULL);
-	soft_app_message_set_size(Message,s_size);
 	
-	url = g_key_file_get_string(kconfig,"soft-app-store","url",NULL);
-	soft_app_message_set_url(Message,url);
+	name = as_app_get_name (AS_APP(Message),NULL);
+    soft_app_message_set_name(Message,name);
+
+	summary =  as_app_get_comment (AS_APP(Message),NULL);
+	soft_app_message_set_summary (Message,summary);
+
+	soft_app_message_set_score(Message,0.5);
+	
+	description = as_app_get_description (AS_APP(Message),NULL);
+	soft_app_message_set_description (Message,description);
+
+	soft_app_message_set_version (Message,split[PK_PACKAGE_ID_VERSION]);
 	
 	license = g_key_file_get_string(kconfig,"soft-app-store","licenses",NULL);
-	soft_app_message_set_license(Message,license);
+	soft_app_message_set_license (Message,license);
+	
+	s_size =  g_key_file_get_string(kconfig,"soft-app-store","size",NULL);
+	soft_app_message_set_size (Message,s_size);
+	
+	url = g_key_file_get_string(kconfig,"soft-app-store","url",NULL);
+	soft_app_message_set_url (Message,url);
+	
+	soft_app_message_set_arch (Message,split[PK_PACKAGE_ID_ARCH]);
 	
 	package = g_key_file_get_string(kconfig,"soft-app-store","package",NULL);
-	soft_app_message_set_package(Message,package);
+	soft_app_message_set_package (Message,package);
 	g_key_file_free(kconfig);
+    
+	soft_app_message_set_pkgname (Message,package_id);
 
+	soft_app_message_set_state (Message,TRUE);
     g_ptr_array_add (app->pkg->list, Message);
 	soft_sum = app->pkg->cache_cnt + app->pkg->metadata_cnt;
     if(soft_sum >= app->pkg->phashlen)

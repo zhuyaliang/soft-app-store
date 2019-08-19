@@ -32,7 +32,7 @@ static void GetLocalSoftSearchResult (const char *SoftName,SoftAppStore *app)
     for (i = 0; i < app->pkg->list->len; i++)
     {
         Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
-		package_id = soft_app_message_get_pkgid (Message);
+		package_id = soft_app_message_get_pkgname (Message);
 		split = pk_package_id_split (package_id);
 
 		if (strstr(split[PK_PACKAGE_ID_NAME],SoftName) == NULL)

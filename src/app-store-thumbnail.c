@@ -20,7 +20,6 @@
 #include <libsoup/soup.h>
 
 G_DEFINE_TYPE (SoftAppThumbnailTile, soft_app_thumbnail_tile, GTK_TYPE_BUTTON)
-G_DEFINE_TYPE (SoftAppThumbnail,     soft_app_thumbnail,      G_TYPE_OBJECT)
 
 /*
 static gboolean
@@ -102,14 +101,14 @@ soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)
     SoupSession *SoupSso;
     SoupMessage *SoupMsg;
 
-	level = soft_app_thumbnail_get_score(tile->thb);
+	level = soft_app_message_get_score(tile->Message);
     soft_app_star_widget_set_rating (tile->stars1,level--);
     soft_app_star_widget_set_rating (tile->stars2,level--);
     soft_app_star_widget_set_rating (tile->stars3,level--);
     soft_app_star_widget_set_rating (tile->stars4,level--);
     soft_app_star_widget_set_rating (tile->stars5,level--);
 
-	icon_url = soft_app_thumbnail_get_icon(tile->thb);
+	icon_url = soft_app_message_get_icon(tile->Message);
     
 	SoupSso = soup_session_new ();
 	SoupMsg = soup_message_new (SOUP_METHOD_GET,icon_url);
@@ -118,7 +117,7 @@ soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)
 								SoupGetSoftIcon,
 								tile->image);
 	
-    soft_name = soft_app_thumbnail_get_name(tile->thb);
+    soft_name = soft_app_message_get_name(tile->Message);
     SetLableFontType(tile->label,
                     "black",
                      11,
@@ -126,16 +125,16 @@ soft_app_thumbnail_tile_set_app (SoftAppThumbnailTile *tile)
                      FALSE);
 }
 
-static void soft_app_thumbnail_tile_set_data(SoftAppThumbnailTile *tile, SoftAppThumbnail *app)
+static void soft_app_thumbnail_tile_set_data(SoftAppThumbnailTile *tile, SoftAppMessage *app)
 {
-	g_set_object (&tile->thb, app);
+	g_set_object (&tile->Message, app);
     soft_app_thumbnail_tile_set_app (tile);
 }    
 static void
 soft_app_thumbnail_tile_destroy (GtkWidget *widget)
 {
     SoftAppThumbnailTile *tile = SOFT_APP_THUMBNAIL_TILE(widget);
-    g_clear_object (&tile->thb);
+    g_clear_object (&tile->Message);
 }
 
 static void
@@ -198,7 +197,7 @@ soft_app_thumbnail_tile_class_init (SoftAppThumbnailTileClass *klass)
 }
 
 GtkWidget *
-soft_app_thumbnail_tile_new (SoftAppThumbnail *app)
+soft_app_thumbnail_tile_new (SoftAppMessage *app)
 {
     SoftAppThumbnailTile *tile;
 
@@ -208,236 +207,3 @@ soft_app_thumbnail_tile_new (SoftAppThumbnail *app)
 
     return GTK_WIDGET (tile);
 }
-
-float
-soft_app_thumbnail_get_score (SoftAppThumbnail *thb)
-{
-    return thb->soft_score;
-}
-
-void
-soft_app_thumbnail_set_score (SoftAppThumbnail  *thb, 
-                              float              soft_score)
-{
-    thb->soft_score = soft_score;
-}  
-
-gboolean
-soft_app_thumbnail_get_state (SoftAppThumbnail *thb)
-{
-    return thb->soft_state;
-}
-
-void
-soft_app_thumbnail_set_state (SoftAppThumbnail  *thb, 
-                              gboolean          soft_state)
-{
-    thb->soft_state = soft_state;
-}  
-const gchar *
-soft_app_thumbnail_get_name (SoftAppThumbnail *thb)
-{
-    return thb->soft_name;
-}
-
-void
-soft_app_thumbnail_set_name (SoftAppThumbnail  *thb,
-                             const char      *name)
-{
-    g_free (thb->soft_name);
-    thb->soft_name = g_strdup (name);
-}  
-
-const gchar *
-soft_app_thumbnail_get_icon (SoftAppThumbnail *thb)
-{
-    return thb->icon_name;
-}
-
-void
-soft_app_thumbnail_set_icon (SoftAppThumbnail  *thb, 
-                             const gchar       *icon)
-{
-    g_free (thb->icon_name);
-    thb->icon_name = g_strdup (icon);
-}  
-
-const gchar *
-soft_app_thumbnail_get_downnum (SoftAppThumbnail *thb)
-{
-    return thb->downloads;
-}
-
-void
-soft_app_thumbnail_set_downnum (SoftAppThumbnail  *thb, 
-                                const gchar       *downloads)
-{
-    g_free (thb->downloads);
-    thb->downloads = g_strdup (downloads);
-} 
-
-const gchar *
-soft_app_thumbnail_get_sumary (SoftAppThumbnail *thb)
-{
-    return thb->sumary;
-}
-
-void
-soft_app_thumbnail_set_sumary (SoftAppThumbnail  *thb, 
-                               const gchar       *sumary)
-{
-    g_free (thb->sumary);
-    thb->sumary = g_strdup (sumary);
-}  
-
-const gchar *
-soft_app_thumbnail_get_description (SoftAppThumbnail *thb)
-{
-    return thb->description;
-}
-
-void
-soft_app_thumbnail_set_description (SoftAppThumbnail  *thb, 
-                                    const gchar       *description)
-{
-    g_free (thb->description);
-    thb->description = g_strdup (description);
-}  
-
-const gchar *
-soft_app_thumbnail_get_pkgname (SoftAppThumbnail *thb)
-{
-    return thb->pkgname;
-}
-
-void
-soft_app_thumbnail_set_pkgname (SoftAppThumbnail  *thb, 
-                                const gchar       *pkgname)
-{
-    g_free (thb->pkgname);
-    thb->pkgname = g_strdup (pkgname);
-}  
-
-const gchar *
-soft_app_thumbnail_get_version (SoftAppThumbnail *thb)
-{
-    return thb->version;
-}
-
-void
-soft_app_thumbnail_set_version (SoftAppThumbnail  *thb, 
-                                const gchar       *version)
-{
-    g_free (thb->version);
-    thb->version = g_strdup (version);
-}  
-
-static void
-soft_app_thumbnail_finalize (GObject *object)
-{
-    SoftAppThumbnail *thb = SOFT_APP_THUMBNAIL (object);
-
-    g_free (thb->soft_name);
-    g_free (thb->icon_name);
-    g_free (thb->downloads);
-    g_free (thb->sumary);
-    g_free (thb->description);
-    g_free (thb->pkgname);
-    g_free (thb->version);
-    g_free (thb->arch);
-    g_free (thb->size);
-    g_free (thb->licenses);
-    g_free (thb->homepage);
-    g_free (thb->screenshot_url);
-}
-
-const gchar *
-soft_app_thumbnail_get_screenurl (SoftAppThumbnail *thb)
-{
-    return thb->screenshot_url;
-}
-
-void
-soft_app_thumbnail_set_screenurl (SoftAppThumbnail  *thb, 
-                                  const gchar       *screenshot_url)
-{
-    g_free (thb->screenshot_url);
-    thb->screenshot_url = g_strdup (screenshot_url);
-}  
-const gchar *
-soft_app_thumbnail_get_licenses (SoftAppThumbnail *thb)
-{
-    return thb->licenses;
-}
-
-void
-soft_app_thumbnail_set_licenses (SoftAppThumbnail  *thb, 
-                                 const gchar       *licenses)
-{
-    g_free (thb->licenses);
-    thb->licenses = g_strdup (licenses);
-}  
-
-const gchar *
-soft_app_thumbnail_get_arch (SoftAppThumbnail *thb)
-{
-    return thb->arch;
-}
-
-void
-soft_app_thumbnail_set_size (SoftAppThumbnail  *thb, 
-                             const gchar       *size)
-{
-    g_free (thb->size);
-    thb->size = g_strdup (size);
-}  
-
-const gchar *
-soft_app_thumbnail_get_size (SoftAppThumbnail *thb)
-{
-    return thb->size;
-}
-
-void
-soft_app_thumbnail_set_arch (SoftAppThumbnail  *thb, 
-                             const gchar       *arch)
-{
-    g_free (thb->arch);
-    thb->arch = g_strdup (arch);
-}
-
-const gchar *
-soft_app_thumbnail_get_homepage (SoftAppThumbnail *thb)
-{
-    return thb->homepage;
-}
-
-void
-soft_app_thumbnail_set_homepage (SoftAppThumbnail  *thb, 
-                                 const gchar       *homepage)
-{
-    g_free (thb->homepage);
-    thb->homepage = g_strdup (homepage);
-}  
-
-static void
-soft_app_thumbnail_class_init (SoftAppThumbnailClass *klass)
-{
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
-    object_class->finalize = soft_app_thumbnail_finalize;
-}
-
-static void
-soft_app_thumbnail_init (SoftAppThumbnail *thb)
-{
-
-}
-
-SoftAppThumbnail *
-soft_app_thumbnail_new (void)
-{
-    SoftAppThumbnail *thb;
-    thb = g_object_new (SOFT_APP_TYPE_THUMBNAIL, NULL);
-    
-    return SOFT_APP_THUMBNAIL (thb);
-}    

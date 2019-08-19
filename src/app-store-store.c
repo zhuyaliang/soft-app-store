@@ -138,7 +138,7 @@ SoupGetRichRecomInfo (SoupSession *session,
                       gpointer     data)
 {
 
-    SoftAppThumbnail *thb;
+    SoftAppMessage   *Message;
     json_object      *js;
     const char       *name;
     const char       *icon;
@@ -151,7 +151,9 @@ SoupGetRichRecomInfo (SoupSession *session,
     const char       *screenshot_url;
     const char       *version;
     const char       *size;
-    const char       *downnum;
+    const char		 *package_id;
+    const char		 *package;
+    GError *error_local = NULL;
 	gboolean          state;
 	int               score;
     char             *screenshot;
@@ -181,7 +183,6 @@ SoupGetRichRecomInfo (SoupSession *session,
     score = atoi (GetJsonSpecifiedData (js,"score"));
     sumary = GetJsonSpecifiedData (js,"summary");
     destination = GetJsonSpecifiedData (js,"description");
-    downnum = GetJsonSpecifiedData (js,"downloads");
     pkgname = GetJsonSpecifiedData (js,"pkgname");
     licenses = GetJsonSpecifiedData (js,"license");
     arch = GetJsonSpecifiedData (js,"platform");
@@ -193,23 +194,38 @@ SoupGetRichRecomInfo (SoupSession *session,
     s_size = g_strdup_printf ("%.2f MB",atof(size) / 1024);
     icon_url = g_strdup_printf ("%s:%d%s",STORESERVERADDR,STORESERVERPOER,icon);
     
-    thb = soft_app_thumbnail_new ();
-    soft_app_thumbnail_set_icon  (thb,icon_url);
-    soft_app_thumbnail_set_name  (thb,name);
-    soft_app_thumbnail_set_score (thb,score);
-    soft_app_thumbnail_set_sumary (thb,sumary);
-    soft_app_thumbnail_set_downnum (thb,downnum);
-    soft_app_thumbnail_set_description (thb,destination);
-    soft_app_thumbnail_set_pkgname (thb,pkgname);
-    soft_app_thumbnail_set_licenses (thb,licenses);
-    soft_app_thumbnail_set_arch (thb,arch);
-    soft_app_thumbnail_set_size (thb,s_size);
-    soft_app_thumbnail_set_homepage (thb,homepage);
-    soft_app_thumbnail_set_version (thb,version);
-    soft_app_thumbnail_set_screenurl (thb,screenshot);
-    state = DetermineStoreSoftInstalled (pkgname,app);
+    Message = soft_app_message_new ();
+    soft_app_message_set_icon  (Message,icon_url);
+    soft_app_message_set_name  (Message,name);
+    soft_app_message_set_score (Message,score);
+    soft_app_message_set_summary (Message,sumary);
+    soft_app_message_set_screenshot (Message,screenshot);
+    soft_app_message_set_description (Message,destination);
+    soft_app_message_set_license (Message,licenses);
+    soft_app_message_set_arch (Message,arch);
+    soft_app_message_set_size (Message,s_size);
+    soft_app_message_set_url (Message,homepage);
+    soft_app_message_set_version (Message,version);
+    
+	pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
+    package_id = pk_get_resolve_package (app->Ctx,
+                                         pkgname,
+                                        &error_local);
+    pk_bitfield_remove (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
+	if (package_id == NULL)
+	{
+		soft_app_message_set_pkgname (Message,"unknow");
+		soft_app_message_set_package (Message,"unknow");
+	}
+	else
+	{
+		soft_app_message_set_pkgname (Message,package_id);
+		package = pk_package_id_to_printable (package_id);
+		soft_app_message_set_package (Message,package);
+	}
+    state = DetermineStoreSoftInstalled (package_id,app);
 
-    Recom = soft_app_thumbnail_tile_new (thb);
+    Recom = soft_app_thumbnail_tile_new (Message);
     g_signal_connect (Recom, 
                      "clicked",
                       G_CALLBACK (SwitchPageToDetailsPage), 
@@ -274,7 +290,7 @@ SoupGetRichSubInfo (SoupSession *session,
                     gpointer     data)
 {
 
-    SoftAppThumbnail *thb;
+    SoftAppMessage   *Message;
     json_object      *js;
     const char       *name;
     const char       *icon;
@@ -287,7 +303,9 @@ SoupGetRichSubInfo (SoupSession *session,
     const char       *screenshot_url;
     const char       *version;
     const char       *size;
-    const char       *downnum;
+	const char       *package_id;
+    const char		 *package;
+    GError *error_local = NULL;
     int               score;
     char             *screenshot;
     char             *s_size;
@@ -316,7 +334,6 @@ SoupGetRichSubInfo (SoupSession *session,
     score = atoi (GetJsonSpecifiedData (js,"score"));
     sumary = GetJsonSpecifiedData (js,"summary");
     destination = GetJsonSpecifiedData (js,"description");
-    downnum = GetJsonSpecifiedData (js,"downloads");
     pkgname = GetJsonSpecifiedData (js,"pkgname");
     licenses = GetJsonSpecifiedData (js,"license");
     arch = GetJsonSpecifiedData (js,"platform");
@@ -328,23 +345,39 @@ SoupGetRichSubInfo (SoupSession *session,
     s_size = g_strdup_printf ("%.2f MB",atof(size) / 1024);
     icon_url = g_strdup_printf ("%s:%d%s",STORESERVERADDR,STORESERVERPOER,icon);
     
-    thb = soft_app_thumbnail_new ();
-    soft_app_thumbnail_set_icon  (thb,icon_url);
-    soft_app_thumbnail_set_name  (thb,name);
-    soft_app_thumbnail_set_score (thb,score);
-    soft_app_thumbnail_set_sumary (thb,sumary);
-    soft_app_thumbnail_set_downnum (thb,downnum);
-    soft_app_thumbnail_set_description (thb,destination);
-    soft_app_thumbnail_set_pkgname (thb,pkgname);
-    soft_app_thumbnail_set_licenses (thb,licenses);
-    soft_app_thumbnail_set_arch (thb,arch);
-    soft_app_thumbnail_set_size (thb,s_size);
-    soft_app_thumbnail_set_homepage (thb,homepage);
-    soft_app_thumbnail_set_version (thb,version);
-    soft_app_thumbnail_set_screenurl (thb,screenshot);
-    state = DetermineStoreSoftInstalled (pkgname,app);
-    soft_app_thumbnail_set_state (thb,state); 
-    Recom = soft_app_thumbnail_tile_new (thb);
+    Message = soft_app_message_new ();
+    soft_app_message_set_icon  (Message,icon_url);
+    soft_app_message_set_name  (Message,name);
+    soft_app_message_set_score (Message,score);
+    soft_app_message_set_summary (Message,sumary);
+    soft_app_message_set_screenshot (Message,screenshot);
+    soft_app_message_set_description (Message,destination);
+    soft_app_message_set_pkgname (Message,pkgname);
+    soft_app_message_set_license (Message,licenses);
+    soft_app_message_set_arch (Message,arch);
+    soft_app_message_set_size (Message,s_size);
+    soft_app_message_set_url (Message,homepage);
+    soft_app_message_set_version (Message,version);
+    
+	pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
+    package_id = pk_get_resolve_package (app->Ctx,
+                                         pkgname,
+                                        &error_local);
+    pk_bitfield_remove (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
+	if (package_id == NULL)
+	{
+		soft_app_message_set_pkgname (Message,"unknow");
+		soft_app_message_set_package (Message,"unknow");
+	}
+	else
+	{
+		soft_app_message_set_pkgname (Message,package_id);
+		package = pk_package_id_to_printable (package_id);
+		soft_app_message_set_package (Message,package);
+	}
+	state = DetermineStoreSoftInstalled (package_id,app);
+    soft_app_message_set_state (Message,state); 
+    Recom = soft_app_thumbnail_tile_new (Message);
     g_signal_connect (Recom, 
                      "clicked",
                       G_CALLBACK (SwitchPageToDetailsPage), 

@@ -562,12 +562,13 @@ void CreateRecommendDetails(gpointer d,gpointer data)
     const char  *summary;
 	const char  *size;
 	const char  *arch;
-	const char  *licenses;
+	const char  *license;
 	const char  *homepage;
     const char  *pkgname;
     const char  *version;
-	const char  *describing;
+	const char  *description;
 	const char  *screenshot;
+	const char  *package;
 	float        score;
 	gboolean     state;
 	GtkWidget   *install_button;
@@ -577,36 +578,38 @@ void CreateRecommendDetails(gpointer d,gpointer data)
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
 	
-	name = soft_app_thumbnail_get_name (tile->thb);
-	icon = soft_app_thumbnail_get_icon (tile->thb);
-    summary = soft_app_thumbnail_get_sumary (tile->thb);
-    pkgname = soft_app_thumbnail_get_pkgname (tile->thb);
-    version = soft_app_thumbnail_get_version (tile->thb);
-	score = soft_app_thumbnail_get_score (tile->thb);
-	size  = soft_app_thumbnail_get_size (tile->thb);
-	arch  = soft_app_thumbnail_get_arch (tile->thb);
-	homepage  = soft_app_thumbnail_get_homepage (tile->thb);
-	licenses  = soft_app_thumbnail_get_licenses (tile->thb);
-    describing = soft_app_thumbnail_get_description (tile->thb); 
-    screenshot = soft_app_thumbnail_get_screenurl (tile->thb);
+    icon = soft_app_message_get_icon(tile->Message);
+	name = soft_app_message_get_name (tile->Message); 
+    summary = soft_app_message_get_summary (tile->Message);
+	score = soft_app_message_get_score(tile->Message);
+	screenshot = soft_app_message_get_screenshot (tile->Message);
+    description = soft_app_message_get_description (tile->Message);
+    version = soft_app_message_get_version(tile->Message);
+    license = soft_app_message_get_license (tile->Message);
+    size    = soft_app_message_get_size(tile->Message);
+    homepage = soft_app_message_get_url(tile->Message);
+    arch    = soft_app_message_get_arch(tile->Message);
+    package = soft_app_message_get_package(tile->Message);
+    pkgname = soft_app_message_get_pkgname(tile->Message);
 
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
 	soft_app_info_set_comment(info,summary);
-	state = soft_app_thumbnail_get_state (tile->thb);
+	state = soft_app_message_get_state (tile->Message);
 	if (!state)
 		soft_app_info_set_button(info,_("install"));
 	else
 		soft_app_info_set_button(info,_("installed"));
 	soft_app_info_set_score(info,score);
 	soft_app_info_set_screenshot_url(info,screenshot);
-    soft_app_info_set_explain(info,describing);
+    soft_app_info_set_explain(info,description);
 	soft_app_info_set_version(info,version);
 	soft_app_info_set_arch(info,arch);
-	soft_app_info_set_protocol(info,licenses);
+	soft_app_info_set_protocol(info,license);
 	soft_app_info_set_source(info,homepage);
 	soft_app_info_set_size (info,size);
-	soft_app_info_set_package (info,pkgname);
+	soft_app_info_set_package (info,package);
+	soft_app_info_set_pkgid (info,pkgname);
 	soft_app_info_set_action (info,STOREAPPSOFT);
 	soft_app_info_set_state (info,state);
 	
@@ -638,7 +641,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	const char  *license;
 	const char  *url;
 	const char  *size;
-	const char  *pkgid;
+	const char  *pkgname;
 	const char  *summary;
 	const char  *arch;
 	const char  *package;
@@ -657,10 +660,11 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
 
-	name = as_app_get_name(AS_APP(row->Message),NULL); 
-	cache_file = soft_app_message_get_cache(row->Message);
     icon = soft_app_message_get_icon(row->Message);
+	name = soft_app_message_get_name (row->Message); 
+    summary = soft_app_message_get_summary (row->Message);
 	score = soft_app_message_get_score(row->Message);
+	
     screenshots = as_app_get_screenshots(AS_APP(row->Message));
     if (screenshots->len >= 1)
     {    
@@ -668,15 +672,19 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
         im = as_screenshot_get_image (as_shot,AS_IMAGE_LARGE_WIDTH,AS_IMAGE_LARGE_HEIGHT);
         screenshot_url = as_image_get_url (im);
     }
-    explain = as_app_get_description(AS_APP(row->Message),NULL);
+	else
+	{
+		screenshot_url = soft_app_message_get_screenshot (row->Message);
+	}
+    explain = soft_app_message_get_description (row->Message);
     version = soft_app_message_get_version(row->Message);
     license = soft_app_message_get_license(row->Message);
-    url     = soft_app_message_get_url(row->Message);
     size    = soft_app_message_get_size(row->Message);
-    pkgid   = soft_app_message_get_pkgid(row->Message);
-    summary = as_app_get_comment(AS_APP(row->Message),NULL);
+    url     = soft_app_message_get_url(row->Message);
     arch    = soft_app_message_get_arch(row->Message);
     package = soft_app_message_get_package(row->Message);
+    pkgname = soft_app_message_get_pkgname(row->Message);
+	cache_file = soft_app_message_get_cache(row->Message);
 
 	info = soft_app_info_new(name);
 	soft_app_info_set_icon(info,icon);
@@ -689,7 +697,7 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 	soft_app_info_set_protocol(info,license);
 	soft_app_info_set_source(info,url);
 	soft_app_info_set_size(info,size);
-	soft_app_info_set_pkgid(info,pkgid);
+	soft_app_info_set_pkgid(info,pkgname);
 	soft_app_info_set_cache(info,cache_file);
 	soft_app_info_set_arch(info,arch);
 	soft_app_info_set_package(info,package);

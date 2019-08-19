@@ -13,6 +13,7 @@ sources = [
 'app-store-details.c',
 'app-store-search.c',
 'app-store-screenshot.c',
+'app-store-message.c',
 ]
 
 executable('soft-app-store',

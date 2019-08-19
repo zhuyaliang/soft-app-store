@@ -630,8 +630,7 @@ void InitStorePkCtx (SoftAppStore *app)
     }
     app->Ctx->task = pk_task_new ();
 }   
-static gchar *
-pk_get_resolve_package (PkCtx *ctx, const gchar *package_name, GError **error)
+const gchar * pk_get_resolve_package (PkCtx *ctx, const gchar *package_name, GError **error)
 {
     gchar *package_id = NULL;
     gboolean valid;
@@ -681,7 +680,7 @@ pk_get_resolve_package (PkCtx *ctx, const gchar *package_name, GError **error)
 
 gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app)
 {
-    gchar *package_id;
+    const gchar *package_id;
     GError *error_local = NULL;
     g_autoptr(GPtrArray) array = NULL;
 
@@ -696,7 +695,7 @@ gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app)
                           pname);
         return NULL;
     }
-    g_ptr_array_add (array, package_id);
+    g_ptr_array_add (array, (gpointer)package_id);
 
     if (array->len == 0) 
     {
@@ -709,22 +708,16 @@ gchar **PackageNameToPackageids (const char *pname,SoftAppStore *app)
     g_ptr_array_add (array, NULL);
     return g_strdupv ((gchar **) array->pdata);
 }
-gboolean DetermineStoreSoftInstalled (const char *pname,SoftAppStore *app)
+gboolean DetermineStoreSoftInstalled (const char *package_id,SoftAppStore *app)
 {
-    char   *package_id;
-    GError *error_local = NULL;
     g_auto(GStrv) split = NULL;
 
-    pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
-    package_id = pk_get_resolve_package (app->Ctx,
-                                         pname,
-                                        &error_local);
-    pk_bitfield_remove (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
     if (package_id == NULL)
     {
         return FALSE;
-    }   
+    }  
     split = pk_package_id_split (package_id);
+	split[PK_PACKAGE_ID_DATA][9] = '\0';
     if (g_strcmp0(split[PK_PACKAGE_ID_DATA],"installed") == 0)
     {
         return TRUE;
