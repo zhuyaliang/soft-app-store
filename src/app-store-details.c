@@ -56,7 +56,7 @@ soft_app_details_refresh (SoftAppDetails *details)
 	SetLableFontType(details->label_name,
                     "black",
                      12,
-                     soft_app_info_get_name (details->info),
+                     details->info->soft_name,
                      TRUE);
 	
 	SetLableFontType(details->label_comment,
@@ -78,13 +78,7 @@ soft_app_details_refresh (SoftAppDetails *details)
     screenshot_url = soft_app_info_get_screenshot_url(details->info);
     soft_app_screenshot_load_async (details->screenshot,
                                     screenshot_url);
-	/*
-	screenshot_name = soft_app_info_get_screenshot(details->info);
-	pixbuf = gdk_pixbuf_new_from_file(screenshot_name,NULL);
-    soft_app_image_set_from_pixbuf(GTK_IMAGE(details->screenshot),pixbuf,400);
-    g_object_unref(pixbuf);
-    */
-
+    
     gtk_label_set_text(GTK_LABEL(details->explain),
 			           soft_app_info_get_explain (details->info));
     
@@ -331,18 +325,6 @@ soft_app_details_new (SoftAppInfo *info)
     return GTK_FIXED (details);
 }
 
-const char	*soft_app_info_get_name	(SoftAppInfo *info)
-{
-	return info->soft_name; 
-}
-
-void soft_app_info_set_name (SoftAppInfo *info,
-		                     const char  *name)
-{
-	g_free (info->soft_name);
-    info->soft_name = g_strdup (name);
-
-}
 const char *soft_app_info_get_icon (SoftAppInfo *info)
 {
 	return info->icon_name; 

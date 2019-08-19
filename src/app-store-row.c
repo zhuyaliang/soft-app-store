@@ -29,7 +29,8 @@ soft_app_row_refresh (SoftAppRow *row)
 	const char *icon_name;
 	const char *soft_name;
 	const char *sumary;
-	icon_name = soft_app_message_get_icon(row->Message);
+
+    icon_name = soft_app_message_get_icon(row->Message);
 	gtk_image_set_from_icon_name(GTK_IMAGE(row->image),icon_name,GTK_ICON_SIZE_DIALOG);
 	
 	soft_name = as_app_get_name(AS_APP(row->Message),NULL);
@@ -51,6 +52,7 @@ soft_app_row_refresh (SoftAppRow *row)
                      10,
                      soft_app_message_get_size (row->Message),
                      TRUE);
+
 }
 
 void
@@ -77,26 +79,25 @@ soft_app_row_init (SoftAppRow *row)
     GtkWidget *v_hbox;
     GtkWidget *h_vbox;
 	
-	gtk_widget_set_has_window (GTK_WIDGET (row), FALSE);
-
-    box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);  
-    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);  
-	gtk_box_pack_start(GTK_BOX(box),hbox ,FALSE,FALSE, 10);
+    box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);  
     gtk_container_add (GTK_CONTAINER (row), box);
+    
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);  
+	gtk_box_pack_start(GTK_BOX(box),hbox ,FALSE,FALSE, 10);
     
     row->image = gtk_image_new();
 	gtk_box_pack_start(GTK_BOX(hbox),row->image ,FALSE,FALSE, 10);
-    
-    vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);  
+   
+    vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);  
 	gtk_widget_set_size_request(vbox,150,-1);
 	gtk_box_pack_start(GTK_BOX(hbox),vbox ,FALSE,FALSE, 10);
 
     row->label_name = gtk_label_new(NULL);
 	gtk_box_pack_start(GTK_BOX(vbox),row->label_name ,FALSE,FALSE, 6);
     
-    v_hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);  
+    v_hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);  
     gtk_widget_set_halign(v_hbox, GTK_ALIGN_CENTER);
-	gtk_box_pack_start(GTK_BOX(vbox),v_hbox ,FALSE,FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox),v_hbox ,FALSE,FALSE, 3);
 	
 	row->stars1 = gtk_image_new();
 	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars1 ,FALSE, FALSE, 0);
@@ -109,12 +110,11 @@ soft_app_row_init (SoftAppRow *row)
     row->stars5 = gtk_image_new();
 	gtk_box_pack_start(GTK_BOX(v_hbox),row->stars5 ,FALSE, FALSE, 0);
     
-    described_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);  
+    described_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);  
 	gtk_widget_set_size_request(described_box,400,-1);
 	gtk_box_pack_start(GTK_BOX(hbox),described_box ,FALSE,FALSE, 6);
 	row->label_describe = gtk_label_new(NULL);
 	gtk_label_set_max_width_chars(GTK_LABEL(row->label_describe),50);
-	gtk_widget_set_size_request(row->label_describe,100,10);
 	gtk_label_set_line_wrap(GTK_LABEL(row->label_describe),TRUE);
 	gtk_label_set_lines(GTK_LABEL(row->label_describe),2);
 	gtk_box_pack_start(GTK_BOX(described_box),row->label_describe ,FALSE,FALSE, 6);
@@ -124,7 +124,8 @@ soft_app_row_init (SoftAppRow *row)
 
 	row->label_size = gtk_label_new(NULL);
 	gtk_box_pack_start(GTK_BOX(h_vbox),row->label_size ,FALSE,FALSE, 6);
-	gtk_box_pack_start(GTK_BOX(box), gtk_separator_new (GTK_ORIENTATION_HORIZONTAL) ,FALSE,FALSE, 6);
+	
+    gtk_box_pack_start(GTK_BOX(box), gtk_separator_new (GTK_ORIENTATION_HORIZONTAL) ,FALSE,FALSE, 6);
 
 }
 

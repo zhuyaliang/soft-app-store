@@ -33,6 +33,7 @@ soft_app_pkgkit_dispose (GObject *object)
 {
 	SoftAppPkgkit *pkg = SOFT_APP_PKGKIT(object);
 
+    g_print ("soft_app_pkgkit_dispose         !!!!!\r\n");
 	if (pkg->control != NULL)
         g_object_unref (pkg->control);
     if (pkg->task != NULL)
@@ -41,9 +42,7 @@ soft_app_pkgkit_dispose (GObject *object)
         g_object_unref (pkg->cancellable);
     if (pkg->package_sack != NULL)
         g_object_unref (pkg->package_sack);
-    if (pkg->phash != NULL)
-        g_hash_table_destroy (pkg->phash);
-    g_free (pkg);
+    //g_free (pkg);
 }
 
 static void

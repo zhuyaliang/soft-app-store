@@ -78,7 +78,6 @@ typedef struct
 	SoupSession      *SoupSession;
     SoupMessage      *SoupMessage;
     AsApp            *asapp;
-    GHashTable       *hashapp;
 	gint              index;
 	uint              per;
 	int               page;

@@ -109,11 +109,6 @@ GtkWidget        *soft_app_details_get_button       (SoftAppDetails *details);
 
 GtkWidget        *soft_app_details_get_bar          (SoftAppDetails *details);
 
-const char       *soft_app_info_get_name            (SoftAppInfo *info);
-
-void              soft_app_info_set_name            (SoftAppInfo *info,
-		                                             const char  *name);
-
 const char       *soft_app_info_get_icon            (SoftAppInfo *info);
 
 void              soft_app_info_set_icon            (SoftAppInfo *info,

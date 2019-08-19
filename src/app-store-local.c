@@ -43,12 +43,11 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
         Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
 		row = soft_app_row_new(Message);
         soft_app_message_set_index (Message,i);
-		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
+	    gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);
-		gtk_widget_show_all(row);
 	}
-	//gtk_widget_show(app->LocalSoftListBox);
+	gtk_widget_show_all(app->LocalSoftListBox);
 	app->pkg->action = GPK_ACTION_DONE;
 	SoftAppStoreLog ("Debug","load all local soft %u to listrowboxi Successfu",i);
 }
@@ -663,7 +662,6 @@ static void soft_app_remove_progress_cb (PkProgress     *progress,
     {
         if (percentage > 0) 
         {
-			g_print("percentage = %d\r\n",percentage);
 			gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app->details->progressbar),
 										 (float) percentage / 100.0f);
 		}
@@ -777,7 +775,6 @@ void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
 	gtk_widget_hide(button);
 	gtk_widget_show(app->details->progressbar);
 	package_id = soft_app_info_get_pkgid(app->details->info);
-    g_print("package_id = %s\r\n",package_id);
     package_ids = pk_package_ids_from_id (package_id);
     /* remove */
     pk_task_remove_packages_async (app->pkg->task, 
@@ -820,7 +817,6 @@ GtkWidget *LoadLocalInstall(SoftAppStore *app)
 	gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(app->LocalSoftBar),TRUE);
 	g_object_set(app->LocalSoftBar,"show-text",TRUE,NULL);
 	gtk_box_pack_start (GTK_BOX (vbox), app->LocalSoftBar, TRUE, TRUE, 0);
-	gtk_widget_show_all(app->LocalSoftListBox);
 
 	GetLocalSoftMessage(app);
 	return vbox;

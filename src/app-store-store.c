@@ -43,7 +43,6 @@ static const SoftAppDesktopData msdata[] =
 };
 static void CreateStoreCategoryList(SoftAppStore *app,
                                     SoftAppCategoryTile *tile);
-
 static void SwitchPageToCategoryListPage (GtkWidget *button, SoftAppStore *app)
 {
     GtkAdjustment *adj = NULL;
@@ -208,8 +207,7 @@ SoupGetRichRecomInfo (SoupSession *session,
     soft_app_thumbnail_set_homepage (thb,homepage);
     soft_app_thumbnail_set_version (thb,version);
     soft_app_thumbnail_set_screenurl (thb,screenshot);
-	state = DetermineStoreSoftInstalled (name);
-	soft_app_thumbnail_set_state (thb,state);
+    state = DetermineStoreSoftInstalled (pkgname,app);
 
     Recom = soft_app_thumbnail_tile_new (thb);
     g_signal_connect (Recom, 
@@ -290,14 +288,13 @@ SoupGetRichSubInfo (SoupSession *session,
     const char       *version;
     const char       *size;
     const char       *downnum;
-	gboolean          state;
     int               score;
     char             *screenshot;
     char             *s_size;
     char             *icon_url;
     GtkWidget        *fixed;
     GtkWidget        *Recom;
-    gpointer          value;
+    gboolean          state;
 
     SoftAppStore *app = (SoftAppStore *)data;
     if (msg->status_code == SOUP_STATUS_NOT_MODIFIED)
@@ -345,37 +342,8 @@ SoupGetRichSubInfo (SoupSession *session,
     soft_app_thumbnail_set_homepage (thb,homepage);
     soft_app_thumbnail_set_version (thb,version);
     soft_app_thumbnail_set_screenurl (thb,screenshot);
-    value = g_hash_table_lookup (app->hashapp,name);
-    if (value != NULL)
-    {
-        if (g_strcmp0(value,"N") == 0)
-        {
-            state = FALSE;
-        }
-        else
-        {
-            state = TRUE;
-        }    
-	    soft_app_thumbnail_set_state (thb,state);
-    }    
-    else
-    {
-        state = DetermineStoreSoftInstalled (name);
-	    soft_app_thumbnail_set_state (thb,state);
-        if (state)
-        {    
-            g_hash_table_insert(app->hashapp,
-                                g_strdup((gpointer)name),
-                                g_strdup("Y"));
-        }
-        else
-        {
-            g_hash_table_insert(app->hashapp,
-                                g_strdup((gpointer)name),
-                                g_strdup("N"));
-        }    
-    }    
-    
+    state = DetermineStoreSoftInstalled (pkgname,app);
+    soft_app_thumbnail_set_state (thb,state); 
     Recom = soft_app_thumbnail_tile_new (thb);
     g_signal_connect (Recom, 
                      "clicked",
@@ -587,11 +555,9 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
 
     InitStorePkCtx (app);
-    app->hashapp = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free); 
     request = g_strdup_printf ("%s:%d/api/apps/category/",STORESERVERADDR,STORESERVERPOER);
 	app->SoupSession = soup_session_new ();
 	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
-    request = g_strdup_printf ("%s:%d/api/apps/category/",STORESERVERADDR,STORESERVERPOER);
 	
 	button_search = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
 	g_signal_connect (button_search, 
@@ -606,12 +572,14 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
                       app);
     app->button_return = button_return;	
 	app->StoreFlowbox = CategorySoftWindow(vbox);
+
     soup_session_queue_message (app->SoupSession,
 								app->SoupMessage,
 								SoupGetStoreCategory,
 								app);
    								
 	g_free (request);
+
 	request = g_strdup_printf ("%s:%d/api/apps/recommend/",STORESERVERADDR,STORESERVERPOER);
 	msg = soup_message_new (SOUP_METHOD_GET,request);
     
@@ -623,6 +591,7 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 	g_free (request);
 
     gtk_widget_show_all (app->StoreRecmHbox);
+
     return vbox;
 }
 
@@ -724,6 +693,10 @@ void InstallStoreSoftApp (GtkWidget *button,SoftAppStore *app)
         Please update the warehouse."),ERROR);
         return;
     }
+    pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NEWEST);
+    pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NOT_INSTALLED);
+    pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NOT_SOURCE);
+    pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_ARCH);
     
 	gtk_widget_hide(button);
 	gtk_widget_show(app->details->progressbar);
