@@ -42,6 +42,7 @@ static void UpdateLocalInstallPage(SoftAppStore *app)
     {
         Message = SOFT_APP_MESSAGE (g_ptr_array_index (app->pkg->list, i));
 		row = soft_app_row_new(Message);
+        soft_app_message_set_index (Message,i);
 		gtk_widget_set_halign(row, GTK_ALIGN_CENTER);
 		gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(row),TRUE);
 		gtk_list_box_insert (GTK_LIST_BOX(app->LocalSoftListBox), row, i);

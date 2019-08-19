@@ -741,6 +741,7 @@ void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,
 	SoftAppStore *app = (SoftAppStore *)data;
 	SoftAppRow *row = SOFT_APP_ROW(Row);
 
+    app->index = soft_app_message_get_index (row->Message);
     app->page = INDIVIDUAL_SOFT_PAGE;
 	SwitchPage(app);
     CreateLocalSoftDetails(app,row);

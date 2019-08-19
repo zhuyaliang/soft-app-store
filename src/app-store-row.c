@@ -160,6 +160,18 @@ soft_app_message_set_score (SoftAppMessage  *Message,
     Message->soft_score = soft_score;
 }  
 
+int
+soft_app_message_get_index (SoftAppMessage *Message)
+{
+    return Message->index;
+}
+
+void
+soft_app_message_set_index (SoftAppMessage  *Message, 
+                            int              index)
+{
+    Message->index = index;
+}  
 const gchar*
 soft_app_message_get_size (SoftAppMessage *Message)
 {

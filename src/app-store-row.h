@@ -56,6 +56,7 @@ typedef struct SoftAppMessage
 	char        *soft_ids;
 	char        *cache;
 	char       **soft_files;
+    int          index;
 }SoftAppMessage;
 
 typedef struct SoftAppMessageClass
@@ -109,6 +110,11 @@ float             soft_app_message_get_score           (SoftAppMessage *Message)
 
 void              soft_app_message_set_score           (SoftAppMessage *Message,
                                                         float           soft_score);
+
+int               soft_app_message_get_index           (SoftAppMessage *Message);
+
+void              soft_app_message_set_index           (SoftAppMessage *Message,
+                                                        int             index);
 
 const gchar      *soft_app_message_get_size            (SoftAppMessage *Message);
 

@@ -738,7 +738,8 @@ gboolean DetermineStoreSoftInstalled (const char *SoftName)
 				g_str_has_suffix (fn, ".metainfo.xml")) 
 			{
 				g_autofree gchar *filename = g_build_filename (fn1, fn, NULL);
-				app = as_app_new();
+				
+                app = as_app_new();
 				as_app_parse_file(app,
 								  filename,
 								  AS_APP_PARSE_FLAG_USE_HEURISTICS,

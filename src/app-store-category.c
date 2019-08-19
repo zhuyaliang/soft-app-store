@@ -95,7 +95,7 @@ soft_app_category_tile_init (SoftAppCategoryTile *tile)
     gtk_widget_set_valign (tile->label_num,GTK_ALIGN_END);
     gtk_widget_set_halign (tile->label_num,GTK_ALIGN_END);
 	gtk_box_pack_end(GTK_BOX(hbox),tile->label_num ,FALSE,FALSE, 0);
-
+    
 }
 
 static void

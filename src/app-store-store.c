@@ -297,7 +297,8 @@ SoupGetRichSubInfo (SoupSession *session,
     char             *icon_url;
     GtkWidget        *fixed;
     GtkWidget        *Recom;
-    
+    gpointer          value;
+
     SoftAppStore *app = (SoftAppStore *)data;
     if (msg->status_code == SOUP_STATUS_NOT_MODIFIED)
     {
@@ -344,9 +345,37 @@ SoupGetRichSubInfo (SoupSession *session,
     soft_app_thumbnail_set_homepage (thb,homepage);
     soft_app_thumbnail_set_version (thb,version);
     soft_app_thumbnail_set_screenurl (thb,screenshot);
-	state = DetermineStoreSoftInstalled (name);
-	soft_app_thumbnail_set_state (thb,state);
-
+    value = g_hash_table_lookup (app->hashapp,name);
+    if (value != NULL)
+    {
+        if (g_strcmp0(value,"N") == 0)
+        {
+            state = FALSE;
+        }
+        else
+        {
+            state = TRUE;
+        }    
+	    soft_app_thumbnail_set_state (thb,state);
+    }    
+    else
+    {
+        state = DetermineStoreSoftInstalled (name);
+	    soft_app_thumbnail_set_state (thb,state);
+        if (state)
+        {    
+            g_hash_table_insert(app->hashapp,
+                                g_strdup((gpointer)name),
+                                g_strdup("Y"));
+        }
+        else
+        {
+            g_hash_table_insert(app->hashapp,
+                                g_strdup((gpointer)name),
+                                g_strdup("N"));
+        }    
+    }    
+    
     Recom = soft_app_thumbnail_tile_new (thb);
     g_signal_connect (Recom, 
                      "clicked",
@@ -558,6 +587,7 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
 
     InitStorePkCtx (app);
+    app->hashapp = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free); 
     request = g_strdup_printf ("%s:%d/api/apps/category/",STORESERVERADDR,STORESERVERPOER);
 	app->SoupSession = soup_session_new ();
 	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
