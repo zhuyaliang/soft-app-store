@@ -50,12 +50,15 @@ typedef struct SoftAppMessage
 	char        *soft_size;
     char        *soft_homepage;
     char        *soft_arch;
-    char        *soft_package;
-	char        *soft_pkgname;
+    char        *soft_package;//package name
+	char        *soft_pkgname;//install formt  
 	char        *cache_file;
 	char       **soft_files;
+	char        *button_name; //button name install installed uninstall
     int          soft_index;
 	gboolean     soft_state;
+    gboolean     soft_mode;  //mode: TRUE  local soft 
+                             //mode: FALSE store soft
 }SoftAppMessage;
 
 typedef struct SoftAppMessageClass
@@ -153,6 +156,15 @@ gboolean          soft_app_message_get_state           (SoftAppMessage *Message)
 void              soft_app_message_set_state           (SoftAppMessage *Message,
 		                                                gboolean        state);
 
+const gchar      *soft_app_message_get_button          (SoftAppMessage *Message);
+
+void              soft_app_message_set_button          (SoftAppMessage *Message,
+                                                        const gchar    *button);
+
+gboolean          soft_app_message_get_mode            (SoftAppMessage *Message);
+
+void              soft_app_message_set_mode            (SoftAppMessage *Message,
+		                                                gboolean        mode);
 G_END_DECLS
 
 #endif

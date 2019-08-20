@@ -30,7 +30,7 @@ static char *GetMetadataFileName(char *path)
 	
 	return g_strdup(split[4]);
 }
-static void UpdateLocalInstallPage(SoftAppStore *app)
+void UpdateLocalInstallPage(SoftAppStore *app)
 {
 	SoftAppMessage *Message;
 	GtkWidget  *row;
@@ -211,6 +211,7 @@ GetLocalSoftAppDetails (PkClient       *client,
 						  package_id);
 
 	soft_app_message_set_state (Message,TRUE);
+	soft_app_message_set_mode  (Message,TRUE);
 	
 	g_key_file_save_to_file(kconfig,cache_file,NULL);
 	SoftAppStoreLog ("Debug","wriet cache %s Successfu",cache_file);
@@ -447,6 +448,7 @@ soft_app_get_package_details_use_cache (char *package_id, SoftAppStore *app)
 	soft_app_message_set_pkgname (Message,package_id);
 
 	soft_app_message_set_state (Message,TRUE);
+	soft_app_message_set_mode  (Message,TRUE);
     g_ptr_array_add (app->pkg->list, Message);
 	soft_sum = app->pkg->cache_cnt + app->pkg->metadata_cnt;
     if(soft_sum >= app->pkg->phashlen)
@@ -786,7 +788,7 @@ void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app)
     const char *name;
 	GtkWidget  *dialog;
 
-    name  = soft_app_info_get_cache(app->details->info);
+    name  = soft_app_message_get_cache (app->details->Message);
     dialog = gtk_message_dialog_new (GTK_WINDOW(app->MainWindow), 
                                      GTK_DIALOG_DESTROY_WITH_PARENT,
                                      GTK_MESSAGE_INFO, 
@@ -807,7 +809,7 @@ void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app)
 
 	gtk_widget_hide(button);
 	gtk_widget_show(app->details->progressbar);
-	package_id = soft_app_info_get_pkgid(app->details->info);
+	package_id = soft_app_message_get_pkgname(app->details->Message);
     package_ids = pk_package_ids_from_id (package_id);
     /* remove */
     pk_task_remove_packages_async (app->pkg->task, 

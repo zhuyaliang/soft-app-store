@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: soft-app-store\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-16 11:36+0800\n"
+"POT-Creation-Date: 2019-08-20 11:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,91 +17,101 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app-store-local.c:552
+#: src/app-store-local.c:590
 msgid "open metadata"
 msgstr ""
 
-#: src/app-store-local.c:805
+#: src/app-store-local.c:845
 msgid "Efforts are being made to load the local software list"
 msgstr "正在努力加载本地软件列表"
 
-#: src/app-store-store.c:465
+#: src/app-store-store.c:511
 msgid "Subclass"
 msgstr "子类"
 
-#: src/app-store-store.c:474
+#: src/app-store-store.c:520
 msgid "sort"
 msgstr "排序"
 
-#: src/app-store-store.c:507
+#: src/app-store-store.c:553
 msgid "soft category"
 msgstr "软件分类"
 
-#: src/app-store-store.c:529
+#: src/app-store-store.c:575
 msgid "soft recommend"
 msgstr "软件推荐"
 
-#: src/app-store-store.c:590 src/app-store-details.c:602
+#. update soft state
+#: src/app-store-store.c:659 src/app-store-details.c:353
+msgid "installed"
+msgstr "已安装"
+
+#: src/app-store-store.c:713 src/app-store-store.c:730
+#: src/app-store-details.c:351
 msgid "install"
 msgstr "安装"
 
-#: src/app-store-store.c:590
+#: src/app-store-store.c:713
+msgid "No package name, maybe the back end is not set."
+msgstr "没有包名称，可能没有设置后端"
+
+#: src/app-store-store.c:730
 msgid ""
 "No suitable package can be found in the system warehouse.        Please "
 "update the warehouse."
 msgstr "在系统仓库中找不到合适的包。请更新仓库"
 
-#: src/app-store-util.c:167
+#: src/app-store-util.c:168
 msgid "_Return"
 msgstr "返回"
 
-#: src/app-store-util.c:178
+#: src/app-store-util.c:179
 msgid "Message"
 msgstr "消息"
 
-#: src/app-store-util.c:625
+#: src/app-store-util.c:626
 msgid "Failed to contact PackageKit"
 msgstr "联系PackageKit失败"
 
-#: src/app-store-row.c:50 src/app-store-details.c:684
-msgid "uninstall"
-msgstr "卸载"
-
-#: src/app-store-details.c:196
+#: src/app-store-details.c:198
 msgid "file list"
 msgstr "文件列表"
 
-#: src/app-store-details.c:230
+#: src/app-store-details.c:232
 msgid "details"
 msgstr "详细信息"
 
-#: src/app-store-details.c:246
+#: src/app-store-details.c:248
 msgid "version"
 msgstr "版本"
 
-#: src/app-store-details.c:256
+#: src/app-store-details.c:258
 msgid "protocol"
 msgstr "协议"
 
-#: src/app-store-details.c:266
+#: src/app-store-details.c:268
 msgid "sources"
 msgstr "软件源"
 
-#: src/app-store-details.c:276
+#: src/app-store-details.c:278
 msgid "size"
 msgstr "大小"
 
-#: src/app-store-details.c:286
+#: src/app-store-details.c:288
 msgid "arch"
 msgstr "架构"
 
-#: src/app-store-details.c:296
+#: src/app-store-details.c:298
 msgid "package"
 msgstr "包名"
 
-#: src/app-store-details.c:308
+#: src/app-store-details.c:310
 msgid "discuss"
 msgstr "评论"
+
+#: src/app-store-details.c:396
+msgid "uninstall"
+msgstr "卸载"
 
 #: src/app-store-search.c:83
 msgid "Search for local packages enter the correct software name"
@@ -149,55 +159,55 @@ msgstr "屏幕截图无效"
 msgid "Screenshot not available"
 msgstr "屏幕截图不可用"
 
-#: src/main.c:64
+#: src/main.c:53
 msgid "Get Icon Fail"
 msgstr ""
 
-#: src/main.c:78
+#: src/main.c:67
 msgid "Soft App Store"
 msgstr "Software Application Store "
 
-#: src/main.c:193
+#: src/main.c:189
 msgid "Loading software catalog"
 msgstr "正在加载软件目录"
 
-#: src/main.c:210
+#: src/main.c:206
 msgid "all store"
 msgstr "商店"
 
-#: src/main.c:216
+#: src/main.c:212
 msgid "local install"
 msgstr "本地安装"
 
-#: src/main.c:222
+#: src/main.c:218
 msgid "local update"
 msgstr "本地更新"
 
-#: src/main.c:257 src/main.c:299
+#: src/main.c:255 src/main.c:297
 msgid "open file"
 msgstr ""
 
-#: src/main.c:257
+#: src/main.c:255
 msgid "Create pid file failed"
 msgstr ""
 
-#: src/main.c:266
+#: src/main.c:264
 msgid "write file"
 msgstr ""
 
-#: src/main.c:266
+#: src/main.c:264
 msgid "write pid file failed"
 msgstr ""
 
-#: src/main.c:299
+#: src/main.c:297
 msgid "open pid file failed"
 msgstr ""
 
-#: src/main.c:304
+#: src/main.c:302
 msgid "read file"
 msgstr ""
 
-#: src/main.c:304
+#: src/main.c:302
 msgid "read pid file failed"
 msgstr ""
 

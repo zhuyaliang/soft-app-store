@@ -21,6 +21,7 @@
 #include "app-store-thumbnail.h"
 #include "app-store-details.h"
 #include "app-store-search.h"
+#include "app-store-local.h"
 
 typedef struct {
     const gchar *name;
@@ -206,6 +207,7 @@ SoupGetRichRecomInfo (SoupSession *session,
     soft_app_message_set_size (Message,s_size);
     soft_app_message_set_url (Message,homepage);
     soft_app_message_set_version (Message,version);
+    soft_app_message_set_mode (Message,FALSE);
     
 	pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
     package_id = pk_get_resolve_package (app->Ctx,
@@ -224,7 +226,7 @@ SoupGetRichRecomInfo (SoupSession *session,
 		soft_app_message_set_package (Message,package);
 	}
     state = DetermineStoreSoftInstalled (package_id,app);
-
+    soft_app_message_set_state (Message,state);
     Recom = soft_app_thumbnail_tile_new (Message);
     g_signal_connect (Recom, 
                      "clicked",
@@ -358,6 +360,7 @@ SoupGetRichSubInfo (SoupSession *session,
     soft_app_message_set_size (Message,s_size);
     soft_app_message_set_url (Message,homepage);
     soft_app_message_set_version (Message,version);
+    soft_app_message_set_mode (Message,FALSE);
     
 	pk_bitfield_add (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
     package_id = pk_get_resolve_package (app->Ctx,
@@ -366,7 +369,7 @@ SoupGetRichSubInfo (SoupSession *session,
     pk_bitfield_remove (app->Ctx->filters, PK_FILTER_ENUM_INSTALLED);
 	if (package_id == NULL)
 	{
-		soft_app_message_set_pkgname (Message,"unknow");
+		soft_app_message_set_pkgname (Message,pkgname);
 		soft_app_message_set_package (Message,"unknow");
 	}
 	else
@@ -630,8 +633,8 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
 
 
 static void soft_app_install_progress_cb (PkProgress     *progress, 
-		                                 PkProgressType  type, 
-								   	     SoftAppStore   *app)
+		                                  PkProgressType  type, 
+								   	      SoftAppStore   *app)
 {
     PkStatusEnum status;
     gint percentage;
@@ -652,9 +655,11 @@ static void soft_app_install_progress_cb (PkProgress     *progress,
 										  1.00);
             gtk_widget_hide (app->details->progressbar);
             button = soft_app_details_get_button (app->details);
-            soft_app_info_set_state (app->details->info,TRUE);
+            soft_app_message_set_state (app->details->Message,TRUE); //update soft state 
             gtk_button_set_label (GTK_BUTTON(button),_("installed"));
             gtk_widget_show (button);
+            g_ptr_array_add (app->pkg->list,app->details->Message);
+			UpdateLocalInstallPage(app);
 		}
 	} 
     else if (type == PK_PROGRESS_TYPE_PERCENTAGE) 
@@ -698,11 +703,11 @@ void InstallStoreSoftApp (GtkWidget *button,SoftAppStore *app)
 	g_auto(GStrv) package_ids = NULL;
     const gchar  *package_id = NULL;
     
-    if (soft_app_info_get_state(app->details->info))
+    if (soft_app_message_get_state(app->details->Message))
     {
         return;
     }    
-	package_id = soft_app_info_get_package(app->details->info);
+	package_id = soft_app_message_get_pkgname(app->details->Message);
     if (package_id == NULL)
     {
         MessageReport (_("install"),_("No package name, maybe the back end is not set."),ERROR);
@@ -724,6 +729,10 @@ void InstallStoreSoftApp (GtkWidget *button,SoftAppStore *app)
     {
         MessageReport (_("install"),_("No suitable package can be found in the system warehouse.\
         Please update the warehouse."),ERROR);
+        pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NEWEST);
+        pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NOT_INSTALLED);
+        pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NOT_SOURCE);
+        pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_ARCH);
         return;
     }
     pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NEWEST);
@@ -731,6 +740,7 @@ void InstallStoreSoftApp (GtkWidget *button,SoftAppStore *app)
     pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_NOT_SOURCE);
     pk_bitfield_remove (app->Ctx->filters,PK_FILTER_ENUM_ARCH);
     
+    soft_app_message_set_pkgname (app->details->Message,package_ids[0]);
 	gtk_widget_hide(button);
 	gtk_widget_show(app->details->progressbar);
    /* install */

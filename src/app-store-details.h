@@ -25,45 +25,11 @@ G_BEGIN_DECLS
                                               SOFT_APP_TYPE_DETAILS,\
                                               SoftAppDetails))
 
-#define SOFT_APP_TYPE_INFO                   (soft_app_info_get_type ())
-#define SOFT_APP_INFO(object)                (G_TYPE_CHECK_INSTANCE_CAST ((object),\
-                                              SOFT_APP_TYPE_INFO,\
-                                              SoftAppInfo))
-#define LOCALINSTALL  0
-#define STOREAPPSOFT  1
-
-typedef struct SoftAppInfo
-{
-    GObject      parent_instance;
-	char        *soft_name;
-	char        *icon_name;
-	char        *comment;
-	char        *button_name;
-	float        score;
-	char        *screenshot_url;
-	char        *explain;
-	char        *version;
-	char        *protocol;
-	char        *source;
-	char        *size;
-	char        *pkgid;
-	char        *arch;
-	char        *package;
-	char        *cache;
-	int          action;
-	gboolean     state;
-}SoftAppInfo;
-
-typedef struct SoftAppInfoClass
-{
-    GObjectClass parent_instance_class;
-}SoftAppInfoClass;
-
 typedef struct SoftAppDetails
 {
     GtkFixed    parent_instance;
    
-	SoftAppInfo *info;
+    SoftAppMessage *Message;
     GtkWidget   *soft_image;
 	GtkWidget   *label_name;
 	GtkWidget   *label_comment;
@@ -76,7 +42,6 @@ typedef struct SoftAppDetails
 	GtkWidget   *files_button;
 	GtkWidget   *progressbar;
 	GtkWidget   *label_progress;
-	//GtkWidget   *screenshot;
 	SoftAppScreenshot *screenshot;
     GtkWidget   *explain;
 	GtkWidget   *label_version;
@@ -96,104 +61,15 @@ typedef struct SoftAppDetailsClass
 
 GType             soft_app_details_get_type         (void) G_GNUC_CONST;
 
-GtkFixed         *soft_app_details_new              (SoftAppInfo *info);
+GtkFixed         *soft_app_details_new              (SoftAppMessage *Message);
 
-GType             soft_app_info_get_type            (void) G_GNUC_CONST;
-
-SoftAppInfo      *soft_app_info_new                 (const char  *soft_name);
 
 void              soft_app_details_set_info         (SoftAppDetails *details, 
-                                                     SoftAppInfo *info);
+                                                     SoftAppMessage *Message);
 
 GtkWidget        *soft_app_details_get_button       (SoftAppDetails *details);
 
 GtkWidget        *soft_app_details_get_bar          (SoftAppDetails *details);
-
-const char       *soft_app_info_get_icon            (SoftAppInfo *info);
-
-void              soft_app_info_set_icon            (SoftAppInfo *info,
-		                                             const char  *icon);
-
-const char       *soft_app_info_get_comment         (SoftAppInfo *info);
-
-
-void              soft_app_info_set_comment         (SoftAppInfo *info,
-		                                             const char  *name);
- 
-float             soft_app_info_get_score           (SoftAppInfo *info);
-
-void              soft_app_info_set_score           (SoftAppInfo *info,
-		                                             float        score);
-
-const char       *soft_app_info_get_button          (SoftAppInfo *info);
-
-void              soft_app_info_set_button          (SoftAppInfo *info,
-		                                             const char  *button_name);
-
-const char       *soft_app_info_get_screenshot      (SoftAppInfo *info);
-
-void              soft_app_info_set_screenshot      (SoftAppInfo *info,
-		                                             const char  *screenshot_name);
-
-const char       *soft_app_info_get_screenshot_url  (SoftAppInfo *info);
-
-void              soft_app_info_set_screenshot_url  (SoftAppInfo *info,
-		                                             const char  *screenshot_url);
-
-const char       *soft_app_info_get_explain         (SoftAppInfo *info);
-
-void              soft_app_info_set_explain         (SoftAppInfo *info,
-		                                             const char  *explain);
-
-const char       *soft_app_info_get_version         (SoftAppInfo *info);
-
-void              soft_app_info_set_version         (SoftAppInfo *info,
-		                                             const char  *version);
-
-const char       *soft_app_info_get_protocol        (SoftAppInfo *info);
-
-void              soft_app_info_set_protocol        (SoftAppInfo *info,
-		                                             const char  *protovol);
-
-const char       *soft_app_info_get_source          (SoftAppInfo *info);
-
-void              soft_app_info_set_source          (SoftAppInfo *info,
-		                                             const char  *source);
-
-const char       *soft_app_info_get_size            (SoftAppInfo *info);
-
-void              soft_app_info_set_size            (SoftAppInfo *info,
-		                                             const char  *size);
-
-const char       *soft_app_info_get_pkgid           (SoftAppInfo *info);
-
-void              soft_app_info_set_pkgid           (SoftAppInfo *info,
-		                                             const char  *pkgid);
-
-const char       *soft_app_info_get_cache           (SoftAppInfo *info);
-
-void              soft_app_info_set_cache           (SoftAppInfo *info,
-		                                             const char  *cache);
-
-const char       *soft_app_info_get_arch            (SoftAppInfo *info);
-
-void              soft_app_info_set_arch            (SoftAppInfo *info,
-		                                             const char  *arch);
-
-const char       *soft_app_info_get_package         (SoftAppInfo *info);
-
-void              soft_app_info_set_package         (SoftAppInfo *info,
-		                                             const char  *package);
-
-int               soft_app_info_get_action          (SoftAppInfo *info);
-
-void              soft_app_info_set_action          (SoftAppInfo *info,
-		                                             int          action);
-
-void              soft_app_info_set_state           (SoftAppInfo *info,
-		                                             gboolean     state);
-
-gboolean          soft_app_info_get_state           (SoftAppInfo *info);
 
 void CreateRecommendDetails(gpointer app,gpointer      data);
 void SwitchPageToIndividualDetailsPage (GtkListBox    *list_box,

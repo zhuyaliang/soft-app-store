@@ -10,3 +10,4 @@ src/app-store-details.c
 src/app-store-search.c
 src/app-store-screenshot.c
 src/main.c
+src/app-store-message.c

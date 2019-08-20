@@ -25,46 +25,52 @@
 #define   UNKNOWPNG               "mp.png"
 
 G_DEFINE_TYPE (SoftAppDetails,     soft_app_details,  GTK_TYPE_FIXED)
-G_DEFINE_TYPE (SoftAppInfo,        soft_app_info,     G_TYPE_OBJECT)
-
+GtkWidget *soft_app_details_get_button(SoftAppDetails *details)
+{
+    return details->button;
+}
+GtkWidget *soft_app_details_get_bar(SoftAppDetails *details)
+{
+    return details->progressbar;
+}
 static void
 soft_app_details_refresh (SoftAppDetails *details)
 {
-	float      level;
-    int        action;
-	const char *icon_name,*screenshot_url;
+	float        level;
+    gboolean     mode;
+	const char  *icon_name,*screenshot_url,*soft_name;
 
     SoupSession *SoupSso;
     SoupMessage *SoupMsg;
 	
-    icon_name = soft_app_info_get_icon(details->info);
-    action = soft_app_info_get_action(details->info);
-	if(action == LOCALINSTALL)
+    icon_name = soft_app_message_get_icon (details->Message);
+    mode = soft_app_message_get_mode (details->Message);
+	if(mode)
     {
         gtk_image_set_from_icon_name(GTK_IMAGE(details->soft_image),icon_name,GTK_ICON_SIZE_DIALOG);
     }
     else
     {   
-
 	    SoupSso = soup_session_new ();
 	    SoupMsg = soup_message_new (SOUP_METHOD_GET,icon_name);
         soup_session_queue_message (SoupSso,
 	    					        SoupMsg,
 								    SoupGetSoftIcon,
 								    details->soft_image);
-    }    
+    }   
+    soft_name = soft_app_message_get_name (details->Message);
 	SetLableFontType(details->label_name,
                     "black",
                      12,
-                     details->info->soft_name,
+                     soft_name,
                      TRUE);
 	
 	SetLableFontType(details->label_comment,
                     "black",
                      11,
-                     soft_app_info_get_comment (details->info),
+                     soft_app_message_get_summary (details->Message),
                      FALSE);
-	level = soft_app_info_get_score(details->info);
+	level = soft_app_message_get_score(details->Message);
 
     soft_app_star_widget_set_rating (details->stars1,level--);
     soft_app_star_widget_set_rating (details->stars2,level--);
@@ -73,50 +79,50 @@ soft_app_details_refresh (SoftAppDetails *details)
     soft_app_star_widget_set_rating (details->stars5,level--);
 
     gtk_button_set_label(GTK_BUTTON(details->button),
-                         soft_app_info_get_button(details->info));	
+                         soft_app_message_get_button(details->Message));	
 	
-    screenshot_url = soft_app_info_get_screenshot_url(details->info);
+    screenshot_url = soft_app_message_get_screenshot (details->Message);
     soft_app_screenshot_load_async (details->screenshot,
                                     screenshot_url);
     
     gtk_label_set_text(GTK_LABEL(details->explain),
-			           soft_app_info_get_explain (details->info));
+			           soft_app_message_get_description (details->Message));
     
     SetLableFontType(details->label_version,
                     "black",
                      10,
-                     soft_app_info_get_version (details->info),
+                     soft_app_message_get_version (details->Message),
                      FALSE);
     SetLableFontType(details->label_protocol,
                     "black",
                      10,
-                     soft_app_info_get_protocol (details->info),
+                     soft_app_message_get_license (details->Message),
                      FALSE);
     SetLableFontType(details->label_source,
                     "black",
                      10,
-                     soft_app_info_get_source (details->info),
+                     soft_app_message_get_url (details->Message),
                      FALSE);
     SetLableFontType(details->label_size,
                     "black",
                      10,
-                     soft_app_info_get_size (details->info),
+                     soft_app_message_get_size (details->Message),
                      FALSE);
     SetLableFontType(details->label_arch,
                     "black",
                      10,
-                     soft_app_info_get_arch (details->info),
+                     soft_app_message_get_arch (details->Message),
                      FALSE);
     SetLableFontType(details->label_package,
                     "black",
                      10,
-                     soft_app_info_get_package (details->info),
+                     soft_app_message_get_package (details->Message),
                      FALSE);
 }    
 void
-soft_app_details_set_info (SoftAppDetails *details, SoftAppInfo *info)
+soft_app_details_set_info (SoftAppDetails *details, SoftAppMessage *Message)
 {
-    g_set_object (&details->info, info);
+    g_set_object (&details->Message, Message);
     soft_app_details_refresh (details);
 }
 
@@ -124,7 +130,7 @@ static void
 soft_app_details_destroy (GtkWidget *widget)
 {
     SoftAppDetails *details = SOFT_APP_DETAILS (widget);
-    g_clear_object (&details->info);
+    g_clear_object (&details->Message);
 }
 
 static void
@@ -315,262 +321,24 @@ soft_app_details_class_init (SoftAppDetailsClass *klass)
 }
 
 GtkFixed *
-soft_app_details_new (SoftAppInfo *info)
+soft_app_details_new (SoftAppMessage *Message)
 {
     SoftAppDetails *details;
 
     details = g_object_new (SOFT_APP_TYPE_DETAILS, NULL);
-    soft_app_details_set_info (details, info);
+    soft_app_details_set_info (details, Message);
 
     return GTK_FIXED (details);
 }
 
-const char *soft_app_info_get_icon (SoftAppInfo *info)
-{
-	return info->icon_name; 
-}
-void soft_app_info_set_icon (SoftAppInfo *info,
-		                     const char  *icon)
-{
-	g_free (info->icon_name);
-    info->icon_name = g_strdup (icon);
-}
-
-const char *soft_app_info_get_cache (SoftAppInfo *info)
-{
-	return info->cache; 
-}
-void soft_app_info_set_cache (SoftAppInfo *info,
-		                     const char   *cache)
-{
-	g_free (info->cache);
-    info->cache = g_strdup (cache);
-}	
-const char *soft_app_info_get_comment (SoftAppInfo *info)
-
-{
-	return info->comment; 
-
-}
-void soft_app_info_set_comment (SoftAppInfo *info,
-		                        const char  *comment)
-{
-	g_free (info->comment);
-    info->comment = g_strdup (comment);
-
-}
-float soft_app_info_get_score (SoftAppInfo *info)
-{
-	return info->score; 
-
-}
-void soft_app_info_set_score (SoftAppInfo *info,
-		                      float        score)
-{
-    info->score = score;
-}
-const char *soft_app_info_get_button (SoftAppInfo *info)
-{
-	return info->button_name; 
-
-}
-void soft_app_info_set_button (SoftAppInfo *info,
-		                       const char  *button_name)
-{
-	g_free (info->button_name);
-    info->button_name = g_strdup (button_name);
-}
-const char *soft_app_info_get_explain (SoftAppInfo *info)
-{
-	return info->explain; 
-}
-
-void soft_app_info_set_explain (SoftAppInfo *info,
-		                        const char  *explain)
-{
-	g_free (info->explain);
-    info->explain = g_strdup (explain);
-}
-const char *soft_app_info_get_screenshot_url (SoftAppInfo *info)
-{
-	return info->screenshot_url; 
-}
-void soft_app_info_set_screenshot_url (SoftAppInfo *info,
-		                               const char  *screenshot_url)
-{
-	g_free (info->screenshot_url);
-    info->screenshot_url = g_strdup (screenshot_url);
-}
-const char *soft_app_info_get_version (SoftAppInfo *info)
-{
-	return info->version; 
-}
-void soft_app_info_set_version (SoftAppInfo *info,
-		                        const char  *version)
-{
-	g_free (info->version);
-    info->version = g_strdup (version);
-}
-const char *soft_app_info_get_protocol (SoftAppInfo *info)
-{
-	return info->protocol; 
-}
-
-void soft_app_info_set_protocol (SoftAppInfo *info,
-		                         const char  *protocol)
-{
-	g_free (info->protocol);
-    info->protocol = g_strdup (protocol);
-
-}
-
-const char *soft_app_info_get_source (SoftAppInfo *info)
-{
-	return info->source; 
-}
-void soft_app_info_set_source (SoftAppInfo *info,
-		                       const char  *source)
-{
-	g_free (info->source);
-    info->source = g_strdup (source);
-}
-
-const char *soft_app_info_get_size (SoftAppInfo *info)
-{
-	return info->size; 
-}
-void soft_app_info_set_size (SoftAppInfo *info,
-		                     const char  *size)
-{
-	g_free (info->size);
-    info->size = g_strdup (size);
-}
-
-const char *soft_app_info_get_pkgid (SoftAppInfo *info)
-{
-	return info->pkgid; 
-}
-void soft_app_info_set_pkgid (SoftAppInfo *info,
-		                      const char  *pkgid)
-{
-	g_free (info->pkgid);
-    info->pkgid = g_strdup (pkgid);
-}
-
-const char *soft_app_info_get_arch (SoftAppInfo *info)
-{
-	return info->arch; 
-}
-void soft_app_info_set_arch (SoftAppInfo *info,
-		                      const char  *arch)
-{
-	g_free (info->arch);
-    info->arch = g_strdup (arch);
-}
-
-const char *soft_app_info_get_package (SoftAppInfo *info)
-{
-	return info->package; 
-}
-void soft_app_info_set_package (SoftAppInfo *info,
-		                        const char  *package)
-{
-	g_free (info->package);
-    info->package = g_strdup (package);
-}
-
-int  soft_app_info_get_action (SoftAppInfo *info)
-{
-	return info->action; 
-}
-void soft_app_info_set_action (SoftAppInfo *info,
-		                       int          action)
-{
-    info->action = action;
-}
-
-int  soft_app_info_get_state (SoftAppInfo *info)
-{
-	return info->state; 
-}
-void soft_app_info_set_state (SoftAppInfo *info,
-		                      gboolean     state)
-{
-    info->state = state;
-}
-GtkWidget *soft_app_details_get_button(SoftAppDetails *details)
-{
-	return details->button;
-}
-GtkWidget *soft_app_details_get_bar(SoftAppDetails *details)
-{
-	return details->progressbar;
-}
-static void
-soft_app_info_finalize (GObject *object)
-{
-    SoftAppInfo *info = SOFT_APP_INFO (object);
-
-    g_free (info->soft_name);
-    g_free (info->icon_name);
-    g_free (info->comment);
-    g_free (info->button_name);
-    g_free (info->screenshot_url);
-    g_free (info->explain);
-    g_free (info->version);
-    g_free (info->protocol);
-    g_free (info->source);
-    g_free (info->size);
-    g_free (info->pkgid);
-    g_free (info->cache);
-    g_free (info->arch);
-    g_free (info->package);
-}
-
-static void
-soft_app_info_class_init (SoftAppInfoClass *klass)
-{
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
-    object_class->finalize = soft_app_info_finalize;
-}
-
-static void
-soft_app_info_init (SoftAppInfo *info)
-{
-
-}
-
-SoftAppInfo *
-soft_app_info_new (const char *name)
-{
-    SoftAppInfo *info;
-    info = g_object_new (SOFT_APP_TYPE_INFO, NULL);
-	info->soft_name = g_strdup(name);
-
-    return SOFT_APP_INFO (info);
-}
 void CreateRecommendDetails(gpointer d,gpointer data)
 {
     SoftAppThumbnailTile *tile = SOFT_APP_THUMBNAIL_TILE(data);
 	SoftAppStore *app = (SoftAppStore *)d;
 
     GtkWidget   *sw;
-	SoftAppInfo *info;
+    gboolean     state;
 	GtkFixed    *details;
-	const char  *name;
-	const char  *icon;
-    const char  *summary;
-	const char  *size;
-	const char  *arch;
-	const char  *license;
-	const char  *homepage;
-    const char  *pkgname;
-    const char  *version;
-	const char  *description;
-	const char  *screenshot;
-	const char  *package;
-	float        score;
-	gboolean     state;
 	GtkWidget   *install_button;
 	GtkWidget   *install_bar;
 	
@@ -578,42 +346,13 @@ void CreateRecommendDetails(gpointer d,gpointer data)
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
 	
-    icon = soft_app_message_get_icon(tile->Message);
-	name = soft_app_message_get_name (tile->Message); 
-    summary = soft_app_message_get_summary (tile->Message);
-	score = soft_app_message_get_score(tile->Message);
-	screenshot = soft_app_message_get_screenshot (tile->Message);
-    description = soft_app_message_get_description (tile->Message);
-    version = soft_app_message_get_version(tile->Message);
-    license = soft_app_message_get_license (tile->Message);
-    size    = soft_app_message_get_size(tile->Message);
-    homepage = soft_app_message_get_url(tile->Message);
-    arch    = soft_app_message_get_arch(tile->Message);
-    package = soft_app_message_get_package(tile->Message);
-    pkgname = soft_app_message_get_pkgname(tile->Message);
-
-	info = soft_app_info_new(name);
-	soft_app_info_set_icon(info,icon);
-	soft_app_info_set_comment(info,summary);
 	state = soft_app_message_get_state (tile->Message);
 	if (!state)
-		soft_app_info_set_button(info,_("install"));
+		soft_app_message_set_button(tile->Message,_("install"));
 	else
-		soft_app_info_set_button(info,_("installed"));
-	soft_app_info_set_score(info,score);
-	soft_app_info_set_screenshot_url(info,screenshot);
-    soft_app_info_set_explain(info,description);
-	soft_app_info_set_version(info,version);
-	soft_app_info_set_arch(info,arch);
-	soft_app_info_set_protocol(info,license);
-	soft_app_info_set_source(info,homepage);
-	soft_app_info_set_size (info,size);
-	soft_app_info_set_package (info,package);
-	soft_app_info_set_pkgid (info,pkgname);
-	soft_app_info_set_action (info,STOREAPPSOFT);
-	soft_app_info_set_state (info,state);
+		soft_app_message_set_button(tile->Message,_("installed"));
 	
-	details = soft_app_details_new(info);
+    details = soft_app_details_new(tile->Message);
     gtk_widget_set_halign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
     gtk_widget_set_valign (GTK_WIDGET (details), GTK_ALIGN_CENTER);
 	app->details = SOFT_APP_DETAILS(details);
@@ -632,21 +371,7 @@ void CreateRecommendDetails(gpointer d,gpointer data)
 static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
 {
     GtkWidget   *sw;
-	SoftAppInfo *info;
 	GtkFixed    *details;
-	const char  *name;
-	const char  *icon;
-	const char  *explain;
-	const char  *version;
-	const char  *license;
-	const char  *url;
-	const char  *size;
-	const char  *pkgname;
-	const char  *summary;
-	const char  *arch;
-	const char  *package;
-	const char  *cache_file;
-	float        score;
 	GtkWidget   *remove_button;
 	GtkWidget   *files_button;
 	GtkWidget   *install_bar;
@@ -660,50 +385,16 @@ static void CreateLocalSoftDetails(SoftAppStore *app,SoftAppRow *row)
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (app->StackDetailsBox), sw, TRUE, TRUE, 0);
 
-    icon = soft_app_message_get_icon(row->Message);
-	name = soft_app_message_get_name (row->Message); 
-    summary = soft_app_message_get_summary (row->Message);
-	score = soft_app_message_get_score(row->Message);
-	
     screenshots = as_app_get_screenshots(AS_APP(row->Message));
     if (screenshots->len >= 1)
     {    
         as_shot = g_ptr_array_index (screenshots, 0);
         im = as_screenshot_get_image (as_shot,AS_IMAGE_LARGE_WIDTH,AS_IMAGE_LARGE_HEIGHT);
         screenshot_url = as_image_get_url (im);
+        soft_app_message_set_screenshot (row->Message,screenshot_url);
     }
-	else
-	{
-		screenshot_url = soft_app_message_get_screenshot (row->Message);
-	}
-    explain = soft_app_message_get_description (row->Message);
-    version = soft_app_message_get_version(row->Message);
-    license = soft_app_message_get_license(row->Message);
-    size    = soft_app_message_get_size(row->Message);
-    url     = soft_app_message_get_url(row->Message);
-    arch    = soft_app_message_get_arch(row->Message);
-    package = soft_app_message_get_package(row->Message);
-    pkgname = soft_app_message_get_pkgname(row->Message);
-	cache_file = soft_app_message_get_cache(row->Message);
-
-	info = soft_app_info_new(name);
-	soft_app_info_set_icon(info,icon);
-	soft_app_info_set_comment(info,summary);
-	soft_app_info_set_button(info,_("uninstall"));
-	soft_app_info_set_score(info,score);
-	soft_app_info_set_screenshot_url(info,screenshot_url);
-	soft_app_info_set_explain(info,explain);
-	soft_app_info_set_version(info,version);
-	soft_app_info_set_protocol(info,license);
-	soft_app_info_set_source(info,url);
-	soft_app_info_set_size(info,size);
-	soft_app_info_set_pkgid(info,pkgname);
-	soft_app_info_set_cache(info,cache_file);
-	soft_app_info_set_arch(info,arch);
-	soft_app_info_set_package(info,package);
-	soft_app_info_set_action(info,LOCALINSTALL);
-
-	details = soft_app_details_new(info);
+    soft_app_message_set_button (row->Message,_("uninstall"));
+	details = soft_app_details_new(row->Message);
 	app->details = SOFT_APP_DETAILS(details);
 	remove_button = soft_app_details_get_button(SOFT_APP_DETAILS(details));
     g_signal_connect (remove_button,

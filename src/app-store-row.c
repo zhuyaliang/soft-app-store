@@ -17,6 +17,7 @@
 
 #include "app-store-row.h"
 #include "app-store-util.h"
+#include "app-store-thumbnail.h"
 
 G_DEFINE_TYPE (SoftAppRow,     soft_app_row,     GTK_TYPE_LIST_BOX_ROW)
 
@@ -26,12 +27,12 @@ soft_app_row_refresh (SoftAppRow *row)
 	float      level;
 	const char *icon_name;
 	const char *soft_name;
-	const char *sumary;
+	const char *summary;
 
     icon_name = soft_app_message_get_icon(row->Message);
 	gtk_image_set_from_icon_name(GTK_IMAGE(row->image),icon_name,GTK_ICON_SIZE_DIALOG);
 	
-	soft_name = as_app_get_name(AS_APP(row->Message),NULL);
+	soft_name = soft_app_message_get_name(row->Message);
 	gtk_label_set_text(GTK_LABEL(row->label_name),soft_name);
 	
 	level = soft_app_message_get_score(row->Message);
@@ -42,8 +43,8 @@ soft_app_row_refresh (SoftAppRow *row)
     soft_app_star_widget_set_rating (row->stars4,level--);
     soft_app_star_widget_set_rating (row->stars5,level--);
    
-	sumary = as_app_get_comment (AS_APP(row->Message),NULL);
-	gtk_label_set_text(GTK_LABEL(row->label_describe),sumary);
+	summary = soft_app_message_get_summary (row->Message);
+	gtk_label_set_text(GTK_LABEL(row->label_describe),summary);
 	
 	SetLableFontType(row->label_size,
                     "black",

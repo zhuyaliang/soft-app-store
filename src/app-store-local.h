@@ -23,4 +23,5 @@
 GtkWidget *LoadLocalInstall(SoftAppStore *app);
 void RemoveLocalSoftApp (GtkWidget *button, SoftAppStore *app);
 void ViewLocalSoftFiles (GtkWidget *button, SoftAppStore *app);
+void UpdateLocalInstallPage(SoftAppStore *app);
 #endif

@@ -254,6 +254,32 @@ soft_app_message_set_state (SoftAppMessage  *Message,
     Message->soft_state = state;
 } 
 
+gboolean
+soft_app_message_get_mode (SoftAppMessage *Message)
+{
+    return Message->soft_mode;
+}
+
+void
+soft_app_message_set_mode (SoftAppMessage  *Message, 
+                           gboolean         mode)
+{
+    Message->soft_mode = mode;
+}
+
+const gchar *
+soft_app_message_get_button (SoftAppMessage *Message)
+{
+    return Message->button_name;
+}
+
+void
+soft_app_message_set_button (SoftAppMessage  *Message, 
+                            const gchar      *button_name)
+{
+    g_free (Message->button_name);
+    Message->button_name = g_strdup (button_name);
+}  
 static void
 soft_app_message_finalize (GObject *object)
 {
@@ -272,6 +298,7 @@ soft_app_message_finalize (GObject *object)
     g_free (Message->soft_package);
     g_free (Message->soft_pkgname);
     g_free (Message->cache_file);
+    g_free (Message->button_name);
     g_strfreev (Message->soft_files);
 }
 
