@@ -24,14 +24,32 @@ G_DEFINE_TYPE (SoftAppRow,     soft_app_row,     GTK_TYPE_LIST_BOX_ROW)
 static void
 soft_app_row_refresh (SoftAppRow *row)
 {
-	float      level;
-	const char *icon_name;
-	const char *soft_name;
-	const char *summary;
+	float        level;
+	const char  *icon_name;
+	const char  *soft_name;
+	const char  *summary;
+    
+    gboolean     mode;
+    SoupSession *SoupSso;
+    SoupMessage *SoupMsg;
 
     icon_name = soft_app_message_get_icon(row->Message);
-	gtk_image_set_from_icon_name(GTK_IMAGE(row->image),icon_name,GTK_ICON_SIZE_DIALOG);
-	
+    mode = soft_app_message_get_mode (row->Message);
+	if(mode)
+    {
+	    gtk_image_set_from_icon_name(GTK_IMAGE(row->image),
+                                     icon_name,
+                                     GTK_ICON_SIZE_DIALOG);
+    }
+    else
+    {   
+	    SoupSso = soup_session_new ();
+	    SoupMsg = soup_message_new (SOUP_METHOD_GET,icon_name);
+        soup_session_queue_message (SoupSso,
+	    					        SoupMsg,
+								    SoupGetSoftIcon,
+								    row->image);
+    }   
 	soft_name = soft_app_message_get_name(row->Message);
 	gtk_label_set_text(GTK_LABEL(row->label_name),soft_name);
 	

@@ -18,7 +18,7 @@ sources = [
 
 executable('soft-app-store',
   sources : sources,
-  dependencies : [gtk_deps,pkgkit_deps,appstream_deps,libsoup_deps,jsonc_deps],
+  dependencies : [gtk_deps,pkgkit_deps,appstream_deps,libsoup_deps,jsonc_deps,json_glib_deps],
   include_directories: top_srcdir,
   install : true,
   install_dir : get_option('bindir')

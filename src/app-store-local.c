@@ -472,13 +472,6 @@ soft_app_get_package_details (char         *package_id,
 	SoftAppStoreLog ("Debug","Cache Directory %s Creation Successfu",dname);	
 	/*Get detailed information about the software*/
     package_ids = pk_package_ids_from_id (package_id);
-    pk_client_get_details_async (PK_CLIENT(pkg->task), 
-                                 package_ids, 
-                                 pkg->cancellable,
-                                (PkProgressCallback) GetLocalDetailsProgress,
-                                 app,
-                                (GAsyncReadyCallback) GetLocalSoftAppDetails,
-                                 pkg);
     pk_client_get_files_async (PK_CLIENT (pkg->task), 
                                package_ids, 
                                pkg->cancellable,
@@ -486,6 +479,14 @@ soft_app_get_package_details (char         *package_id,
                                app,
                               (GAsyncReadyCallback) GetLocalSoftFilesFinished, 
                                pkg);
+    usleep (200);
+    pk_client_get_details_async (PK_CLIENT(pkg->task), 
+                                 package_ids, 
+                                 pkg->cancellable,
+                                (PkProgressCallback) GetLocalDetailsProgress,
+                                 app,
+                                (GAsyncReadyCallback) GetLocalSoftAppDetails,
+                                 pkg);
 }
 
 static void get_local_soft_details_ready (SoftAppPkgkit *pkg,
