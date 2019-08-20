@@ -110,6 +110,7 @@ conf.set_quoted('LIBEXECDIR', join_paths(get_option('prefix'), get_option('libex
 conf.set_quoted('ICONDIR', join_paths(get_option('prefix'), get_option('datadir'), meson.project_name(), 'icon/'))
 conf.set_quoted('APPDATA', join_paths(get_option('prefix'), get_option('datadir'), 'appdata/'))
 conf.set_quoted('METAINFO', join_paths(get_option('prefix'), get_option('datadir'), 'metainfo/'))
+conf.set_quoted('SERVERCONFIG', '/etc/soft-app-store/appstore-server.ini')
 configure_file(
   output : 'config.h',
   configuration : conf

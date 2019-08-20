@@ -94,6 +94,9 @@ SoupGetStoreCategory (SoupSession *session,
     if (msg->status_code == SOUP_STATUS_NOT_MODIFIED)
     {
         SoftAppStoreLog ("Warning","get category SOUP_STATUS_NOT_MODIFIED");
+        MessageReport ("Send Get Request",
+                     _("Check whether /etc/soft-app-store/appstore-server.ini is set first or not"),
+                       WARING);
         return;
     }
     if (msg->status_code != SOUP_STATUS_OK)
@@ -102,6 +105,9 @@ SoupGetStoreCategory (SoupSession *session,
                          "status code '%u': %s",
                           msg->status_code,
                           msg->reason_phrase);
+        MessageReport ("Send Get Request",
+                     _("Check whether /etc/soft-app-store/appstore-server.ini is set first or not"),
+                       WARING);
         return;
     }
     list = GetJsonCategory (msg->response_body->data); 
@@ -191,9 +197,9 @@ SoupGetRichRecomInfo (SoupSession *session,
     homepage = GetJsonSpecifiedData (js,"homepage");
     version = GetJsonSpecifiedData (js,"version");
     screenshot_url = GetJsonSpecifiedData (js,"screenshots");
-    screenshot = g_strdup_printf ("%s:%d/media/%s",STORESERVERADDR,STORESERVERPOER,screenshot_url);
+    screenshot = g_strdup_printf ("%s:%s/media/%s",app->server_addr,app->server_port,screenshot_url);
     s_size = g_strdup_printf ("%.2f MB",atof(size) / 1024);
-    icon_url = g_strdup_printf ("%s:%d%s",STORESERVERADDR,STORESERVERPOER,icon);
+    icon_url = g_strdup_printf ("%s:%s%s",app->server_addr,app->server_port,icon);
     
     Message = soft_app_message_new ();
     soft_app_message_set_icon  (Message,icon_url);
@@ -343,9 +349,9 @@ SoupGetRichSubInfo (SoupSession *session,
     homepage = GetJsonSpecifiedData (js,"homepage");
     version = GetJsonSpecifiedData (js,"version");
     screenshot_url = GetJsonSpecifiedData (js,"screenshots");
-    screenshot = g_strdup_printf ("%s:%d/media/%s",STORESERVERADDR,STORESERVERPOER,screenshot_url);
+    screenshot = g_strdup_printf ("%s:%s/media/%s",app->server_addr,app->server_port,screenshot_url);
     s_size = g_strdup_printf ("%.2f MB",atof(size) / 1024);
-    icon_url = g_strdup_printf ("%s:%d%s",STORESERVERADDR,STORESERVERPOER,icon);
+    icon_url = g_strdup_printf ("%s:%s%s",app->server_addr,app->server_port,icon);
     
     Message = soft_app_message_new ();
     soft_app_message_set_icon  (Message,icon_url);
@@ -591,7 +597,7 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
 
     InitStorePkCtx (app);
-    request = g_strdup_printf ("%s:%d/api/apps/category/",STORESERVERADDR,STORESERVERPOER);
+    request = g_strdup_printf ("%s:%s/api/apps/category/",app->server_addr,app->server_port);
 	app->SoupSession = soup_session_new ();
 	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
 	
@@ -616,7 +622,7 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
    								
 	g_free (request);
 
-	request = g_strdup_printf ("%s:%d/api/apps/recommend/",STORESERVERADDR,STORESERVERPOER);
+	request = g_strdup_printf ("%s:%s/api/apps/recommend/",app->server_addr,app->server_port);
 	msg = soup_message_new (SOUP_METHOD_GET,request);
     
 	app->StoreRecmHbox = RecommendSoftWindow(vbox);

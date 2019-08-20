@@ -1,5 +1,6 @@
 subdir('icon')
 subdir('hicolor')
+subdir('soft-app-store')
 
 i18n = import('i18n')
 

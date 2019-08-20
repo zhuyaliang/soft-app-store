@@ -31,8 +31,6 @@
 #include <libsoup/soup.h>
 
 #define _(STRING)  gettext(STRING)   
-#define STORESERVERADDR    "http://127.0.0.1"
-#define STORESERVERPOER     8000
 #define PK_EXIT_CODE_SYNTAX_INVALID 3
 #define PK_EXIT_CODE_FILE_NOT_FOUND 4
 #define PK_EXIT_CODE_NOTHING_USEFUL 5
@@ -82,6 +80,8 @@ typedef struct
 	uint              per;
 	int               page;
 	int               parent_page;
+    char             *server_addr;
+    char             *server_port;
 }SoftAppStore;
 
 #endif

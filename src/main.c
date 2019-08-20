@@ -38,7 +38,14 @@ static gboolean on_window_quit (GtkWidget    *widget,
                                 SoftAppStore *app)
 {
     CloseLogFile();  
-
+    if (app->server_addr != NULL)
+    {
+        g_free (app->server_addr);
+    }    
+    if (app->server_port != NULL)
+    {
+        g_free (app->server_port);
+    }    
     gtk_main_quit();
     return TRUE;
 }
@@ -318,7 +325,34 @@ ERROREXIT:
     return TRUE;
 
 }        
+static gboolean LoadServerConfig (SoftAppStore *app)
+{
+    GKeyFile         *Kconfig = NULL;
+    g_autoptr(GError) error = NULL;
 
+    Kconfig = g_key_file_new();
+    if(Kconfig == NULL)
+    {
+        SoftAppStoreLog ("Warning","g_key_file_new %s fail",SERVERCONFIG);
+        return FALSE;
+    }
+    if(!g_key_file_load_from_file(Kconfig, SERVERCONFIG, G_KEY_FILE_NONE, &error))
+    {
+        SoftAppStoreLog ("Warning","Error loading key file: %s", error->message);
+        g_key_file_free(Kconfig);
+        return FALSE;
+    }
+    app->server_addr = g_key_file_get_string (Kconfig,"server","ipaddr",&error);
+    app->server_port = g_key_file_get_string (Kconfig,"server","port",&error);
+
+    if (app->server_addr == NULL || app->server_port == NULL)
+    {
+        g_key_file_free(Kconfig);
+        return FALSE;
+    }    
+
+    return TRUE;
+}    
 int main(int argc, char **argv)
 {
 	
@@ -328,7 +362,14 @@ int main(int argc, char **argv)
     textdomain (GETTEXT_PACKAGE); 
     
     gtk_init(&argc, &argv);
-    
+   
+    /*read config soft-app-store/appstore-server.ini*/
+    if (!LoadServerConfig (&app))
+    {
+        MessageReport ("Read appstore-server.ini",
+                      _("Check whether /etc/soft-app-store/appstore-server.ini is set first or not"),
+                       WARING);
+    }    
     /* Create the main window */
 	InitMainWindow(&app);
 

@@ -113,9 +113,9 @@ SoupGetSoftInfo (SoupSession *session,
     homepage = GetJsonSpecifiedData (js,"homepage");
     version = GetJsonSpecifiedData (js,"version");
     screenshot_url = GetJsonSpecifiedData (js,"screenshots");
-    screenshot = g_strdup_printf ("%s:%d/media/%s",STORESERVERADDR,STORESERVERPOER,screenshot_url);
+    screenshot = g_strdup_printf ("%s:%s/media/%s",app->server_addr,app->server_port,screenshot_url);
     s_size = g_strdup_printf ("%.2f MB",atof(size) / 1024);
-    icon_url = g_strdup_printf ("%s:%d%s",STORESERVERADDR,STORESERVERPOER,icon);
+    icon_url = g_strdup_printf ("%s:%s%s",app->server_addr,app->server_port,icon);
     
     Message = soft_app_message_new ();
     soft_app_message_set_icon  (Message,icon_url);
@@ -201,7 +201,7 @@ static void GetStoreSoftSearchResult (const char *SoftName,SoftAppStore *app)
 	SoupMessage *msg;
     SoupSession *sso;
 
-    request = g_strdup_printf ("%s:%d/api/apps/search/",   STORESERVERADDR,STORESERVERPOER);
+    request = g_strdup_printf ("%s:%s/api/apps/search/",app->server_addr,app->server_port);
 	sso = soup_session_new ();
 	msg = soup_message_new (SOUP_METHOD_POST,request);
     set_content_request (msg, SoftName);
