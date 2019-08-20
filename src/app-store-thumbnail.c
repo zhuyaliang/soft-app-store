@@ -153,7 +153,8 @@ soft_app_thumbnail_tile_init (SoftAppThumbnailTile *tile)
     gtk_widget_set_halign (eventbox,GTK_ALIGN_END);
     gtk_widget_set_valign (eventbox,GTK_ALIGN_START);
 	gtk_overlay_add_overlay (GTK_OVERLAY (overlay), eventbox);
-    tile->image_install = gtk_image_new_from_icon_name ("software-installed-symbolic",GTK_ICON_SIZE_MENU);
+    //tile->image_install = gtk_image_new_from_icon_name ("software-installed-symbolic",GTK_ICON_SIZE_MENU);
+    tile->image_install = gtk_image_new_from_icon_name ("soft-app-installed-symbolic",GTK_ICON_SIZE_MENU);
     gtk_widget_set_halign (tile->image_install,GTK_ALIGN_CENTER);
     gtk_widget_set_valign (tile->image_install,GTK_ALIGN_CENTER);
     gtk_container_add (GTK_CONTAINER (eventbox), tile->image_install);

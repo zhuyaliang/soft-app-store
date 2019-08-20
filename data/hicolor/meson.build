@@ -1,5 +1,6 @@
 actions_icons = [
   ['16x16', 'soft-app-store.png'],
+  ['16x16', 'soft-app-installed-symbolic.png'],
   ['22x22', 'soft-app-store.png'],
   ['24x24', 'soft-app-store.png'],
   ['32x32', 'soft-app-store.png'],
