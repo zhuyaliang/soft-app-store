@@ -88,7 +88,6 @@ SoupGetStoreCategory (SoupSession *session,
     SoftAppCategory *cate;
     GdkRGBA          key_color;
     GtkWidget       *tile;
-    
     SoftAppStore *app = (SoftAppStore *)data;
     list = g_ptr_array_new ();
     if (msg->status_code == SOUP_STATUS_NOT_MODIFIED)
@@ -614,7 +613,7 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
                       app);
     app->button_return = button_return;	
 	app->StoreFlowbox = CategorySoftWindow(vbox);
-
+    
     soup_session_queue_message (app->SoupSession,
 								app->SoupMessage,
 								SoupGetStoreCategory,

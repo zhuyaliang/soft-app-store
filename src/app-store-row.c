@@ -110,7 +110,9 @@ soft_app_row_init (SoftAppRow *row)
 	gtk_box_pack_start(GTK_BOX(hbox),vbox ,FALSE,FALSE, 10);
 
     row->label_name = gtk_label_new(NULL);
-	gtk_box_pack_start(GTK_BOX(vbox),row->label_name ,FALSE,FALSE, 6);
+    gtk_label_set_ellipsize (GTK_LABEL(row->label_name),PANGO_ELLIPSIZE_END);
+    gtk_label_set_max_width_chars (GTK_LABEL(row->label_name),10);
+    gtk_box_pack_start(GTK_BOX(vbox),row->label_name ,FALSE,FALSE, 6);
     
     v_hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);  
     gtk_widget_set_halign(v_hbox, GTK_ALIGN_CENTER);

@@ -732,9 +732,14 @@ static char *GetLocalFiles(const char *dname)
 {
     FILE *fp = NULL;
     char *home,*fname;
+    char *ret = _("Viewing the list of newly installed package files is not supported");
 	char *files = NULL;
     int   flen;
 
+    if (dname == NULL)
+    {
+        return g_strdup(ret);
+    }    
     home = getenv("HOME");
     fname = g_strconcat(home,"/.soft-app-store/",dname,"/files",NULL);
     
