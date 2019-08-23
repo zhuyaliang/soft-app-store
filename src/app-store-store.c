@@ -132,11 +132,15 @@ SoupGetStoreCategory (SoupSession *session,
                          "clicked",
                           G_CALLBACK (SwitchPageToCategoryListPage), 
                           app);
-        gtk_container_add (GTK_CONTAINER (app->StoreFlowbox),tile);
+        if (i <= 11)
+            gtk_container_add (GTK_CONTAINER (app->StoreFlowbox),tile);
+        if (i >= 12)
+            gtk_container_add (GTK_CONTAINER (app->StoreFlowbox2),tile);
         g_free ((gpointer)subnum);
     }
 	g_ptr_array_free (list, TRUE);
     gtk_widget_show_all (app->StoreFlowbox);
+    gtk_widget_show_all (app->StoreFlowbox2);
 }    
 static void
 SoupGetRichRecomInfo (SoupSession *session,
@@ -547,7 +551,33 @@ static void CreateStoreCategoryList(SoftAppStore *app,
     gtk_widget_show_all(app->StackCategoryBox);
 }   
 
-static GtkWidget *CategorySoftWindow(GtkWidget *vbox)
+static GtkWidget *CategorySoftWindow2(GtkWidget *CategoresMore)
+{
+    GtkWidget *flowbox;
+    	
+    flowbox = gtk_flow_box_new ();
+    gtk_flow_box_set_homogeneous (GTK_FLOW_BOX (flowbox),TRUE);
+    gtk_widget_set_valign (flowbox, GTK_ALIGN_START);
+    gtk_flow_box_set_max_children_per_line(GTK_FLOW_BOX (flowbox), 3);
+    gtk_flow_box_set_selection_mode (GTK_FLOW_BOX (flowbox), GTK_SELECTION_NONE);
+    gtk_flow_box_set_column_spacing(GTK_FLOW_BOX (flowbox),12);
+    gtk_flow_box_set_row_spacing(GTK_FLOW_BOX (flowbox),12);
+	gtk_container_add (GTK_CONTAINER(CategoresMore),flowbox);
+   
+    return flowbox;
+}   
+static GtkWidget *CreateRevealerMore (GtkWidget *vbox)
+{
+    GtkWidget *revealer;
+
+    revealer = gtk_revealer_new();
+    gtk_revealer_set_transition_duration (GTK_REVEALER (revealer), 0);
+    gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
+    gtk_box_pack_start (GTK_BOX(vbox),revealer,TRUE,TRUE,0);
+    
+    return revealer;
+}    
+static GtkWidget *CategorySoftWindow (GtkWidget *vbox)
 {
 	GtkWidget *label;
     GtkWidget *flowbox;
@@ -559,6 +589,7 @@ static GtkWidget *CategorySoftWindow(GtkWidget *vbox)
 	gtk_box_pack_start(GTK_BOX(vbox),label ,TRUE, TRUE, 0);
     
     flowbox = gtk_flow_box_new ();
+    gtk_flow_box_set_homogeneous (GTK_FLOW_BOX (flowbox),TRUE);
     gtk_widget_set_valign (flowbox, GTK_ALIGN_START);
     gtk_flow_box_set_max_children_per_line(GTK_FLOW_BOX (flowbox), 3);
     gtk_flow_box_set_selection_mode (GTK_FLOW_BOX (flowbox), GTK_SELECTION_NONE);
@@ -585,21 +616,51 @@ static GtkWidget *RecommendSoftWindow (GtkWidget *vbox)
 
     return hbox;
 
-}    
-GtkWidget *LoadStoreSoft(SoftAppStore *app)
+}   
+
+static void
+SwitchExpanderButtonState (GtkRevealer  *revealer,
+                           GParamSpec   *pspec,
+                           SoftAppStore *app)
 {
-    GtkWidget *vbox;
+    gboolean child_revealed = gtk_revealer_get_child_revealed (revealer);
+
+    gtk_widget_set_visible (app->expander_button_up,
+                child_revealed);
+    gtk_widget_set_visible (app->expander_button_down,
+                !child_revealed);
+}
+
+static void
+gs_overview_page_categories_expander_down_cb (GtkButton *button, SoftAppStore *app)
+{
+    gtk_revealer_set_transition_duration (GTK_REVEALER (app->CategoresMore), 250);
+    gtk_revealer_set_reveal_child (GTK_REVEALER (app->CategoresMore), TRUE);
+}
+
+static void
+gs_overview_page_categories_expander_up_cb (GtkButton *button, SoftAppStore *app)
+{
+    gtk_revealer_set_transition_duration (GTK_REVEALER (app->CategoresMore), 250);
+    gtk_revealer_set_reveal_child (GTK_REVEALER (app->CategoresMore), FALSE);
+}
+static GtkWidget *CreateExpanderButton (GtkWidget *hbox,const char *icon)
+{
+    GtkWidget *button;
+
+    button = gtk_button_new_from_icon_name(icon,GTK_ICON_SIZE_BUTTON); 
+    gtk_button_set_relief (GTK_BUTTON(button),GTK_RELIEF_NONE);
+    gtk_widget_has_focus (button);
+    gtk_widget_set_can_focus (button,TRUE);
+	gtk_box_pack_start(GTK_BOX(hbox),button ,FALSE, FALSE, 0);
+
+    return button;
+}    
+static void InitHeaderBar (SoftAppStore *app)
+{
     GtkWidget *button_return;
     GtkWidget *button_search;
-	char      *request;
-	SoupMessage *msg;
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
 
-    InitStorePkCtx (app);
-    request = g_strdup_printf ("%s:%s/api/apps/category/",app->server_addr,app->server_port);
-	app->SoupSession = soup_session_new ();
-	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
-	
 	button_search = LoadHeader_bar(app->Header,"edit-find-symbolic",FALSE);
 	g_signal_connect (button_search, 
                      "clicked",
@@ -612,7 +673,32 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
                       G_CALLBACK (SwitchPageToReturn), 
                       app);
     app->button_return = button_return;	
-	app->StoreFlowbox = CategorySoftWindow(vbox);
+}    
+
+GtkWidget *LoadStoreSoft(SoftAppStore *app)
+{
+    GtkWidget *vbox;
+	char      *request;
+    GtkWidget *hbox;
+    GtkWidget *separator;
+	SoupMessage *msg;
+    
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);  
+
+    InitStorePkCtx (app);
+    request = g_strdup_printf ("%s:%s/api/apps/category/",app->server_addr,app->server_port);
+	app->SoupSession = soup_session_new ();
+	app->SoupMessage = soup_message_new (SOUP_METHOD_GET,request);
+    InitHeaderBar (app); 
+	
+    app->StoreFlowbox = CategorySoftWindow(vbox);
+    app->CategoresMore = CreateRevealerMore(vbox);
+    g_signal_connect (app->CategoresMore, 
+                     "notify::child-revealed",
+                      G_CALLBACK (SwitchExpanderButtonState),
+                      app);
+
+	app->StoreFlowbox2 = CategorySoftWindow2(app->CategoresMore);
     
     soup_session_queue_message (app->SoupSession,
 								app->SoupMessage,
@@ -621,21 +707,39 @@ GtkWidget *LoadStoreSoft(SoftAppStore *app)
    								
 	g_free (request);
 
-	request = g_strdup_printf ("%s:%s/api/apps/recommend/",app->server_addr,app->server_port);
-	msg = soup_message_new (SOUP_METHOD_GET,request);
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL,6);
+	gtk_box_pack_start(GTK_BOX(vbox),hbox ,FALSE, FALSE, 0);
     
+    separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+    gtk_widget_set_valign (separator,GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(hbox),separator ,TRUE,TRUE, 0);
+    app->expander_button_up = CreateExpanderButton (hbox,"pan-up-symbolic");
+    g_signal_connect(app->expander_button_up, 
+                    "clicked",
+                     G_CALLBACK (gs_overview_page_categories_expander_up_cb), 
+                     app);
+    app->expander_button_down = CreateExpanderButton (hbox,"pan-down-symbolic"); 
+    g_signal_connect (app->expander_button_down, 
+                     "clicked",
+                      G_CALLBACK (gs_overview_page_categories_expander_down_cb), 
+                      app);
+    separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+    gtk_widget_set_valign (separator,GTK_ALIGN_CENTER);
+	gtk_box_pack_start(GTK_BOX(hbox),separator ,TRUE,TRUE, 0);
+	
+    
+    request = g_strdup_printf ("%s:%s/api/apps/recommend/",app->server_addr,app->server_port);
+	msg = soup_message_new (SOUP_METHOD_GET,request);
 	app->StoreRecmHbox = RecommendSoftWindow(vbox);
 	soup_session_queue_message (app->SoupSession,
 								msg,
 								SoupGetStoreRecommend,
 								app);
 	g_free (request);
-
     gtk_widget_show_all (app->StoreRecmHbox);
 
     return vbox;
 }
-
 
 static void soft_app_install_progress_cb (PkProgress     *progress, 
 		                                  PkProgressType  type, 

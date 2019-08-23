@@ -59,6 +59,10 @@ typedef struct
     GtkWidget        *LocalBox;
     GtkWidget        *UpdateBox;
 	GtkWidget        *StoreFlowbox;
+    GtkWidget        *CategoresMore;
+    GtkWidget        *expander_button_up;
+    GtkWidget        *expander_button_down;
+	GtkWidget        *StoreFlowbox2;
 	GtkWidget        *SubFlowbox;
     GtkWidget        *StoreRecmHbox;
     GtkWidget        *StackCategoryBox;

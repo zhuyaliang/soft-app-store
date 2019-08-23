@@ -206,14 +206,22 @@ static void InitWelcomeInterface (SoftAppStore *app)
 static void InitNoteBook (SoftAppStore *app)
 {
     GtkWidget *NoteName;
-    
+    GtkWidget *sw;
+
+    sw = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw), GTK_SHADOW_IN);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
+                                    GTK_POLICY_NEVER,
+                                    GTK_POLICY_AUTOMATIC);
+ 
     app->NoteBook = gtk_notebook_new();
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK (app->NoteBook), GTK_POS_TOP);
     
     NoteName = gtk_label_new(_("all store"));
     app->StoreBox = LoadStoreSoft(app);
+    gtk_container_add (GTK_CONTAINER (sw), app->StoreBox);
     gtk_notebook_append_page(GTK_NOTEBOOK (app->NoteBook),
-			                 app->StoreBox,
+			                 sw,
 							 NoteName);
 
     NoteName = gtk_label_new(_("local install"));
@@ -249,6 +257,8 @@ static void InitNoteBook (SoftAppStore *app)
 	gtk_widget_show_all(app->MainWindow);
     gtk_widget_hide (app->button_search);
     gtk_widget_hide (app->button_return);
+    gtk_widget_set_visible (app->expander_button_up,FALSE);
+    gtk_widget_set_visible (app->expander_button_down,TRUE);
 }    
 static int RecordPid(void)
 {
