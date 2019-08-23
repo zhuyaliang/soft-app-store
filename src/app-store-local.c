@@ -30,13 +30,25 @@ static char *GetMetadataFileName(char *path)
 	
 	return g_strdup(split[4]);
 }
+static int LocalSoftAppSort (gconstpointer a,gconstpointer b)
+{
+    const char *name1,*name2;
+    SoftAppMessage *msg1 = SOFT_APP_MESSAGE (*(SoftAppMessage **)a);
+    SoftAppMessage *msg2 = SOFT_APP_MESSAGE (*(SoftAppMessage **)b);
+
+    name1 = soft_app_message_get_name (msg1);
+    name2 = soft_app_message_get_name (msg2);
+    
+    return g_strcmp0 (name1, name2);
+}    
 void UpdateLocalInstallPage(SoftAppStore *app)
 {
 	SoftAppMessage *Message;
 	GtkWidget  *row;
 	guint       i;
 	app->page = MAIN_PAGE;
-	
+
+    g_ptr_array_sort (app->pkg->list,(GCompareFunc)LocalSoftAppSort);
 	SoftAppStoreLog ("Debug","start load all local soft %u to listrowbox",app->pkg->list->len);
     for (i = 0; i < app->pkg->list->len; i++)
     {
