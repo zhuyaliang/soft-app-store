@@ -1,5 +1,5 @@
 project('soft-app-store', 'c',
-  version : '1.4.2',
+  version : '1.0.0',
   license : 'GPLv3',
   meson_version : '>=0.40.1',
   default_options : [ 'warning_level=1', 'buildtype=debugoptimized', 'c_std=gnu11'],
