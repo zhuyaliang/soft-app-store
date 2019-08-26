@@ -1,6 +1,8 @@
 /*  soft-app-store 
 *   Copyright (C) 2019  zhuyaliang https://github.com/zhuyaliang/
-*
+*   Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+*   Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
+*   Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
 *   the Free Software Foundation, either version 3 of the License, or

@@ -496,11 +496,6 @@ const char *GetJsonSpecifiedData (json_object *js,const char *SpecifiedData)
     enum json_type type;
     json_object *j,*ja;
 
-    if (js == NULL)
-    {
-        SoftAppStoreLog ("Warning","GetJsonSpecifiedData %s is NULL",SpecifiedData);
-        return NULL;
-    }    
     json_object_object_foreach(js, key, value)  /*Passing through every array element*/
     {
         type = json_object_get_type(value);
