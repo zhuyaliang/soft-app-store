@@ -589,6 +589,24 @@ static gboolean HavingCache(const char *dname)
 
 	return FALSE;
 }
+static gboolean is_soft_name_empty(const char *file_name)
+{
+    AsApp      *app;
+	const char *soft_name;
+
+    app = as_app_new ();
+    as_app_parse_file(app,
+                      file_name,
+                      AS_APP_PARSE_FLAG_USE_HEURISTICS,
+                      NULL);
+	soft_name = as_app_get_name(app,NULL);
+    if (soft_name == NULL || strlen (soft_name) <= 0)
+    {
+        return TRUE;
+    }    
+    
+    return FALSE;
+}    
 static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
 {
     const gchar *fn;
@@ -610,6 +628,8 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
             g_str_has_suffix (fn, ".metainfo.xml")) 
         {
             g_autofree gchar *filename = g_build_filename (path, fn, NULL);
+            if( is_soft_name_empty(filename))
+                continue;    
             if(HavingCache(fn))
 			{
 				package_id = soft_app_file_get_packageid_use_cache(fn);
