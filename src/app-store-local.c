@@ -589,10 +589,11 @@ static gboolean HavingCache(const char *dname)
 
 	return FALSE;
 }
-static gboolean is_soft_name_empty(const char *file_name)
+static gboolean is_soft_name_id_empty(const char *file_name)
 {
     AsApp      *app;
 	const char *soft_name;
+    const char *id_name;
 
     app = as_app_new ();
     as_app_parse_file(app,
@@ -604,7 +605,12 @@ static gboolean is_soft_name_empty(const char *file_name)
     {
         return TRUE;
     }    
-    
+    id_name = as_app_get_unique_id (app);
+    if (strstr (id_name,"/desktop/") == NULL)
+    {
+        return TRUE;
+    }
+    g_print ("id_name = %s\r\n",id_name);
     return FALSE;
 }    
 static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
@@ -628,7 +634,7 @@ static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
             g_str_has_suffix (fn, ".metainfo.xml")) 
         {
             g_autofree gchar *filename = g_build_filename (path, fn, NULL);
-            if( is_soft_name_empty(filename))
+            if( is_soft_name_id_empty(filename))
                 continue;    
             if(HavingCache(fn))
 			{
