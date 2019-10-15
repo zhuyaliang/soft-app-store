@@ -610,7 +610,6 @@ static gboolean is_soft_name_id_empty(const char *file_name)
     {
         return TRUE;
     }
-    g_print ("id_name = %s\r\n",id_name);
     return FALSE;
 }    
 static gboolean soft_app_load_appdata(SoftAppStore *app,const char *path)
